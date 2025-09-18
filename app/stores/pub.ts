@@ -1,14 +1,15 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useSolarNetwork } from '~/composables/useSolarNetwork'
+import type { SnPublisher } from '~/types/api'
 
 export const usePubStore = defineStore('pub', () => {
-  const publishers = ref<any[]>([])
+  const publishers = ref<SnPublisher[]>([])
 
   async function fetchPublishers() {
     const api = useSolarNetwork()
     const resp = await api('/publishers')
-    publishers.value = resp as any[]
+    publishers.value = resp as SnPublisher[]
   }
 
   return { publishers, fetchPublishers }

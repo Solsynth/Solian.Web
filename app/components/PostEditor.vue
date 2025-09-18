@@ -47,13 +47,20 @@ import { useSolarNetwork } from '~/composables/useSolarNetwork'
 
 import PubSelect from './PubSelect.vue'
 
+// Interface for uploaded files in the editor
+interface UploadedFile {
+  name: string
+  url: string
+  type: string
+}
+
 const emits = defineEmits(['posted'])
 
 const publisher = ref<string | undefined>()
 const content = ref('')
 
 const selectedFiles = ref<File[]>([])
-const fileList = ref<any[]>([])
+const fileList = ref<UploadedFile[]>([])
 
 const submitting = ref(false)
 
@@ -103,7 +110,7 @@ function uploadFile(file: File) {
     onError: function (error) {
       console.error('[DRIVE] Upload failed:', error)
     },
-    onProgress: function (bytesUploaded, bytesTotal) {
+    onProgress: function (_bytesUploaded, _bytesTotal) {
       // Could show progress
     },
     onSuccess: function (payload) {
@@ -122,7 +129,7 @@ function uploadFile(file: File) {
     },
   })
   upload.findPreviousUploads().then(function (previousUploads) {
-    if (previousUploads.length) {
+    if (previousUploads.length > 0 && previousUploads[0]) {
       upload.resumeFromPreviousUpload(previousUploads[0])
     }
     upload.start()

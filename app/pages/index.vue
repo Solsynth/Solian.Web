@@ -42,6 +42,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useUserStore } from '~/stores/user'
 import { useSolarNetwork } from '~/composables/useSolarNetwork'
+import type { SnVersion, SnActivity } from '~/types/api'
 
 import PostEditor from '~/components/PostEditor.vue'
 import PostItem from '~/components/PostItem.vue'
@@ -50,17 +51,17 @@ const router = useRouter()
 
 const userStore = useUserStore()
 
-const version = ref<any>(null)
+const version = ref<SnVersion | null>(null)
 async function fetchVersion() {
   const api = useSolarNetwork()
   const resp = await api('/sphere/version')
-  version.value = resp
+  version.value = resp as SnVersion
 }
 onMounted(() => fetchVersion())
 
 const loading = ref(false)
 
-const activites = ref<any[]>([])
+const activites = ref<SnActivity[]>([])
 const activitesLast = computed(() => activites.value[Math.max(activites.value.length - 1, 0)])
 const activitesHasMore = ref(true)
 
@@ -74,7 +75,7 @@ async function fetchActivites() {
       ? '/sphere/activities'
       : `/sphere/activities?cursor=${new Date(activitesLast.value.created_at).toISOString()}`,
   )
-  const data = resp
+  const data = resp as SnActivity[]
   activites.value = [...activites.value, ...data]
   activitesHasMore.value = data[0]?.type != 'empty'
   loading.value = false

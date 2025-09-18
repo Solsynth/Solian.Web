@@ -5,14 +5,19 @@
         <post-header :item="props.item" />
 
         <div v-if="props.item.title || props.item.description">
-          <h2 v-if="props.item.title" class="text-lg">{{ props.item.title }}</h2>
+          <h2 v-if="props.item.title" class="text-lg">
+            {{ props.item.title }}
+          </h2>
           <p v-if="props.item.description" class="text-sm">
             {{ props.item.description }}
           </p>
         </div>
 
-        <article v-if="htmlContent" class="prose prose-sm dark:prose-invert prose-slate prose-p:m-0">
-          <div v-html="htmlContent"/>
+        <article
+          v-if="htmlContent"
+          class="prose prose-sm dark:prose-invert prose-slate prose-p:m-0"
+        >
+          <div v-html="htmlContent" />
         </article>
 
         <div v-if="props.item.attachments" class="d-flex gap-2 flex-wrap">
@@ -28,23 +33,25 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
-import { Marked } from 'marked'
+import { ref, watch } from "vue"
+import { Marked } from "marked"
+import type { SnPost } from "~/types/api"
 
-import PostHeader from './PostHeader.vue'
-import AttachmentItem from './AttachmentItem.vue'
+import PostHeader from "./PostHeader.vue"
+import AttachmentItem from "./AttachmentItem.vue"
 
-const props = defineProps<{ item: any }>()
+const props = defineProps<{ item: SnPost }>()
 
 const marked = new Marked()
 
-const htmlContent = ref<string>('')
+const htmlContent = ref<string>("")
 
 watch(
   props.item,
   async (value) => {
-    if (value.content) htmlContent.value = await marked.parse(value.content)
+    if (value.content)
+      htmlContent.value = await marked.parse(value.content, { breaks: true })
   },
-  { immediate: true, deep: true },
+  { immediate: true, deep: true }
 )
 </script>

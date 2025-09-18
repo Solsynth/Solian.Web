@@ -6,8 +6,9 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue'
+import type { SnAttachment } from '~/types/api'
 
-const props = defineProps<{ item: any }>()
+const props = defineProps<{ item: SnAttachment }>()
 
 const itemType = computed(() => props.item.mime_type.split('/')[0] ?? 'unknown')
 

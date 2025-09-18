@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useSolarNetwork } from '~/composables/useSolarNetwork'
+import type { SnAccount } from '~/types/api'
 
 export const useUserStore = defineStore('user', () => {
   // State
-  const user = ref<any>(null)
+  const user = ref<SnAccount | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
@@ -20,9 +21,9 @@ export const useUserStore = defineStore('user', () => {
     try {
       const response = await api('/id/accounts/me')
 
-      user.value = response
-    } catch (e: any) {
-      error.value = e.message
+      user.value = response as SnAccount
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : 'An error occurred'
       user.value = null // Clear user data on error
     } finally {
       isLoading.value = false
