@@ -10,7 +10,7 @@ import type { SnAttachment } from '~/types/api'
 
 const props = defineProps<{ item: SnAttachment }>()
 
-const itemType = computed(() => props.item.mime_type.split('/')[0] ?? 'unknown')
+const itemType = computed(() => props.item.mimeType.split('/')[0] ?? 'unknown')
 
 const apiBase = useSolarNetworkUrl();
 const remoteSource = computed(() => `${apiBase}/drive/files/${props.item.id}?original=true`)

@@ -14,62 +14,62 @@ export interface SnAccountBadge {
   label: string | null;
   caption: string | null;
   meta: Record<string, unknown>;
-  activated_at: string;
-  expired_at: string | null;
-  account_id: string;
-  created_at: string;
-  updated_at: string;
-  deleted_at: string | null;
+  activatedAt: string;
+  expiredAt: string | null;
+  accountId: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
 }
 
 // Account perk subscription interface
 export interface SnAccountPerkSubscription {
   id: string;
   identifier: string;
-  begun_at: string;
-  ended_at: string;
-  is_active: boolean;
-  is_available: boolean;
-  is_free_trial: boolean;
+  begunAt: string;
+  endedAt: string;
+  isActive: boolean;
+  isAvailable: boolean;
+  isFreeTrial: boolean;
   status: number;
-  base_price: number;
-  final_price: number;
-  renewal_at: string;
-  account_id: string;
-  display_name: string;
-  created_at: string;
-  updated_at: string;
-  deleted_at: string | null;
+  basePrice: number;
+  finalPrice: number;
+  renewalAt: string;
+  accountId: string;
+  displayName: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
 }
 
 // Account profile interface
 export interface SnAccountProfile {
   id: string;
-  first_name: string;
-  middle_name: string;
-  last_name: string;
+  firstName: string;
+  middleName: string;
+  lastName: string;
   bio: string;
   gender: string;
   pronouns: string;
-  time_zone: string;
+  timeZone: string;
   location: string;
   links: SnAccountLink[];
   birthday: string;
-  last_seen_at: string;
+  lastSeenAt: string;
   verification: SnVerification | null;
-  active_badge: unknown | null;
+  activeBadge: unknown | null;
   experience: number;
   level: number;
-  social_credits: number;
-  social_credits_level: number;
-  leveling_progress: number;
+  socialCredits: number;
+  socialCreditsLevel: number;
+  levelingProgress: number;
   picture: SnAttachment | null;
   background: SnAttachment | null;
-  account_id: string;
-  resource_identifier: string;
-  created_at: string;
-  updated_at: string;
-  deleted_at: string | null;
+  accountId: string;
+  resourceIdentifier: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
 }
 
 // Account interface
@@ -79,14 +79,14 @@ export interface SnAccount {
   nick: string;
   language: string;
   region: string;
-  activated_at: string;
-  is_superuser: boolean;
-  automated_id: string | null;
+  activatedAt: string;
+  isSuperuser: boolean;
+  automatedId: string | null;
   profile: SnAccountProfile;
   contacts: unknown[];
   badges: SnAccountBadge[];
-  perk_subscription: SnAccountPerkSubscription | null;
-  created_at: string;
-  updated_at: string;
-  deleted_at: string | null;
+  perkSubscription: SnAccountPerkSubscription | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
 }

@@ -4,11 +4,11 @@ import type { SnPost } from './post'
 export interface SnActivity {
   id: string;
   type: string;
-  resource_identifier: string;
+  resourceIdentifier: string;
   meta: Record<string, unknown>;
   data: SnPost;
   visibility: number;
-  created_at: string;
-  updated_at: string;
-  deleted_at: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
 }

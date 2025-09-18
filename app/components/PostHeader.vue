@@ -7,9 +7,9 @@
         <span class="text-xs">@{{ props.item.publisher.name }}</span>
       </p>
       <p class="text-xs flex gap-1">
-        <span>{{ DateTime.fromISO(props.item.created_at).toRelative() }}</span>
+        <span>{{ DateTime.fromISO(props.item.createdAt).toRelative() }}</span>
         <span class="font-bold">·</span>
-        <span>{{ DateTime.fromISO(props.item.created_at).toLocaleString() }}</span>
+        <span>{{ DateTime.fromISO(props.item.createdAt).toLocaleString() }}</span>
       </p>
     </div>
   </div>
@@ -18,8 +18,9 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { DateTime } from 'luxon'
+import type { SnPost } from '~/types/api';
 
-const props = defineProps<{ item: any }>()
+const props = defineProps<{ item: SnPost }>()
 
 const apiBase = useSolarNetworkUrl();
 const publisherAvatar = computed(() =>

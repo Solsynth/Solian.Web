@@ -16,26 +16,26 @@ export interface SnFileMeta {
   yoffset?: number;
   filename?: string | null;
   orientation?: number;
-  'vips-loader'?: string;
+  vipsLoader?: string;
   interpretation?: number;
-  'bits-per-sample'?: number;
-  'resolution-unit'?: string;
+  bitsPerSample?: number;
+  resolutionUnit?: string;
 }
 
 // Attachment interface
 export interface SnAttachment {
   id: string;
   name: string;
-  file_meta: SnFileMeta;
-  user_meta: Record<string, unknown> | null;
-  sensitive_marks: string[];
-  mime_type: string;
+  fileMeta: SnFileMeta;
+  userMeta: Record<string, unknown> | null;
+  sensitiveMarks: string[];
+  mimeType: string;
   hash: string;
   size: number;
-  has_compression: boolean;
-  created_at: string;
-  updated_at: string;
-  deleted_at: string | null;
+  hasCompression: boolean;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
 }
 
 // Post interface
@@ -44,40 +44,40 @@ export interface SnPost {
   title: string;
   description: string;
   slug: string | null;
-  edited_at: string | null;
-  published_at: string;
+  editedAt: string | null;
+  publishedAt: string;
   visibility: number;
   content: string;
   type: number;
-  pin_mode: unknown | null;
+  pinMode: unknown | null;
   meta: unknown | null;
-  sensitive_marks: string[];
-  embed_view: unknown | null;
-  views_unique: number;
-  views_total: number;
+  sensitiveMarks: string[];
+  embedView: unknown | null;
+  viewsUnique: number;
+  viewsTotal: number;
   upvotes: number;
   downvotes: number;
-  awarded_score: number;
-  reactions_count: Record<string, number>;
-  replies_count: number;
-  reactions_made: Record<string, unknown>;
-  replied_gone: boolean;
-  forwarded_gone: boolean;
-  replied_post_id: string | null;
-  replied_post: SnPost | null;
-  forwarded_post_id: string | null;
-  forwarded_post: SnPost | null;
-  realm_id: string | null;
+  awardedScore: number;
+  reactionsCount: Record<string, number>;
+  repliesCount: number;
+  reactionsMade: Record<string, unknown>;
+  repliedGone: boolean;
+  forwardedGone: boolean;
+  repliedPostId: string | null;
+  repliedPost: SnPost | null;
+  forwardedPostId: string | null;
+  forwardedPost: SnPost | null;
+  realmId: string | null;
   realm: unknown | null;
   attachments: SnAttachment[];
-  publisher_id: string;
+  publisherId: string;
   publisher: SnPublisher;
   awards: unknown | null;
   tags: string[];
   categories: string[];
-  is_truncated: boolean;
-  resource_identifier: string;
-  created_at: string;
-  updated_at: string;
-  deleted_at: string | null;
+  isTruncated: boolean;
+  resourceIdentifier: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
 }

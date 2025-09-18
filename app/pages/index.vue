@@ -73,7 +73,7 @@ async function fetchActivites() {
   const resp = await api(
     activitesLast.value == null
       ? '/sphere/activities'
-      : `/sphere/activities?cursor=${new Date(activitesLast.value.created_at).toISOString()}`,
+      : `/sphere/activities?cursor=${new Date(activitesLast.value.createdAt).toISOString()}`,
   )
   const data = resp as SnActivity[]
   activites.value = [...activites.value, ...data]
