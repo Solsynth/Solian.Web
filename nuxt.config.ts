@@ -12,5 +12,13 @@ export default defineNuxtConfig({
   ],
   features: {
     inlineStyles: false
+  },
+  runtimeConfig: {
+    public: {
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || "https://api.solian.app"
+    }
+  },
+  image: {
+    domains: ["api.solian.app"]
   }
 })
