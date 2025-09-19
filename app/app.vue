@@ -5,6 +5,14 @@
 </template>
 
 <script lang="ts">
-import "@fontsource-variable/nunito"
+import "~/assets/css/tailwind.css"
+
 import "@mdi/font/css/materialdesignicons.css"
+
+import { useUserStore } from "~/stores/user"
+
+onMounted(() => {
+  const userStore = useUserStore()
+  userStore.fetchUser()
+})
 </script>

@@ -8,5 +8,5 @@ export default defineVuetifyConfiguration({
   },
   date: {
     adapter: 'luxon'
-  }
+  },
 });

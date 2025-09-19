@@ -10,6 +10,9 @@ export default defineNuxtConfig({
     "vuetify-nuxt-module",
     "@nuxtjs/i18n"
   ],
+  pinia: {
+    storesDirs: ["./app/stores/**"]
+  },
   features: {
     inlineStyles: false
   },

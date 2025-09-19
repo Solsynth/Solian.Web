@@ -1,19 +1,17 @@
 <template>
   <v-container>
-    <v-row>
-      <v-col cols="12" md="8" :order="$vuetify.display.lgAndUp ? 1 : 2">
-        <v-infinite-scroll style="height: calc(100vh - 57px)" :distance="10" @load="fetchActivites">
-          <div v-for="activity in activites" :key="activity.id" class="mt-4">
-            <post-item
-              v-if="activity.type.startsWith('posts')"
-              :item="activity.data"
-              @click="router.push('/posts/' + activity.id)"
-            />
-          </div>
-        </v-infinite-scroll>
-      </v-col>
-      <v-col cols="12" md="4" :order="$vuetify.display.lgAndUp ? 2 : 1">
-        <v-card v-if="!userStore.user" class="w-full mt-4" title="About">
+    <div class="layout">
+      <div class="main">
+        <div v-for="activity in activites" :key="activity.id" class="mb-4">
+          <post-item
+            v-if="activity.type.startsWith('posts')"
+            :item="activity.data"
+            @click="router.push('/posts/' + activity.id)"
+          />
+        </div>
+      </div>
+      <div class="sidebar">
+        <v-card v-if="!userStore.user" class="w-full" title="About">
           <v-card-text>
             <p>Welcome to the <b>Solar Network</b></p>
             <p>The open social network. Friendly to everyone.</p>
@@ -28,24 +26,25 @@
             </p>
           </v-card-text>
         </v-card>
-        <v-card class="mt-4 w-full">
+        <v-card v-else class="mt-4 w-full">
           <v-card-text>
             <post-editor @posted="refreshActivities" />
           </v-card-text>
         </v-card>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-import { useUserStore } from '~/stores/user'
-import { useSolarNetwork } from '~/composables/useSolarNetwork'
-import type { SnVersion, SnActivity } from '~/types/api'
+import { computed, onMounted, ref } from "vue"
+import { useInfiniteScroll } from "@vueuse/core"
+import { useUserStore } from "~/stores/user"
+import { useSolarNetwork } from "~/composables/useSolarNetwork"
+import type { SnVersion, SnActivity } from "~/types/api"
 
-import PostEditor from '~/components/PostEditor.vue'
-import PostItem from '~/components/PostItem.vue'
+import PostEditor from "~/components/PostEditor.vue"
+import PostItem from "~/components/PostItem.vue"
 
 const router = useRouter()
 
@@ -54,7 +53,7 @@ const userStore = useUserStore()
 const version = ref<SnVersion | null>(null)
 async function fetchVersion() {
   const api = useSolarNetwork()
-  const resp = await api('/sphere/version')
+  const resp = await api("/sphere/version")
   version.value = resp as SnVersion
 }
 onMounted(() => fetchVersion())
@@ -62,7 +61,9 @@ onMounted(() => fetchVersion())
 const loading = ref(false)
 
 const activites = ref<SnActivity[]>([])
-const activitesLast = computed(() => activites.value[Math.max(activites.value.length - 1, 0)])
+const activitesLast = computed(
+  () => activites.value[Math.max(activites.value.length - 1, 0)]
+)
 const activitesHasMore = ref(true)
 
 async function fetchActivites() {
@@ -72,18 +73,73 @@ async function fetchActivites() {
   const api = useSolarNetwork()
   const resp = await api(
     activitesLast.value == null
-      ? '/sphere/activities'
-      : `/sphere/activities?cursor=${new Date(activitesLast.value.createdAt).toISOString()}`,
+      ? "/sphere/activities"
+      : `/sphere/activities?cursor=${new Date(
+          activitesLast.value.createdAt
+        ).toISOString()}`
   )
   const data = resp as SnActivity[]
   activites.value = [...activites.value, ...data]
-  activitesHasMore.value = data[0]?.type != 'empty'
+  activitesHasMore.value = data[0]?.type != "empty"
   loading.value = false
 }
 onMounted(() => fetchActivites())
+
+useInfiniteScroll(window, fetchActivites, {
+  canLoadMore: () => !loading.value && activitesHasMore.value,
+  distance: 10,
+})
 
 async function refreshActivities() {
   activites.value = []
   fetchActivites()
 }
 </script>
+
+<style scoped>
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0 16px;
+}
+
+.main {
+  order: 2;
+}
+
+.sidebar {
+  order: 1;
+  overflow-y: auto;
+  height: auto;
+  max-height: 100vh;
+}
+
+@media (min-width: 960px) {
+  .layout {
+    grid-template-columns: 2fr 1fr;
+  }
+
+  .main {
+    order: unset;
+  }
+
+  .sidebar {
+    order: unset;
+  }
+}
+
+@media (min-width: 1280px) {
+  .sidebar {
+    position: sticky;
+    top: calc(68px + 8px);
+  }
+}
+</style>
