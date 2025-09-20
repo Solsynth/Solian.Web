@@ -1,6 +1,7 @@
 import { defineStore } from "pinia"
 import { ref, computed } from "vue"
 import { useSolarNetwork } from "~/composables/useSolarNetwork"
+import { FetchError } from "ofetch"
 import type { SnAccount } from "~/types/api"
 
 export const useUserStore = defineStore("user", () => {
@@ -35,9 +36,14 @@ export const useUserStore = defineStore("user", () => {
       user.value = response as SnAccount
       console.log(`Logged in as ${user.value.name}`)
     } catch (e: unknown) {
-      error.value = e instanceof Error ? e.message : "An error occurred"
-      user.value = null // Clear user data on error
-      console.error('Failed to fetch user... ', e)
+      if (e instanceof FetchError && e.statusCode == 401) {
+        error.value = "Unauthorized"
+        user.value = null
+      } else {
+        error.value = e instanceof Error ? e.message : "An error occurred"
+        user.value = null // Clear user data on error
+        console.error("Failed to fetch user... ", e)
+      }
     } finally {
       isLoading.value = false
     }
@@ -60,6 +66,6 @@ export const useUserStore = defineStore("user", () => {
     isAuthenticated,
     fetchUser,
     setToken,
-    logout,
+    logout
   }
 })
