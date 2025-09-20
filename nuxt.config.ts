@@ -15,21 +15,21 @@ export default defineNuxtConfig({
   ],
   css: ["~/assets/css/main.css"],
   app: {
-    pageTransition: { name: 'page', mode: 'out-in' },
+    pageTransition: { name: "page", mode: "out-in" },
     head: {
       titleTemplate: "%s - Solar Network"
     }
   },
   site: {
-    url: "http://localhost:3000",
+    url: process.env.NUXT_PUBLIC_SITE_URL || "https://solian.app",
     name: "Solar Network"
   },
   ogImage: {
     fonts: [
-      'Noto+Sans+SC:400',
-      'Noto+Sans+TC:400',
-      'Noto+Sans+JP:400',
-      'Nunito:400'
+      "Noto+Sans+SC:400",
+      "Noto+Sans+TC:400",
+      "Noto+Sans+JP:400",
+      "Nunito:400"
     ]
   },
   colorMode: {
@@ -52,13 +52,18 @@ export default defineNuxtConfig({
     public: {
       development: process.env.NODE_ENV == "development",
       apiBase: process.env.NUXT_PUBLIC_API_BASE || "https://api.solian.app",
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || "https://floatingisland.app"
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || "https://solian.app"
     }
   },
   vite: {
     plugins: [tailwindcss()]
   },
   nitro: {
+    routeRules: {
+      "/.well-known/**": {
+        proxy: process.env.NUXT_PUBLIC_API_BASE || "https://api.solian.app"
+      }
+    },
     devProxy: {
       "/api": {
         target: process.env.NUXT_PUBLIC_API_BASE || "https://api.solian.app",
