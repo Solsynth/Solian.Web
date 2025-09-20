@@ -17,6 +17,5 @@
 
 html,
 body {
-  --font-family: "Nunito Variable", sans-serif;
   font-family: var(--font-family);
 }

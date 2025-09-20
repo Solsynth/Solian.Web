@@ -39,7 +39,7 @@ export const useSolarNetwork = () => {
   })
 }
 
-export const useSolarNetworkUrl = () => {
+export const useSolarNetworkUrl = (withoutProxy = false) => {
   const config = useRuntimeConfig()
-  return config.public.development ? "/api" : config.public.apiBase
+  return (config.public.development && !withoutProxy) ? "/api" : config.public.apiBase
 }
