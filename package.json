@@ -17,8 +17,9 @@
     "@nuxt/eslint": "1.9.0",
     "@nuxt/image": "1.11.0",
     "@nuxtjs/i18n": "10.1.0",
-    "@nuxtjs/tailwindcss": "6.14.0",
     "@pinia/nuxt": "0.11.2",
+    "@tailwindcss/typography": "^0.5.18",
+    "@tailwindcss/vite": "^4.1.13",
     "@vueuse/core": "^13.9.0",
     "blurhash": "^2.0.5",
     "cfturnstile-vue3": "^2.0.0",
@@ -27,6 +28,7 @@
     "marked": "^16.3.0",
     "nuxt": "^4.1.2",
     "pinia": "^3.0.3",
+    "tailwindcss": "^4.1.13",
     "tus-js-client": "^4.3.1",
     "vue": "^3.5.21",
     "vue-router": "^4.5.1",
@@ -35,6 +37,7 @@
   "devDependencies": {
     "@mdi/font": "^7.4.47",
     "@types/luxon": "^3.7.1",
-    "@types/node": "^24.5.2"
+    "@types/node": "^24.5.2",
+    "eslint-plugin-tailwindcss": "^4.0.0-beta.0"
   }
 }

@@ -1,9 +1,13 @@
 <template>
-  <div v-if="itemType == 'image'" class="relative rounded-md overflow-hidden" :style="containerStyle">
+  <div
+    v-if="itemType == 'image'"
+    class="relative rounded-md overflow-hidden"
+    :style="`width: 100%; max-height: 800px; aspect-ratio: ${aspectRatio}`"
+  >
     <!-- Blurhash placeholder -->
     <div
       v-if="blurhash"
-      class="absolute inset-0"
+      class="absolute inset-0 z-[-1]"
       :style="blurhashContainerStyle"
     >
       <canvas
@@ -16,7 +20,7 @@
     <!-- Main image -->
     <img
       :src="remoteSource"
-      class="w-full h-auto rounded-md"
+      class="w-full h-auto rounded-md transition-opacity duration-500"
       :class="{ 'opacity-0': !imageLoaded && blurhash }"
       @load="imageLoaded = true"
       @error="imageLoaded = true"
@@ -37,54 +41,23 @@ const itemType = computed(() => props.item.mimeType.split("/")[0] ?? "unknown")
 const blurhash = computed(() => props.item.fileMeta?.blur)
 const imageWidth = computed(() => props.item.fileMeta?.width)
 const imageHeight = computed(() => props.item.fileMeta?.height)
-const aspectRatio = computed(() => props.item.fileMeta?.ratio ?? (imageWidth.value && imageHeight.value ? imageHeight.value / imageWidth.value : 1))
+const aspectRatio = computed(
+  () =>
+    props.item.fileMeta?.ratio ??
+    (imageWidth.value && imageHeight.value
+      ? imageHeight.value / imageWidth.value
+      : 1)
+)
 const imageLoaded = ref(false)
 
 const blurCanvas = ref<HTMLCanvasElement | null>(null)
 
 const apiBase = useSolarNetworkUrl()
-const remoteSource = computed(
-  () => `${apiBase}/drive/files/${props.item.id}?original=true`
-)
-
-const containerStyle = computed(() => {
-  if (imageWidth.value && imageHeight.value) {
-    const maxWidth = 640 // Cap maximum width
-    const maxHeight = 800 // Cap maximum height
-
-    let width = imageWidth.value
-    let height = imageHeight.value
-
-    // Scale down if width exceeds max
-    if (width > maxWidth) {
-      const ratio = maxWidth / width
-      width = maxWidth
-      height = height * ratio
-    }
-
-    // Scale down if height exceeds max
-    if (height > maxHeight) {
-      const ratio = maxHeight / height
-      height = maxHeight
-      width = width * ratio
-    }
-
-    return {
-      width: `${width}px`,
-      height: `${height}px`,
-      'max-width': '100%',
-      'max-height': '100%'
-    }
-  }
-  return {
-    'max-width': '800px',
-    'max-height': '600px'
-  }
-})
+const remoteSource = computed(() => `${apiBase}/drive/files/${props.item.id}`)
 
 const blurhashContainerStyle = computed(() => {
   return {
-    'padding-bottom': `${aspectRatio.value * 100}%`
+    "padding-bottom": `${aspectRatio.value * 100}%`
   }
 })
 

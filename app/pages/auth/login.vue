@@ -324,7 +324,7 @@ function getFactorName(factorType: number) {
                     variant="text"
                     class="text-capitalize"
                     color="primary"
-                    >Forgot email?</v-btn
+                    >Forgot password?</v-btn
                   >
 
                   <div class="d-flex justify-end">
