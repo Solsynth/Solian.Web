@@ -24,7 +24,7 @@
     "@vueuse/core": "^13.9.0",
     "blurhash": "^2.0.5",
     "cfturnstile-vue3": "^2.0.0",
-    "eslint": "^9.0.0",
+    "eslint": "^9.36.0",
     "luxon": "^3.7.2",
     "marked": "^16.3.0",
     "nuxt": "^4.1.2",
