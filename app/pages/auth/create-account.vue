@@ -153,6 +153,10 @@ import IconDark from "~/assets/images/cloudy-lamb@dark.png"
 const router = useRouter()
 const api = useSolarNetwork()
 
+useHead({
+  title: "Create Account"
+})
+
 const stage = ref<"username-nick" | "email" | "password" | "captcha">(
   "username-nick"
 )

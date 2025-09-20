@@ -11,6 +11,10 @@
 </template>
 
 <script lang="ts" setup>
+useHead({
+  title: "Auth Completed"
+})
+
 definePageMeta({
   layout: "minimal"
 })

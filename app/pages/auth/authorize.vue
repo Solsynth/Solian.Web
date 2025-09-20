@@ -128,6 +128,10 @@ import IconDark from '~/assets/images/cloudy-lamb@dark.png'
 const route = useRoute()
 const api = useSolarNetwork()
 
+useHead({
+  title: "Authorize Application"
+})
+
 // State
 const isLoading = ref(true)
 const isAuthorizing = ref(false)

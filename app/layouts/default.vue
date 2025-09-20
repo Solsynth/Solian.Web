@@ -2,6 +2,8 @@
   <v-app :theme="colorMode.preference">
     <v-app-bar flat class="app-bar-blur">
       <v-container class="mx-auto d-flex align-center justify-center">
+        <img :src="$vuetify.theme.current.dark ? IconDark : IconLight" width="32" height="32" class="me-4" alt="The Solar Network" />
+
         <v-btn
           v-for="link in links"
           :key="link.title"
@@ -30,6 +32,9 @@
 </template>
 
 <script lang="ts" setup>
+import IconLight from '~/assets/images/cloudy-lamb.png'
+import IconDark from '~/assets/images/cloudy-lamb@dark.png'
+
 import type { NavLink } from "~/types/navlink"
 
 const apiBase = useSolarNetworkUrl()

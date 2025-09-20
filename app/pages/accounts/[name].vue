@@ -301,7 +301,36 @@ function getOffsetUTCString(targetTimeZone: string): string {
 }
 
 definePageMeta({
-  alias: ["/@[name]"]
+  alias: ["/@:name()"]
+})
+
+useHead({
+  title: computed(() => {
+    if (notFound.value) {
+      return "User not found"
+    }
+    if (user.value) {
+      return user.value.nick || user.value.name
+    }
+    return "Loading user..."
+  }),
+  meta: computed(() => {
+    if (user.value) {
+      const description = `View the profile of ${user.value.nick || user.value.name} on Solar Network.`
+      return [
+        { name: 'description', content: description },
+      ]
+    }
+    return []
+  })
+})
+
+defineOgImage({
+  component: 'WithAvatar',
+  title: computed(() => user.value ? user.value.nick || user.value.name : 'User Profile'),
+  description: computed(() => user.value ? `View the profile of ${user.value.nick || user.value.name} on Solar Network.` : ''),
+  avatarUrl: computed(() => userPicture.value),
+  backgroundImage: computed(() => userBackground.value),
 })
 </script>
 

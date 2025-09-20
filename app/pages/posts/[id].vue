@@ -58,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue"
+import { ref, onMounted, computed } from "vue"
 import { Marked } from "marked"
 import type { SnPost } from "~/types/api"
 
@@ -67,6 +67,29 @@ import AttachmentItem from "~/components/AttachmentItem.vue"
 
 const route = useRoute()
 const id = route.params.id as string
+
+useHead({
+  title: computed(() => {
+    if (loading.value) return 'Loading post...'
+    if (error.value) return 'Error'
+    if (!post.value) return 'Post not found'
+    return post.value.title || 'Post'
+  }),
+  meta: computed(() => {
+    if (post.value) {
+      const description = post.value.description || post.value.content?.substring(0, 150) || ''
+      return [
+        { name: 'description', content: description },
+      ]
+    }
+    return []
+  })
+})
+
+defineOgImage({
+  title: computed(() => post.value?.title || 'Post'),
+  description: computed(() => post.value?.description || post.value?.content?.substring(0, 150) || ''),
+})
 
 const post = ref<SnPost | null>(null)
 const loading = ref(true)

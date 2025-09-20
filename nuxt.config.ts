@@ -10,9 +10,31 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "vuetify-nuxt-module",
     "@nuxtjs/i18n",
-    "@nuxtjs/color-mode"
+    "@nuxtjs/color-mode",
+    "nuxt-og-image"
   ],
   css: ["~/assets/css/main.css"],
+  app: {
+    head: {
+      titleTemplate: "%s - Solar Network"
+    }
+  },
+  site: {
+    url: "http://localhost:3000",
+    name: "Solar Network"
+  },
+  ogImage: {
+    fonts: [
+      'Noto+Sans+SC:400',
+      'Noto+Sans+TC:400',
+      'Noto+Sans+JP:400',
+      'Nunito:400'
+    ]
+  },
+  colorMode: {
+    preference: "system",
+    fallback: "light"
+  },
   features: {
     inlineStyles: false
   },
@@ -28,7 +50,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       development: process.env.NODE_ENV == "development",
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || "https://api.solian.app"
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || "https://api.solian.app",
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || "https://floatingisland.app"
     }
   },
   vite: {

@@ -11,6 +11,10 @@ import IconLight from "~/assets/images/cloudy-lamb.png"
 import IconDark from "~/assets/images/cloudy-lamb@dark.png"
 
 // State management
+useHead({
+  title: "Sign In"
+})
+
 const stage = ref<
   "find-account" | "select-factor" | "enter-code" | "token-exchange"
 >("find-account")

@@ -36,6 +36,10 @@ import CaptchaWidget from "@/components/CaptchaWidget.vue"
 
 const route = useRoute()
 
+useHead({
+  title: "Captcha Verification"
+})
+
 const onCaptchaVerified = (token: string) => {
   if (window.parent !== window) {
     window.parent.postMessage(`captcha_tk=${token}`, "*")
