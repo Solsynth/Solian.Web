@@ -17,6 +17,22 @@ const stage = ref<
 const isLoading = ref(false)
 const error = ref<string | null>(null)
 
+// Computed for v-window active index
+const activeStageIndex = computed(() => {
+  switch (stage.value) {
+    case "find-account":
+      return 0
+    case "select-factor":
+      return 1
+    case "enter-code":
+      return 2
+    case "token-exchange":
+      return 3
+    default:
+      return 0
+  }
+})
+
 // Stage 1: Find Account
 const accountIdentifier = ref("")
 const deviceId = ref("")
@@ -230,214 +246,210 @@ function getFactorName(factorType: number) {
 
 <template>
   <v-container class="d-flex align-center justify-center fill-height">
-    <v-card class="pa-8" max-width="1000" rounded="lg" width="100%">
-      <v-overlay :model-value="isLoading" class="align-center justify-center">
-        <v-progress-circular indeterminate size="64" />
-      </v-overlay>
-      <div class="mb-4">
-        <img
-          :src="$vuetify.theme.current.dark ? IconDark : IconLight"
-          alt="CloudyLamb"
-          height="60"
-          width="60"
-        />
+    <v-card max-width="1000" rounded="lg" width="100%">
+      <div v-if="isLoading" class="d-flex justify-center mb-4">
+        <v-progress-linear indeterminate color="primary" height="4" />
       </div>
-      <v-row>
-        <v-col cols="12" lg="6" class="d-flex align-start justify-start">
-          <div class="md:text-left h-auto">
-            <div v-if="stage === 'find-account'">
-              <h2 class="text-2xl font-bold mb-1">Sign in</h2>
-              <p class="text-lg">Use your Solarpass</p>
+      <div class="pa-8">
+        <div class="mb-4">
+          <img
+            :src="$vuetify.theme.current.dark ? IconDark : IconLight"
+            alt="CloudyLamb"
+            height="60"
+            width="60"
+          />
+        </div>
+        <v-row>
+          <v-col cols="12" lg="6" class="d-flex align-start justify-start">
+            <div class="md:text-left h-auto">
+              <div v-if="stage === 'find-account'">
+                <h2 class="text-2xl font-bold mb-1">Sign in</h2>
+                <p class="text-lg">Use your Solarpass</p>
+              </div>
+              <div v-if="stage === 'select-factor'">
+                <h2 class="text-2xl font-bold mb-1">Choose how to sign in</h2>
+                <p class="text-lg">
+                  Select your preferred authentication method
+                </p>
+              </div>
+              <div v-if="stage === 'enter-code' && selectedFactor">
+                <h2 class="text-2xl font-bold mb-1">
+                  Enter your
+                  {{
+                    selectedFactor.type === 0 ? "password" : "verification code"
+                  }}
+                </h2>
+                <p v-if="selectedFactor.type === 1" class="text-lg">
+                  A code has been sent to
+                  {{ selectedFactor.contact || "your email" }}.
+                </p>
+                <p v-if="selectedFactor.type === 2" class="text-lg">
+                  Enter the code from your in-app authenticator.
+                </p>
+                <p v-if="selectedFactor.type === 3" class="text-lg">
+                  Enter the timed verification code.
+                </p>
+                <p v-if="selectedFactor.type === 4" class="text-lg">
+                  Enter your PIN code.
+                </p>
+                <p v-if="selectedFactor.type === 0" class="text-lg">
+                  Enter your password to continue.
+                </p>
+              </div>
+              <div v-if="stage === 'token-exchange'">
+                <h2 class="text-2xl font-bold mb-1">Finalizing Login</h2>
+                <p class="text-lg">
+                  Please wait while we complete your sign in.
+                </p>
+              </div>
             </div>
-            <div v-if="stage === 'select-factor'">
-              <h2 class="text-2xl font-bold mb-1">Choose how to sign in</h2>
-              <p class="text-lg">Select your preferred authentication method</p>
-            </div>
-            <div v-if="stage === 'enter-code' && selectedFactor">
-              <h2 class="text-2xl font-bold mb-1">
-                Enter your
-                {{
-                  selectedFactor.type === 0 ? "password" : "verification code"
-                }}
-              </h2>
-              <p v-if="selectedFactor.type === 1" class="text-lg">
-                A code has been sent to
-                {{ selectedFactor.contact || "your email" }}.
-              </p>
-              <p v-if="selectedFactor.type === 2" class="text-lg">
-                Enter the code from your in-app authenticator.
-              </p>
-              <p v-if="selectedFactor.type === 3" class="text-lg">
-                Enter the timed verification code.
-              </p>
-              <p v-if="selectedFactor.type === 4" class="text-lg">
-                Enter your PIN code.
-              </p>
-              <p v-if="selectedFactor.type === 0" class="text-lg">
-                Enter your password to continue.
-              </p>
-            </div>
-            <div v-if="stage === 'token-exchange'">
-              <h2 class="text-2xl font-bold mb-1">Finalizing Login</h2>
-              <p class="text-lg">Please wait while we complete your sign in.</p>
-            </div>
-          </div>
-        </v-col>
-        <v-col cols="12" lg="6" class="d-flex align-center justify-stretch">
-          <div class="w-full d-flex flex-column md:text-right">
-            <!-- Stage 1: Find Account -->
-            <div v-if="stage === 'find-account'">
-              <v-text-field
-                v-model="accountIdentifier"
-                label="Email or username"
-                variant="filled"
-                class="mb-2"
-                @keydown.enter="handleFindAccount"
-              />
-              <v-btn variant="text" class="text-capitalize pl-0" color="primary"
-                >Forgot email?</v-btn
+          </v-col>
+          <v-col cols="12" lg="6" class="d-flex align-center justify-stretch">
+            <div class="w-full d-flex flex-column md:text-right">
+              <v-window
+                v-model="activeStageIndex"
+                class="align-self-stretch pt-2"
               >
+                <!-- Stage 1: Find Account -->
+                <v-window-item :value="0">
+                  <v-text-field
+                    v-model="accountIdentifier"
+                    label="Email or username"
+                    variant="outlined"
+                    class="mb-2"
+                    @keydown.enter="handleFindAccount"
+                  />
+                  <v-btn
+                    slim
+                    variant="text"
+                    class="text-capitalize"
+                    color="primary"
+                    >Forgot email?</v-btn
+                  >
 
-              <p class="text-body-2 mt-8 mb-4">
-                Not your computer? Use Private Browsing windows to sign in.
-                <v-btn
-                  variant="text"
-                  class="text-capitalize pl-0"
-                  color="primary"
-                  href="https://support.google.com/accounts/answer/181449?hl=en"
-                  target="_blank"
-                >
-                  Learn more about using Guest mode
-                </v-btn>
-              </p>
+                  <div class="d-flex justify-end">
+                    <p class="mt-4 mb-6 text-sm max-w-96">
+                      Not your computer? Remember to use Private Browsing
+                      windows to sign in.
+                    </p>
+                  </div>
 
-              <div class="d-flex justify-space-between align-center mt-8">
-                <v-btn
-                  variant="text"
-                  class="text-capitalize"
-                  to="/auth/create-account"
-                >
-                  Create account
-                </v-btn>
-                <v-btn color="primary" size="large" @click="handleFindAccount">
-                  Next
-                </v-btn>
-              </div>
+                  <div class="d-flex justify-space-between align-center mt-8">
+                    <v-btn
+                      variant="text"
+                      class="text-capitalize"
+                      to="/auth/create-account"
+                    >
+                      Create account
+                    </v-btn>
+                    <v-btn
+                      color="primary"
+                      size="large"
+                      @click="handleFindAccount"
+                    >
+                      Next
+                    </v-btn>
+                  </div>
+                </v-window-item>
+
+                <!-- Stage 2: Select Factor -->
+                <v-window-item :value="1">
+                  <v-radio-group v-model="selectedFactorId">
+                    <v-list>
+                      <v-list-item v-for="factor in factors" :key="factor.id">
+                        <v-list-item-action>
+                          <v-radio
+                            :value="factor.id"
+                            :label="getFactorName(factor.type)"
+                          />
+                        </v-list-item-action>
+                        <template #append>
+                          <v-icon>{{
+                            factor.type === 0
+                              ? "mdi-lock"
+                              : factor.type === 1
+                              ? "mdi-email"
+                              : factor.type === 2
+                              ? "mdi-cellphone"
+                              : factor.type === 3
+                              ? "mdi-clock"
+                              : factor.type === 4
+                              ? "mdi-numeric"
+                              : "mdi-shield-key"
+                          }}</v-icon>
+                        </template>
+                      </v-list-item>
+                    </v-list>
+                  </v-radio-group>
+                  <div class="d-flex justify-end mt-6">
+                    <v-btn
+                      color="primary"
+                      size="large"
+                      :disabled="!selectedFactorId"
+                      @click="handleFactorSelected"
+                    >
+                      Next
+                    </v-btn>
+                  </div>
+                </v-window-item>
+
+                <!-- Stage 3: Enter Code -->
+                <v-window-item :value="2">
+                  <v-text-field
+                    v-model="password"
+                    :type="selectedFactor?.type === 0 ? 'password' : 'text'"
+                    :label="selectedFactor?.type === 0 ? 'Password' : 'Code'"
+                    variant="outlined"
+                    class="mb-2"
+                    @keydown.enter="handleVerifyFactor"
+                  />
+                  <div class="d-flex justify-space-between align-center mt-6">
+                    <v-btn
+                      v-if="selectedFactor?.type === 1"
+                      variant="text"
+                      class="text-capitalize pl-0"
+                      color="primary"
+                      @click="requestVerificationCode"
+                    >
+                      Resend Code
+                    </v-btn>
+                    <v-spacer v-else />
+                    <v-btn
+                      color="primary"
+                      size="large"
+                      @click="handleVerifyFactor"
+                    >
+                      Verify
+                    </v-btn>
+                  </div>
+                </v-window-item>
+
+                <!-- Stage 4: Token Exchange -->
+                <v-window-item :value="3">
+                  <div class="d-flex justify-center">
+                    <v-progress-circular
+                      indeterminate
+                      size="64"
+                      color="primary"
+                    />
+                  </div>
+                </v-window-item>
+              </v-window>
+
+              <v-alert
+                v-if="error"
+                type="error"
+                closable
+                class="mt-2"
+                @update:model-value="error = null"
+              >
+                {{ error }}
+              </v-alert>
             </div>
-
-            <!-- Stage 2: Select Factor -->
-            <div v-if="stage === 'select-factor' && challenge">
-              <v-radio-group v-model="selectedFactorId">
-                <v-list>
-                  <v-list-item v-for="factor in factors" :key="factor.id">
-                    <v-list-item-action>
-                      <v-radio
-                        :value="factor.id"
-                        :label="getFactorName(factor.type)"
-                      />
-                    </v-list-item-action>
-                    <template #append>
-                      <v-icon>{{
-                        factor.type === 0
-                          ? "mdi-lock"
-                          : factor.type === 1
-                          ? "mdi-email"
-                          : factor.type === 2
-                          ? "mdi-cellphone"
-                          : factor.type === 3
-                          ? "mdi-clock"
-                          : factor.type === 4
-                          ? "mdi-numeric"
-                          : "mdi-shield-key"
-                      }}</v-icon>
-                    </template>
-                  </v-list-item>
-                </v-list>
-              </v-radio-group>
-              <div class="d-flex justify-end mt-6">
-                <v-btn
-                  color="primary"
-                  size="large"
-                  :disabled="!selectedFactorId"
-                  @click="handleFactorSelected"
-                >
-                  Next
-                </v-btn>
-              </div>
-            </div>
-
-            <!-- Stage 3: Enter Code -->
-            <div v-if="stage === 'enter-code' && selectedFactor">
-              <v-text-field
-                v-model="password"
-                :type="selectedFactor.type === 0 ? 'password' : 'text'"
-                :label="selectedFactor.type === 0 ? 'Password' : 'Code'"
-                variant="filled"
-                class="mb-2"
-                @keydown.enter="handleVerifyFactor"
-              />
-              <div class="d-flex justify-space-between align-center mt-6">
-                <v-btn
-                  v-if="selectedFactor.type === 1"
-                  variant="text"
-                  class="text-capitalize pl-0"
-                  color="primary"
-                  @click="requestVerificationCode"
-                >
-                  Resend Code
-                </v-btn>
-                <v-spacer v-else />
-                <v-btn color="primary" size="large" @click="handleVerifyFactor">
-                  Verify
-                </v-btn>
-              </div>
-            </div>
-
-            <!-- Stage 4: Token Exchange -->
-            <div v-if="stage === 'token-exchange'">
-              <div class="d-flex justify-center">
-                <v-progress-circular indeterminate size="64" color="primary" />
-              </div>
-            </div>
-
-            <v-alert
-              v-if="error"
-              type="error"
-              closable
-              class="mt-2"
-              @update:model-value="error = null"
-            >
-              {{ error }}
-            </v-alert>
-          </div>
-        </v-col>
-      </v-row>
-    </v-card>
-    <div
-      class="d-flex justify-space-between align-center w-100"
-      style="
-        position: absolute;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        max-width: 1200px;
-      "
-    >
-      <v-select
-        :items="['English (United States)']"
-        model-value="English (United States)"
-        variant="plain"
-        density="compact"
-        hide-details
-        class="flex-grow-0"
-      />
-      <div class="d-flex">
-        <v-btn variant="text" size="small" class="text-capitalize">Help</v-btn>
-        <v-btn variant="text" size="small" class="text-capitalize"
-          >Privacy</v-btn
-        >
-        <v-btn variant="text" size="small" class="text-capitalize">Terms</v-btn>
+          </v-col>
+        </v-row>
       </div>
-    </div>
+    </v-card>
+    <footer-compact />
   </v-container>
 </template>
