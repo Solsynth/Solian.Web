@@ -67,7 +67,7 @@ const submitting = ref(false)
 async function submit() {
   submitting.value = true
   const api = useSolarNetwork()
-  await api(`/posts?pub=${publisher.value}`, {
+  await api(`/sphere/posts?pub=${publisher.value}`, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',

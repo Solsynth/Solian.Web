@@ -16,12 +16,21 @@ export default defineNuxtConfig({
   features: {
     inlineStyles: false
   },
+  image: {
+    domains: ["api.solian.app"]
+  },
   runtimeConfig: {
     public: {
+      development: process.env.NODE_ENV == "development",
       apiBase: process.env.NUXT_PUBLIC_API_BASE || "https://api.solian.app"
     }
   },
-  image: {
-    domains: ["api.solian.app"]
+  nitro: {
+    devProxy: {
+      "/api": {
+        target: process.env.NUXT_PUBLIC_API_BASE || "https://api.solian.app",
+        changeOrigin: true
+      }
+    }
   }
 })

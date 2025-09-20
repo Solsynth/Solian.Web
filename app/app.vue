@@ -5,11 +5,9 @@
 </template>
 
 <script lang="ts">
-import "~/assets/css/tailwind.css"
-
 import "@mdi/font/css/materialdesignicons.css"
 
-import { useUserStore } from "~/stores/user"
+import "~/assets/css/tailwind.css"
 
 onMounted(() => {
   const userStore = useUserStore()

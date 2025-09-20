@@ -10,21 +10,18 @@
       <v-list-item v-bind="itemProps">
         <template #prepend>
           <v-avatar
-            :image="item.raw.picture ? `${apiBase}/api/drive/files/${item.raw.picture.id}` : undefined"
+            :image="item.raw.picture ? `${apiBase}/drive/files/${item.raw.picture.id}` : undefined"
             size="small"
-            rounded
           />
         </template>
-        <v-list-item-title>{{ item.raw?.nick }}</v-list-item-title>
         <v-list-item-subtitle>@{{ item.raw?.name }}</v-list-item-subtitle>
       </v-list-item>
     </template>
     <template #selection="{ item }">
       <div class="d-flex align-center">
         <v-avatar
-          :image="item.raw.picture ? `${apiBase}/api/drive/files/${item.raw.picture.id}` : undefined"
+          :image="item.raw.picture ? `${apiBase}/drive/files/${item.raw.picture.id}` : undefined"
           size="24"
-          rounded
           class="me-2"
         />
         {{ item.raw?.nick }}

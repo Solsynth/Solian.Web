@@ -11,7 +11,7 @@
         </div>
       </div>
       <div class="sidebar">
-        <v-card v-if="!userStore.user" class="w-full" title="About">
+        <v-card v-if="!userStore.isAuthenticated" class="w-full" title="About">
           <v-card-text>
             <p>Welcome to the <b>Solar Network</b></p>
             <p>The open social network. Friendly to everyone.</p>
@@ -26,7 +26,7 @@
             </p>
           </v-card-text>
         </v-card>
-        <v-card v-else class="mt-4 w-full">
+        <v-card v-else class="w-full">
           <v-card-text>
             <post-editor @posted="refreshActivities" />
           </v-card-text>
@@ -108,11 +108,12 @@ async function refreshActivities() {
 .layout {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 0 16px;
+  gap: 16px;
 }
 
 .main {
   order: 2;
+  min-width: 0;
 }
 
 .sidebar {

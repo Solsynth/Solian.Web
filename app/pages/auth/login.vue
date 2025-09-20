@@ -75,7 +75,7 @@ async function getFactors() {
   isLoading.value = true
   error.value = null
   try {
-    const availableFactors = await api(
+    const availableFactors = await api<SnAuthFactor[]>(
       `/id/auth/challenge/${challenge.value.id}/factors`
     )
     factors.value = availableFactors.filter(
@@ -94,7 +94,7 @@ async function getFactors() {
   }
 }
 
-async function requestVerificationCode(hint: string | null) {
+async function requestVerificationCode() {
   if (!selectedFactorId.value || !challenge.value) return
 
   const isResend = stage.value === "enter-code"
@@ -104,10 +104,7 @@ async function requestVerificationCode(hint: string | null) {
   try {
     await api(
       `/id/auth/challenge/${challenge.value.id}/factors/${selectedFactorId.value}`,
-      {
-        method: "POST",
-        body: hint
-      }
+      { method: "POST" }
     )
   } catch (e: unknown) {
     error.value = e instanceof Error ? e.message : "An error occurred"
@@ -134,7 +131,7 @@ async function handleFactorSelected() {
     isLoading.value = true
     error.value = null
     try {
-      await requestVerificationCode(selectedFactor.value.contact ?? null)
+      await requestVerificationCode()
       stage.value = "enter-code"
     } catch {
       // Error is already set by requestVerificationCode
@@ -163,7 +160,7 @@ async function handleVerifyFactor() {
 
     password.value = ""
 
-    if (challenge.value.stepRemain === 0) {
+    if (challenge.value!.stepRemain === 0) {
       stage.value = "token-exchange"
       await exchangeToken()
     } else {
@@ -184,13 +181,18 @@ async function exchangeToken() {
   isLoading.value = true
   error.value = null
   try {
-    await api("/id/auth/token", {
+    const tokenResponse = await api<{ token: string }>("/id/auth/token", {
       method: "POST",
       body: {
         grant_type: "authorization_code",
-        code: challenge.value.id
+        code: challenge.value!.id
       }
     })
+
+    // Store the token in localStorage via user store
+    if (tokenResponse && tokenResponse.token) {
+      userStore.setToken(tokenResponse.token)
+    }
 
     await userStore.fetchUser()
 
@@ -233,7 +235,12 @@ function getFactorName(factorType: number) {
         <v-progress-circular indeterminate size="64" />
       </v-overlay>
       <div class="mb-4">
-        <img :src="IconLight" alt="CloudyLamb" height="60" width="60">
+        <img
+          :src="$vuetify.theme.current.dark ? IconDark : IconLight"
+          alt="CloudyLamb"
+          height="60"
+          width="60"
+        />
       </div>
       <v-row>
         <v-col cols="12" lg="6" class="d-flex align-start justify-start">
@@ -244,41 +251,37 @@ function getFactorName(factorType: number) {
             </div>
             <div v-if="stage === 'select-factor'">
               <h2 class="text-2xl font-bold mb-1">Choose how to sign in</h2>
-              <p class="text-lg">
-              Select your preferred authentication method
-              </p>
+              <p class="text-lg">Select your preferred authentication method</p>
             </div>
             <div v-if="stage === 'enter-code' && selectedFactor">
               <h2 class="text-2xl font-bold mb-1">
-              Enter your
-              {{
-                selectedFactor.type === 0 ? "password" : "verification code"
-              }}
+                Enter your
+                {{
+                  selectedFactor.type === 0 ? "password" : "verification code"
+                }}
               </h2>
               <p v-if="selectedFactor.type === 1" class="text-lg">
-              A code has been sent to
-              {{ selectedFactor.contact || "your email" }}.
+                A code has been sent to
+                {{ selectedFactor.contact || "your email" }}.
               </p>
               <p v-if="selectedFactor.type === 2" class="text-lg">
-              Enter the code from your in-app authenticator.
+                Enter the code from your in-app authenticator.
               </p>
               <p v-if="selectedFactor.type === 3" class="text-lg">
-              Enter the timed verification code.
+                Enter the timed verification code.
               </p>
               <p v-if="selectedFactor.type === 4" class="text-lg">
-              Enter your PIN code.
+                Enter your PIN code.
               </p>
               <p v-if="selectedFactor.type === 0" class="text-lg">
-              Enter your password to continue.
+                Enter your password to continue.
               </p>
             </div>
             <div v-if="stage === 'token-exchange'">
               <h2 class="text-2xl font-bold mb-1">Finalizing Login</h2>
-              <p class="text-lg">
-              Please wait while we complete your sign in.
-              </p>
+              <p class="text-lg">Please wait while we complete your sign in.</p>
             </div>
-            </div>
+          </div>
         </v-col>
         <v-col cols="12" lg="6" class="d-flex align-center justify-stretch">
           <div class="w-full d-flex flex-column md:text-right">
@@ -328,16 +331,24 @@ function getFactorName(factorType: number) {
                 <v-list>
                   <v-list-item v-for="factor in factors" :key="factor.id">
                     <v-list-item-action>
-                      <v-radio :value="factor.id" :label="getFactorName(factor.type)"></v-radio>
+                      <v-radio
+                        :value="factor.id"
+                        :label="getFactorName(factor.type)"
+                      />
                     </v-list-item-action>
                     <template #append>
                       <v-icon>{{
-                        factor.type === 0 ? "mdi-lock" :
-                        factor.type === 1 ? "mdi-email" :
-                        factor.type === 2 ? "mdi-cellphone" :
-                        factor.type === 3 ? "mdi-clock" :
-                        factor.type === 4 ? "mdi-numeric" :
-                        "mdi-shield-key"
+                        factor.type === 0
+                          ? "mdi-lock"
+                          : factor.type === 1
+                          ? "mdi-email"
+                          : factor.type === 2
+                          ? "mdi-cellphone"
+                          : factor.type === 3
+                          ? "mdi-clock"
+                          : factor.type === 4
+                          ? "mdi-numeric"
+                          : "mdi-shield-key"
                       }}</v-icon>
                     </template>
                   </v-list-item>
@@ -371,9 +382,7 @@ function getFactorName(factorType: number) {
                   variant="text"
                   class="text-capitalize pl-0"
                   color="primary"
-                  @click="
-                    requestVerificationCode(selectedFactor.contact ?? null)
-                  "
+                  @click="requestVerificationCode"
                 >
                   Resend Code
                 </v-btn>

@@ -3,7 +3,7 @@ import { useDark, useToggle } from "@vueuse/core"
 // composables/useCustomTheme.ts
 export function useCustomTheme(): {
   isDark: WritableComputedRef<boolean, boolean>
-  toggle: (value?: boolean | undefined) => boolean
+  toggle: (value?: boolean | undefined) => boolean,
 } {
   const { $vuetify } = useNuxtApp()
 
