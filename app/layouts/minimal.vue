@@ -1,5 +1,5 @@
 <template>
-  <v-app :theme="isDark ? 'dark' : 'light'">
+  <v-app :theme="colorMode.preference">
     <v-app-bar flat height="48">
       <v-container class="mx-auto d-flex align-center justify-center">
         <p class="text-sm">Solar Network</p>
@@ -13,7 +13,5 @@
 </template>
 
 <script lang="ts" setup>
-import { useCustomTheme } from "~/composables/useCustomTheme"
-
-const { isDark } = useCustomTheme()
+const colorMode = useColorMode()
 </script>

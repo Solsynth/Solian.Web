@@ -1,5 +1,5 @@
 <template>
-  <v-app :theme="isDark ? 'dark' : 'light'">
+  <v-app :theme="colorMode.preference">
     <v-app-bar flat class="app-bar-blur">
       <v-container class="mx-auto d-flex align-center justify-center">
         <v-btn
@@ -30,13 +30,12 @@
 </template>
 
 <script lang="ts" setup>
-import { useCustomTheme } from "~/composables/useCustomTheme"
 import type { NavLink } from "~/types/navlink"
 
 const apiBase = useSolarNetworkUrl()
+const colorMode = useColorMode()
 
 const { user } = useUserStore()
-const { isDark } = useCustomTheme()
 
 const links: NavLink[] = [
   {

@@ -9,14 +9,18 @@ export default defineNuxtConfig({
     "@nuxt/eslint",
     "@pinia/nuxt",
     "vuetify-nuxt-module",
-    "@nuxtjs/i18n"
+    "@nuxtjs/i18n",
+    "@nuxtjs/color-mode"
   ],
   css: ["~/assets/css/main.css"],
+  features: {
+    inlineStyles: false
+  },
   pinia: {
     storesDirs: ["./app/stores/**"]
   },
-  features: {
-    inlineStyles: false
+  i18n: {
+    defaultLocale: "en"
   },
   image: {
     domains: ["api.solian.app"]
