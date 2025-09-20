@@ -165,18 +165,17 @@ const reactionDialog = ref(false)
 
 // Available reaction templates
 const availableReactions: ReactionTemplate[] = [
-  { symbol: "like", emoji: "👍", attitude: 1 },
-  { symbol: "love", emoji: "❤️", attitude: 2 },
-  { symbol: "laugh", emoji: "😂", attitude: 1 },
-  { symbol: "wow", emoji: "😮", attitude: 1 },
-  { symbol: "sad", emoji: "😢", attitude: -1 },
-  { symbol: "angry", emoji: "😠", attitude: -2 },
-  { symbol: "fire", emoji: "🔥", attitude: 2 },
-  { symbol: "clap", emoji: "👏", attitude: 1 },
-  { symbol: "think", emoji: "🤔", attitude: 0 },
-  { symbol: "pray", emoji: "🙏", attitude: 1 },
-  { symbol: "celebrate", emoji: "🎉", attitude: 2 },
-  { symbol: "heart", emoji: "💖", attitude: 2 }
+  { symbol: "thumb_up", emoji: "👍", attitude: 0 },
+  { symbol: "thumb_down", emoji: "👎", attitude: 2 },
+  { symbol: "just_okay", emoji: "😅", attitude: 1 },
+  { symbol: "cry", emoji: "😭", attitude: 1 },
+  { symbol: "confuse", emoji: "🧐", attitude: 1 },
+  { symbol: "clap", emoji: "👏", attitude: 0 },
+  { symbol: "laugh", emoji: "😂", attitude: 0 },
+  { symbol: "angry", emoji: "😡", attitude: 2 },
+  { symbol: "party", emoji: "🎉", attitude: 0 },
+  { symbol: "pray", emoji: "🙏", attitude: 0 },
+  { symbol: "heart", emoji: "❤️", attitude: 0 }
 ]
 
 function getReactionEmoji(symbol: string): string {
@@ -186,9 +185,9 @@ function getReactionEmoji(symbol: string): string {
 
 function getReactionColor(symbol: string): string {
   const attitude =
-    availableReactions.find((r) => r.symbol === symbol)?.attitude || 0
-  if (attitude > 0) return "success"
-  if (attitude < 0) return "error"
+    availableReactions.find((r) => r.symbol === symbol)?.attitude || 1
+  if (attitude === 0) return "success"
+  if (attitude === 2) return "error"
   return "primary"
 }
 
