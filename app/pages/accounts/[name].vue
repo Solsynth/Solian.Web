@@ -156,7 +156,7 @@
         </div>
         <div>
           <v-card v-if="htmlBio" title="Bio" prepend-icon="mdi-pencil">
-            <v-card-text class="px-8">
+            <v-card-text>
               <article
                 class="bio-prose prose prose-sm dark:prose-invert prose-slate"
                 v-html="htmlBio"
