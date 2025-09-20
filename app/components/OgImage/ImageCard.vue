@@ -47,6 +47,9 @@ const themeRgb = computed(() => {
     ?.map((v) => Number.parseInt(v, 16))
     .join(", ")
 })
+const textShadow = computed(() => {
+  return '2px 2px 8px rgba(0,0,0,0.8)'
+})
 const siteConfig = useSiteConfig()
 const siteName = computed(() => {
   return props.siteName || siteConfig.name
@@ -88,11 +91,11 @@ function toAbsoluteUrl(url: string | undefined) {
 
 <template>
   <div
-    class="w-full h-full flex justify-between relative"
+    class="w-full h-full flex justify-between relative text-white"
     :class="[
       ...(colorMode === 'light'
-        ? ['bg-white', 'text-gray-900']
-        : ['bg-gray-900', 'text-white'])
+        ? ['bg-white']
+        : ['bg-gray-900'])
     ]"
   >
     <div
@@ -103,8 +106,8 @@ function toAbsoluteUrl(url: string | undefined) {
     <img
       v-if="backgroundImage"
       :src="toAbsoluteUrl(backgroundImage)"
-      class="absolute top-0 left-0 w-full h-full object-cover opacity-70"
-      style="min-width: 1200px; min-height: 600px;"
+      class="absolute top-0 left-0 w-full h-full object-cover"
+      style="min-width: 1200px; min-height: 600px; filter: blur(8px)"
     />
     <div class="h-full w-full justify-between relative p-[60px]">
       <div class="flex flex-row justify-between items-start">
@@ -112,17 +115,15 @@ function toAbsoluteUrl(url: string | undefined) {
           <h1
             class="m-0 font-bold mb-[30px] text-[75px]"
             style="display: block; text-overflow: ellipsis"
-            :style="{ lineClamp: description ? 2 : 3 }"
+            :style="{ lineClamp: description ? 2 : 3, textShadow }"
           >
             {{ title }}
           </h1>
           <p
             v-if="description"
-            class="text-[35px] leading-12"
-            :class="[
-              colorMode === 'light' ? ['text-gray-700'] : ['text-gray-300']
-            ]"
+            class="text-[35px] leading-12 text-white"
             style="display: block; line-clamp: 3; text-overflow: ellipsis"
+            :style="{ textShadow }"
           >
             {{ description }}
           </p>
@@ -136,7 +137,7 @@ function toAbsoluteUrl(url: string | undefined) {
         </div>
       </div>
       <div class="flex flex-row justify-end items-center text-right gap-3 w-full">
-        <p v-if="siteName" style="font-size: 25px" class="font-bold">
+        <p v-if="siteName" style="font-size: 25px" class="font-bold" :style="{ textShadow }">
           {{ siteName }}
         </p>
         <img

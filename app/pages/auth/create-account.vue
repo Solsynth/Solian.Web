@@ -7,7 +7,7 @@
       <div class="pa-8">
         <div class="mb-4">
           <img
-            :src="$vuetify.theme.current.dark ? IconDark : IconLight"
+            :src="colorMode.value == 'dark' ? IconDark : IconLight"
             alt="CloudyLamb"
             height="60"
             width="60"
@@ -152,6 +152,8 @@ import IconDark from "~/assets/images/cloudy-lamb@dark.png"
 
 const router = useRouter()
 const api = useSolarNetwork()
+
+const colorMode = useColorMode()
 
 useHead({
   title: "Create Account"

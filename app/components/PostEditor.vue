@@ -7,29 +7,7 @@
       @keydown.meta.enter.exact="submit"
       @keydown.ctrl.enter.exact="submit"
     />
-    <div v-if="fileList.length > 0" class="d-flex gap-2 flex-wrap">
-      <v-img
-        v-for="file in fileList"
-        :key="file.name"
-        :src="file.url"
-        width="100"
-        height="100"
-        class="rounded"
-      />
-    </div>
     <div class="flex justify-between">
-      <div class="flex gap-2">
-        <v-file-input
-          v-model="selectedFiles"
-          multiple
-          accept="image/*,video/*,audio/*"
-          label="Upload files"
-          prepend-icon="mdi-upload"
-          hide-details
-          density="compact"
-          @change="handleFileSelect"
-        />
-      </div>
       <v-btn type="primary" :loading="submitting" @click="submit">
         Post
         <template #append>

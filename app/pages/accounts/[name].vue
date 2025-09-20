@@ -326,7 +326,7 @@ useHead({
 })
 
 defineOgImage({
-  component: 'WithAvatar',
+  component: 'ImageCard',
   title: computed(() => user.value ? user.value.nick || user.value.name : 'User Profile'),
   description: computed(() => user.value ? `View the profile of ${user.value.nick || user.value.name} on Solar Network.` : ''),
   avatarUrl: computed(() => userPicture.value),

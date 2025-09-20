@@ -246,6 +246,8 @@ function getFactorName(factorType: number) {
       return "Unknown Factor"
   }
 }
+
+const colorMode = useColorMode()
 </script>
 
 <template>
@@ -257,7 +259,7 @@ function getFactorName(factorType: number) {
       <div class="pa-8">
         <div class="mb-4">
           <img
-            :src="$vuetify.theme.current.dark ? IconDark : IconLight"
+            :src="colorMode.value == 'dark' ? IconDark : IconLight"
             alt="CloudyLamb"
             height="60"
             width="60"

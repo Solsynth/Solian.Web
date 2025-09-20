@@ -10,7 +10,7 @@
           />
         </div>
       </div>
-      <div class="sidebar">
+      <div class="sidebar flex flex-col gap-3">
         <v-card v-if="!userStore.isAuthenticated" class="w-full" title="About">
           <v-card-text>
             <p>Welcome to the <b>Solar Network</b></p>
@@ -31,6 +31,7 @@
             <post-editor @posted="refreshActivities" />
           </v-card-text>
         </v-card>
+        <sidebar-footer />
       </div>
     </div>
   </v-container>
@@ -51,14 +52,14 @@ import IconLight from '~/assets/images/cloudy-lamb.png'
 const router = useRouter()
 
 useHead({
-  title: "Home",
+  title: "Explore",
   meta: [
     { name: 'description', content: 'The open social network. Friendly to everyone.' },
   ]
 })
 
 defineOgImage({
-  title: 'Home',
+  title: 'Explore',
   description: 'The open social network. Friendly to everyone.',
 })
 

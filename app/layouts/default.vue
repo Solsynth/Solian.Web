@@ -2,7 +2,13 @@
   <v-app :theme="colorMode.preference">
     <v-app-bar flat class="app-bar-blur">
       <v-container class="mx-auto d-flex align-center justify-center">
-        <img :src="$vuetify.theme.current.dark ? IconDark : IconLight" width="32" height="32" class="me-4" alt="The Solar Network" />
+        <img
+          :src="colorMode.value == 'dark' ? IconDark : IconLight"
+          width="32"
+          height="32"
+          class="me-4"
+          alt="The Solar Network"
+        />
 
         <v-btn
           v-for="link in links"
@@ -15,13 +21,39 @@
 
         <v-spacer />
 
-        <v-avatar
-          class="me-4"
-          color="grey-darken-1"
-          size="32"
-          icon="mdi-account"
-          :image="`${apiBase}/drive/files/${user?.profile.picture?.id}`"
-        />
+        <v-menu>
+          <template v-slot:activator="{ props }">
+            <v-avatar
+              v-bind="props"
+              class="me-4"
+              color="grey-darken-1"
+              size="32"
+              icon="mdi-account-circle-outline"
+              :image="
+                user?.profile.picture
+                  ? `${apiBase}/drive/files/${user?.profile.picture?.id}`
+                  : undefined
+              "
+            />
+          </template>
+          <v-list density="compact">
+            <v-list-item v-if="!user" to="/auth/login" prepend-icon="mdi-login"
+              >Login</v-list-item
+            >
+            <v-list-item
+              v-if="!user"
+              to="/auth/create-account"
+              prepend-icon="mdi-account-plus"
+              >Create Account</v-list-item
+            >
+            <v-list-item
+              v-if="user"
+              to="/accounts/me"
+              prepend-icon="mdi-view-dashboard"
+              >Dashboard</v-list-item
+            >
+          </v-list>
+        </v-menu>
       </v-container>
     </v-app-bar>
 
@@ -32,8 +64,8 @@
 </template>
 
 <script lang="ts" setup>
-import IconLight from '~/assets/images/cloudy-lamb.png'
-import IconDark from '~/assets/images/cloudy-lamb@dark.png'
+import IconLight from "~/assets/images/cloudy-lamb.png"
+import IconDark from "~/assets/images/cloudy-lamb@dark.png"
 
 import type { NavLink } from "~/types/navlink"
 

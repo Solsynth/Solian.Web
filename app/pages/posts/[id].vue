@@ -1,15 +1,14 @@
 <template>
   <v-container class="py-6">
-    <div v-if="loading" class="text-center py-12">
+    <div v-if="pending" class="text-center py-12">
       <v-progress-circular indeterminate size="64" color="primary" />
       <p class="mt-4">Loading post...</p>
     </div>
     <div v-else-if="error" class="text-center py-12">
       <v-alert type="error" class="mb-4" prominent>
         <v-alert-title>Error Loading Post</v-alert-title>
-        {{ error }}
+        {{ error?.statusMessage || "Failed to load post" }}
       </v-alert>
-      <v-btn color="primary" @click="fetchPost">Try Again</v-btn>
     </div>
     <div v-else-if="post" class="max-w-4xl mx-auto">
       <!-- Article Type: Split Header and Content -->
@@ -206,7 +205,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue"
+import { computed } from "vue"
 import { Marked } from "marked"
 import type { SnPost } from "~/types/api"
 
@@ -217,14 +216,33 @@ import PostReactionList from "~/components/PostReactionList.vue"
 const route = useRoute()
 const id = route.params.id as string
 
-const post = ref<SnPost | null>(null)
-const loading = ref(true)
-const error = ref("")
-const htmlContent = ref("")
+const marked = new Marked()
+
+const apiServer = useSolarNetwork(true);
+
+const { data: postData, error, pending } = await useAsyncData(`post-${id}`, async () => {
+  try {
+    const resp = await apiServer(`/sphere/posts/${id}`)
+    const post = resp as SnPost
+    let html = ""
+    if (post.content) {
+      html = await marked.parse(post.content, { breaks: true })
+    }
+    return { post, html }
+  } catch (e) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: e instanceof Error ? e.message : "Failed to load post"
+    })
+  }
+})
+
+const post = computed(() => postData.value?.post || null)
+const htmlContent = computed(() => postData.value?.html || "")
 
 useHead({
   title: computed(() => {
-    if (loading.value) return "Loading post..."
+    if (pending.value) return "Loading post..."
     if (error.value) return "Error"
     if (!post.value) return "Post not found"
     return post.value.title || "Post"
@@ -239,12 +257,29 @@ useHead({
   })
 })
 
-// defineOgImage({
-//   title: computed(() => post.value?.title || 'Post'),
-//   description: computed(() => post.value?.description || post.value?.content?.substring(0, 150) || ''),
-// })
+const apiBase = useSolarNetworkUrl()
 
-const marked = new Marked()
+const userPicture = computed(() => {
+  return post.value?.publisher.picture
+    ? `${apiBase}/drive/files/${post.value.publisher.picture.id}`
+    : undefined
+})
+const userBackground = computed(() => {
+  const firstImageAttachment = post.value?.attachments?.find(att =>
+    att.mimeType?.startsWith('image/')
+  )
+  return firstImageAttachment
+    ? `${apiBase}/drive/files/${firstImageAttachment.id}`
+    : undefined
+})
+
+defineOgImage({
+  component: 'ImageCard',
+  title: computed(() => post.value?.title || 'Post'),
+  description: computed(() => post.value?.description || post.value?.content?.substring(0, 150) || ''),
+  avatarUrl: computed(() => userPicture.value),
+  backgroundImage: computed(() => userBackground.value),
+})
 
 function formatDate(dateString: string): string {
   return new Date(dateString).toLocaleDateString("en-US", {
@@ -252,23 +287,6 @@ function formatDate(dateString: string): string {
     month: "long",
     day: "numeric"
   })
-}
-
-async function fetchPost() {
-  try {
-    const api = useSolarNetwork()
-    const resp = await api(`/sphere/posts/${id}`)
-    post.value = resp as SnPost
-    if (post.value.content) {
-      htmlContent.value = await marked.parse(post.value.content, {
-        breaks: true
-      })
-    }
-  } catch (e) {
-    error.value = e instanceof Error ? e.message : "Failed to load post"
-  } finally {
-    loading.value = false
-  }
 }
 
 function handleReaction(symbol: string, attitude: number, delta: number) {
@@ -297,8 +315,4 @@ function handleReaction(symbol: string, attitude: number, delta: number) {
   ;(post.value as any).reactions = reactions
   ;(post.value as any).reactionsMade = reactionsMade
 }
-
-onMounted(() => {
-  fetchPost()
-})
 </script>

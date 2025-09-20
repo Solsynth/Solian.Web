@@ -1,8 +1,8 @@
 // Solar Network aka the api client
 import { keysToCamel, keysToSnake } from "~/utils/transformKeys"
 
-export const useSolarNetwork = () => {
-  const apiBase = useSolarNetworkUrl()
+export const useSolarNetwork = (withoutProxy = false) => {
+  const apiBase = useSolarNetworkUrl(withoutProxy)
 
   return $fetch.create({
     baseURL: apiBase,
