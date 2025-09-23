@@ -159,7 +159,7 @@ const api = useSolarNetwork()
 const fileInfo = ref<any>(null)
 async function fetchFileInfo() {
   try {
-    let url = "/api/drive/files/" + fileId + "/info"
+    let url = "/drive/files/" + fileId + "/info"
     if (passcode) {
       url += `?passcode=${passcode}`
     }
