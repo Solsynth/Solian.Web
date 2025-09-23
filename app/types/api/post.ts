@@ -60,7 +60,7 @@ export interface SnPost {
   awardedScore: number;
   reactionsCount: Record<string, number>;
   repliesCount: number;
-  reactionsMade: Record<string, unknown>;
+  reactionsMade: Record<string, boolean>;
   repliedGone: boolean;
   forwardedGone: boolean;
   repliedPostId: string | null;

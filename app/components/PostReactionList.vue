@@ -178,8 +178,17 @@ const availableReactions: ReactionTemplate[] = [
   { symbol: "heart", emoji: "❤️", attitude: 0 }
 ]
 
+function camelToSnake(str: string): string {
+  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
+}
+
 function getReactionEmoji(symbol: string): string {
-  const reaction = availableReactions.find((r) => r.symbol === symbol)
+  let reaction = availableReactions.find((r) => r.symbol === symbol)
+  if (reaction) return reaction.emoji
+
+  // Try camelCase to snake_case conversion
+  const snakeSymbol = camelToSnake(symbol)
+  reaction = availableReactions.find((r) => r.symbol === snakeSymbol)
   return reaction?.emoji || "❓"
 }
 

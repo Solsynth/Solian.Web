@@ -25,14 +25,24 @@
     "blurhash": "^2.0.5",
     "cfturnstile-vue3": "^2.0.0",
     "eslint": "^9.36.0",
+    "katex": "^0.16.22",
     "luxon": "^3.7.2",
-    "marked": "^16.3.0",
     "nuxt": "^4.1.2",
     "nuxt-og-image": "^5.1.11",
     "pinia": "^3.0.3",
+    "rehype-katex": "^7.0.1",
+    "rehype-stringify": "^10.0.1",
+    "remark": "^15.0.1",
+    "remark-breaks": "^4.0.0",
+    "remark-gfm": "^4.0.1",
+    "remark-html": "^16.0.1",
+    "remark-math": "^6.0.0",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
     "sharp": "^0.34.4",
     "tailwindcss": "^4.1.13",
     "tus-js-client": "^4.3.1",
+    "unified": "^11.0.5",
     "vue": "^3.5.21",
     "vue-router": "^4.5.1",
     "vuetify-nuxt-module": "0.18.7"
@@ -41,6 +51,6 @@
     "@mdi/font": "^7.4.47",
     "@types/luxon": "^3.7.1",
     "@types/node": "^24.5.2",
-    "eslint-plugin-tailwindcss": "^4.0.0-beta.0"
+    "eslint-plugin-tailwindcss": "^3.18.2"
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card class="px-4 py-3">
     <v-card-text>
       <div class="flex flex-col gap-3">
         <post-header :item="props.item" />
@@ -20,7 +20,11 @@
           <div v-html="htmlContent" />
         </article>
 
-        <div v-if="props.item.attachments.length > 0" class="d-flex gap-2 flex-wrap" @click.stop>
+        <div
+          v-if="props.item.attachments.length > 0"
+          class="d-flex gap-2 flex-wrap"
+          @click.stop
+        >
           <attachment-item
             v-for="attachment in props.item.attachments"
             :key="attachment.id"
@@ -32,8 +36,8 @@
         <div @click.stop>
           <post-reaction-list
             :parent-id="props.item.id"
-            :reactions="(props.item as any).reactions || {}"
-            :reactions-made="(props.item as any).reactionsMade || {}"
+            :reactions="props.item.reactionsCount"
+            :reactions-made="props.item.reactionsMade"
             :can-react="true"
             @react="handleReaction"
           />
@@ -45,7 +49,14 @@
 
 <script lang="ts" setup>
 import { ref, watch } from "vue"
-import { Marked } from "marked"
+import { unified } from "unified"
+import remarkParse from "remark-parse"
+import remarkMath from "remark-math"
+import remarkRehype from "remark-rehype"
+import remarkBreaks from "remark-breaks"
+import remarkGfm from "remark-gfm"
+import rehypeKatex from "rehype-katex"
+import rehypeStringify from "rehype-stringify"
 import type { SnPost } from "~/types/api"
 
 import PostHeader from "./PostHeader.vue"
@@ -54,7 +65,14 @@ import PostReactionList from "./PostReactionList.vue"
 
 const props = defineProps<{ item: SnPost }>()
 
-const marked = new Marked()
+const processor = unified()
+  .use(remarkParse)
+  .use(remarkMath)
+  .use(remarkBreaks)
+  .use(remarkGfm)
+  .use(remarkRehype)
+  .use(rehypeKatex)
+  .use(rehypeStringify)
 
 const htmlContent = ref<string>("")
 
@@ -87,9 +105,9 @@ function handleReaction(symbol: string, attitude: number, delta: number) {
 
 watch(
   props.item,
-  async (value) => {
+  (value) => {
     if (value.content)
-      htmlContent.value = await marked.parse(value.content, { breaks: true })
+      htmlContent.value = String(processor.processSync(value.content))
   },
   { immediate: true, deep: true }
 )

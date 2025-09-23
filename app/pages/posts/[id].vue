@@ -91,7 +91,7 @@
       <!-- Other Types: Merged Header, Content, and Attachments -->
       <template v-else>
         <!-- Merged Header, Content, and Attachments Section -->
-        <v-card class="mb-4 elevation-1" rounded="lg">
+        <v-card class="px-4 py-3 mb-4 elevation-1" rounded="lg">
           <v-card-text class="pa-6">
             <post-header :item="post" class="mb-4" />
 
@@ -206,7 +206,14 @@
 
 <script setup lang="ts">
 import { computed } from "vue"
-import { Marked } from "marked"
+import { unified } from "unified"
+import remarkParse from "remark-parse"
+import remarkMath from "remark-math"
+import remarkRehype from "remark-rehype"
+import rehypeKatex from "rehype-katex"
+import rehypeStringify from "rehype-stringify"
+import remarkBreaks from "remark-breaks"
+import remarkGfm from "remark-gfm"
 import type { SnPost } from "~/types/api"
 
 import PostHeader from "~/components/PostHeader.vue"
@@ -216,17 +223,28 @@ import PostReactionList from "~/components/PostReactionList.vue"
 const route = useRoute()
 const id = route.params.id as string
 
-const marked = new Marked()
+const processor = unified()
+  .use(remarkParse)
+  .use(remarkMath)
+  .use(remarkBreaks)
+  .use(remarkGfm)
+  .use(remarkRehype)
+  .use(rehypeKatex)
+  .use(rehypeStringify)
 
-const apiServer = useSolarNetwork(true);
+const apiServer = useSolarNetwork(true)
 
-const { data: postData, error, pending } = await useAsyncData(`post-${id}`, async () => {
+const {
+  data: postData,
+  error,
+  pending
+} = await useAsyncData(`post-${id}`, async () => {
   try {
     const resp = await apiServer(`/sphere/posts/${id}`)
     const post = resp as SnPost
     let html = ""
     if (post.content) {
-      html = await marked.parse(post.content, { breaks: true })
+      html = String(processor.processSync(post.content))
     }
     return { post, html }
   } catch (e) {
@@ -245,7 +263,7 @@ useHead({
     if (pending.value) return "Loading post..."
     if (error.value) return "Error"
     if (!post.value) return "Post not found"
-    return post.value.title || "Post"
+    return `${post.value?.title || "Post"} from ${post.value?.publisher.nick}`
   }),
   meta: computed(() => {
     if (post.value) {
@@ -265,8 +283,8 @@ const userPicture = computed(() => {
     : undefined
 })
 const userBackground = computed(() => {
-  const firstImageAttachment = post.value?.attachments?.find(att =>
-    att.mimeType?.startsWith('image/')
+  const firstImageAttachment = post.value?.attachments?.find((att) =>
+    att.mimeType?.startsWith("image/")
   )
   return firstImageAttachment
     ? `${apiBase}/drive/files/${firstImageAttachment.id}`
@@ -274,11 +292,14 @@ const userBackground = computed(() => {
 })
 
 defineOgImage({
-  component: 'ImageCard',
-  title: computed(() => post.value?.title || 'Post'),
-  description: computed(() => post.value?.description || post.value?.content?.substring(0, 150) || ''),
+  component: "ImageCard",
+  title: computed(() => post.value?.title || "Post"),
+  description: computed(
+    () =>
+      post.value?.description || post.value?.content?.substring(0, 150) || ""
+  ),
   avatarUrl: computed(() => userPicture.value),
-  backgroundImage: computed(() => userBackground.value),
+  backgroundImage: computed(() => userBackground.value)
 })
 
 function formatDate(dateString: string): string {

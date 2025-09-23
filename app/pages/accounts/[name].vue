@@ -181,7 +181,14 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue"
-import { Marked } from "marked"
+import { unified } from "unified"
+import remarkParse from "remark-parse"
+import remarkMath from "remark-math"
+import remarkBreaks from "remark-breaks"
+import remarkRehype from "remark-rehype"
+import rehypeKatex from "rehype-katex"
+import rehypeStringify from "rehype-stringify"
+import remarkGfm from "remark-gfm"
 
 const route = useRoute()
 
@@ -239,15 +246,22 @@ const perkSubscriptionNames: Record<string, PerkSubscriptionInfo> = {
   }
 }
 
-const marked = new Marked()
+const processor = unified()
+  .use(remarkParse)
+  .use(remarkMath)
+  .use(remarkBreaks)
+  .use(remarkGfm)
+  .use(remarkRehype)
+  .use(rehypeKatex)
+  .use(rehypeStringify)
 
 const htmlBio = ref<string | undefined>(undefined)
 
 watch(
   user,
-  async (value) => {
+  (value) => {
     htmlBio.value = value?.profile.bio
-      ? await marked.parse(value.profile.bio, { breaks: true })
+      ? String(processor.processSync(value.profile.bio))
       : undefined
   },
   { immediate: true, deep: true }
@@ -316,21 +330,29 @@ useHead({
   }),
   meta: computed(() => {
     if (user.value) {
-      const description = `View the profile of ${user.value.nick || user.value.name} on Solar Network.`
-      return [
-        { name: 'description', content: description },
-      ]
+      const description = `View the profile of ${
+        user.value.nick || user.value.name
+      } on Solar Network.`
+      return [{ name: "description", content: description }]
     }
     return []
   })
 })
 
 defineOgImage({
-  component: 'ImageCard',
-  title: computed(() => user.value ? user.value.nick || user.value.name : 'User Profile'),
-  description: computed(() => user.value ? `View the profile of ${user.value.nick || user.value.name} on Solar Network.` : ''),
+  component: "ImageCard",
+  title: computed(() =>
+    user.value ? user.value.nick || user.value.name : "User Profile"
+  ),
+  description: computed(() =>
+    user.value
+      ? `View the profile of ${
+          user.value.nick || user.value.name
+        } on Solar Network.`
+      : ""
+  ),
   avatarUrl: computed(() => userPicture.value),
-  backgroundImage: computed(() => userBackground.value),
+  backgroundImage: computed(() => userBackground.value)
 })
 </script>
 
