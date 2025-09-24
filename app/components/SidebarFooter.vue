@@ -14,17 +14,12 @@
         Service Status
       </a>
       <span class="font-bold">·</span>
-      <a
-        class="link"
-        target="_blank"
-        href="https://solian.app/swagger/index.html"
-      >
-        API
-      </a>
+      <nuxt-link class="link" target="_blank" to="/swagger"> API </nuxt-link>
     </div>
     <p class="mt-2 opacity-80">
       The FloatingIsland do not provides all the features the Solar Network has,
-      for further usage, see <a href="https://web.solian.app" class="font-bold underline">Solian</a>
+      for further usage, see
+      <a href="https://web.solian.app" class="font-bold underline">Solian</a>
     </p>
   </div>
 </template>
