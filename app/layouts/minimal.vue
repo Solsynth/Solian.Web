@@ -8,7 +8,7 @@
       <v-footer app fixed flat height="48">
         <v-container class="mx-auto d-flex align-center justify-between">
           <img
-            src="/_nuxt/assets/images/cloudy-lamb.png"
+            :src="Icon"
             alt="Cloudy Lamb"
             height="24"
             width="24"
@@ -22,5 +22,7 @@
 </template>
 
 <script lang="ts" setup>
+import Icon from "~/assets/images/cloudy-lamb.png"
+
 const colorMode = useColorMode()
 </script>
