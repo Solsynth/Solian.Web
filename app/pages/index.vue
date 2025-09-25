@@ -31,7 +31,7 @@
             <post-editor @posted="refreshActivities" />
           </v-card-text>
         </v-card>
-        <sidebar-footer />
+        <sidebar-footer class="max-lg:hidden" />
       </div>
     </div>
   </v-container>
@@ -47,20 +47,23 @@ import type { SnVersion, SnActivity } from "~/types/api"
 import PostEditor from "~/components/PostEditor.vue"
 import PostItem from "~/components/PostItem.vue"
 
-import IconLight from '~/assets/images/cloudy-lamb.png'
+import IconLight from "~/assets/images/cloudy-lamb.png"
 
 const router = useRouter()
 
 useHead({
   title: "Explore",
   meta: [
-    { name: 'description', content: 'The open social network. Friendly to everyone.' },
+    {
+      name: "description",
+      content: "The open social network. Friendly to everyone."
+    }
   ]
 })
 
 defineOgImage({
-  title: 'Explore',
-  description: 'The open social network. Friendly to everyone.',
+  title: "Explore",
+  description: "The open social network. Friendly to everyone."
 })
 
 const userStore = useUserStore()
@@ -102,7 +105,7 @@ onMounted(() => fetchActivites())
 
 useInfiniteScroll(window, fetchActivites, {
   canLoadMore: () => !loading.value && activitesHasMore.value,
-  distance: 10,
+  distance: 10
 })
 
 async function refreshActivities() {
