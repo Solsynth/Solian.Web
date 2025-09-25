@@ -59,11 +59,6 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()]
   },
   nitro: {
-    routeRules: {
-      "/.well-known/**": {
-        proxy: process.env.NUXT_PUBLIC_API_BASE || "https://api.solian.app"
-      }
-    },
     devProxy: {
       "/api": {
         target: process.env.NUXT_PUBLIC_API_BASE || "https://api.solian.app",
