@@ -84,4 +84,10 @@ useHead({
 .swagger-ui textarea * {
   font-family: "IBM Plex Mono", monospace !important;
 }
+
+@media (prefers-color-scheme: dark) {
+  .swagger-ui {
+    --secondary-text-color: #ffffff !important;
+  }
+}
 </style>
