@@ -157,7 +157,7 @@ function checkIfNewApp() {
 async function handleAuthorize() {
   isAuthorizing.value = true
   try {
-    const data = await api<{ redirect_uri?: string }>(
+    const data = await api<{ redirectUri?: string }>(
       "/id/auth/open/authorize",
       {
         method: "POST",
@@ -165,8 +165,8 @@ async function handleAuthorize() {
       }
     )
 
-    if (data.redirect_uri) {
-      window.location.href = data.redirect_uri
+    if (data.redirectUri) {
+      window.location.href = data.redirectUri
     }
   } catch (err: any) {
     error.value = err.message || "An error occurred during authorization"
