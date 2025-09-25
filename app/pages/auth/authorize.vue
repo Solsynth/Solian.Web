@@ -161,7 +161,7 @@ async function handleAuthorize() {
       "/id/auth/open/authorize",
       {
         method: "POST",
-        query: route.query
+        body: new URLSearchParams(window.location.search.slice(1))
       }
     )
 
