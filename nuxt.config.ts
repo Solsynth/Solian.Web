@@ -17,7 +17,8 @@ export default defineNuxtConfig({
   app: {
     pageTransition: { name: "page", mode: "out-in" },
     head: {
-      titleTemplate: "%s - Solar Network"
+      titleTemplate: "%s - Solar Network",
+      link: [{ rel: "icon", type: "image/png", href: "/favicon.png" }]
     }
   },
   site: {
