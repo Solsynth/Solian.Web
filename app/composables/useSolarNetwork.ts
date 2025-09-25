@@ -8,12 +8,15 @@ export const useSolarNetwork = (withoutProxy = false) => {
     baseURL: apiBase,
     credentials: "include",
     // Add Authorization header with Bearer token
-    onRequest: ({ options }) => {
+    onRequest: ({ request, options }) => {
+      const side = process.server ? 'SERVER' : 'CLIENT'
+      console.log(`[useSolarNetwork] onRequest for ${request} on ${side}`)
       // Get token from user store
       const userStore = useUserStore()
       const token = userStore.token
 
       if (token) {
+        console.log('[useSolarNetwork] Token found, adding Authorization header.')
         if (!options.headers) {
           options.headers = new Headers()
         }
@@ -23,6 +26,8 @@ export const useSolarNetwork = (withoutProxy = false) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           ;(options.headers as any)["Authorization"] = `Bearer ${token}`
         }
+      } else {
+        console.log('[useSolarNetwork] No token found, skipping Authorization header.')
       }
 
       // Transform request data from camelCase to snake_case

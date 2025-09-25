@@ -53,7 +53,7 @@
                 <v-card variant="outlined" class="pa-4 mb-4 text-left">
                   <h4 class="font-medium mb-2">
                     This will allow
-                    {{ clientInfo.clientName || "the app" }} to:
+                    {{ clientInfo.clientName || "the app" }} to
                   </h4>
                   <ul class="space-y-1">
                     <li

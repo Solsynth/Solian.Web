@@ -11,7 +11,7 @@ export const useUserStore = defineStore("user", () => {
   const error = ref<string | null>(null)
 
   // The name is match with the remote one (set by server Set-Cookie)
-  const token = useCookie<string | null>("AuthToken", {
+  const token = useCookie<string | null>("fl_AuthToken", {
     default: () => null,
     path: "/",
     maxAge: 60 * 60 * 24 * 365 * 10
@@ -19,9 +19,6 @@ export const useUserStore = defineStore("user", () => {
 
   // Getters
   const isAuthenticated = computed(() => !!user.value && !!token.value)
-
-  // Call fetchUser immediately
-  fetchUser()
 
   // Actions
   async function fetchUser(reload = true) {
