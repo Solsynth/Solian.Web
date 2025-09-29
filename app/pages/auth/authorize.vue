@@ -186,6 +186,10 @@ function handleDeny() {
 onMounted(() => {
   fetchClientInfo()
 })
+
+definePageMeta({
+  middleware: "auth"
+})
 </script>
 
 <style scoped>
