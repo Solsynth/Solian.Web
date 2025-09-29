@@ -154,14 +154,17 @@ function checkIfNewApp() {
   isNewApp.value = false
 }
 
-async function handleAuthorize() {
+async function handleAuthorize(authorize = true) {
   isAuthorizing.value = true
   try {
     const data = await api<{ redirectUri?: string }>(
       "/id/auth/open/authorize",
       {
         method: "POST",
-        body: new URLSearchParams(window.location.search.slice(1))
+        body: new URLSearchParams({
+          ...route.query,
+          authorize: authorize ? "true" : "false"
+        })
       }
     )
 
@@ -176,22 +179,7 @@ async function handleAuthorize() {
 }
 
 function handleDeny() {
-  // Redirect back to the client with an error
-  // Ensure redirect_uri is always a string (not an array)
-  const redirectUriStr = Array.isArray(route.query.redirect_uri)
-    ? route.query.redirect_uri[0] || clientInfo.value?.homeUri || "/"
-    : route.query.redirect_uri || clientInfo.value?.homeUri || "/"
-  const redirectUri = new URL(redirectUriStr)
-  // Ensure state is always a string (not an array)
-  const state = Array.isArray(route.query.state)
-    ? route.query.state[0] || ""
-    : route.query.state || ""
-  const params = new URLSearchParams({
-    error: "access_denied",
-    error_description: "The user denied the authorization request",
-    state: state
-  })
-  window.open(`${redirectUri}?${params}`, "_self")
+  handleAuthorize(false)
 }
 
 // Lifecycle

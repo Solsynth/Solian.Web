@@ -22,6 +22,7 @@ export const useUserStore = defineStore("user", () => {
 
   // Actions
   async function fetchUser(reload = true) {
+    if (isLoading.value) return
     if (!reload && user.value) return // Skip fetching if already loaded and not forced to
 
     isLoading.value = true

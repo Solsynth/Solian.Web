@@ -58,13 +58,5 @@ export default defineNuxtConfig({
   },
   vite: {
     plugins: [tailwindcss()]
-  },
-  nitro: {
-    devProxy: {
-      "/api": {
-        target: process.env.NUXT_PUBLIC_API_BASE || "https://api.solian.app",
-        changeOrigin: true
-      }
-    }
   }
 })
