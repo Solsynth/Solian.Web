@@ -10,15 +10,8 @@ export const useUserStore = defineStore("user", () => {
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
-  // The name is match with the remote one (set by server Set-Cookie)
-  const token = useCookie<string | null>("fl_AuthToken", {
-    default: () => null,
-    path: "/",
-    maxAge: 60 * 60 * 24 * 365 * 10
-  }) // 10 years
-
   // Getters
-  const isAuthenticated = computed(() => !!user.value && !!token.value)
+  const isAuthenticated = computed(() => !!user.value)
 
   // Actions
   async function fetchUser(reload = true) {
@@ -32,7 +25,7 @@ export const useUserStore = defineStore("user", () => {
       const response = await api("/id/accounts/me")
 
       user.value = response as SnAccount
-      console.log(`Logged in as ${user.value.name}`)
+      console.log(`[UserStore] Logged in as ${user.value.name}`)
     } catch (e: unknown) {
       if (e instanceof FetchError && e.statusCode == 401) {
         error.value = "Unauthorized"
@@ -47,23 +40,16 @@ export const useUserStore = defineStore("user", () => {
     }
   }
 
-  function setToken(newToken: string) {
-    token.value = newToken
-  }
-
   function logout() {
     user.value = null
-    token.value = null
   }
 
   return {
     user,
-    token,
     isLoading,
     error,
     isAuthenticated,
     fetchUser,
-    setToken,
     logout
   }
 })

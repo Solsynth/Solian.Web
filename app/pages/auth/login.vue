@@ -201,18 +201,14 @@ async function exchangeToken() {
   isLoading.value = true
   error.value = null
   try {
-    const tokenResponse = await api<{ token: string }>("/id/auth/token", {
+    // The token endpoint gives the Set-Cookie header
+    await api<{ token: string }>("/id/auth/token", {
       method: "POST",
       body: {
         grant_type: "authorization_code",
         code: challenge.value!.id
       }
     })
-
-    // Store the token in localStorage via user store
-    if (tokenResponse && tokenResponse.token) {
-      userStore.setToken(tokenResponse.token)
-    }
 
     await userStore.fetchUser()
 
@@ -374,14 +370,14 @@ const colorMode = useColorMode()
                             factor.type === 0
                               ? "mdi-lock"
                               : factor.type === 1
-                              ? "mdi-email"
-                              : factor.type === 2
-                              ? "mdi-cellphone"
-                              : factor.type === 3
-                              ? "mdi-clock"
-                              : factor.type === 4
-                              ? "mdi-numeric"
-                              : "mdi-shield-key"
+                                ? "mdi-email"
+                                : factor.type === 2
+                                  ? "mdi-cellphone"
+                                  : factor.type === 3
+                                    ? "mdi-clock"
+                                    : factor.type === 4
+                                      ? "mdi-numeric"
+                                      : "mdi-shield-key"
                           }}</v-icon>
                         </template>
                       </v-list-item>
