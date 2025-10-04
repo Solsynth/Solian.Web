@@ -75,7 +75,7 @@ if (
   console.log("\nnpx nuxi module add icon\n")
 }
 
-const apiBaseServer = useSolarNetworkUrl(true)
+const apiBaseServer = useSolarNetworkUrl()
 
 function toAbsoluteUrl(url: string | undefined) {
   if (!url) return undefined

@@ -203,7 +203,7 @@ const username = computed(() => {
 
 // Use useFetch with the correct API URL to avoid router conflicts
 const apiBase = useSolarNetworkUrl()
-const apiBaseServer = useSolarNetworkUrl(true)
+const apiBaseServer = useSolarNetworkUrl()
 
 try {
   const { data, error } = await useFetch(

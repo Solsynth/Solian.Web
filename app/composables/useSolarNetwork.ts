@@ -1,9 +1,16 @@
 // Solar Network aka the api client
 import { keysToCamel, keysToSnake } from "~/utils/transformKeys"
 
-export const useSolarNetwork = (withoutProxy = false) => {
-  const apiBase = useSolarNetworkUrl(withoutProxy)
-  const headers = process.server ? useRequestHeaders(["cookie"]) : {}
+export const useSolarNetwork = () => {
+  const apiBase = useSolarNetworkUrl()
+
+  // Access SSR request event only on the server
+  const event = import.meta.server ? useRequestEvent() : null
+
+  // Forward cookies from the incoming request
+  const headers: HeadersInit = import.meta.server && event
+    ? { cookie: event.headers.get('cookie') ?? '' }
+    : {}
 
   return $fetch.create({
     baseURL: apiBase,
@@ -11,7 +18,7 @@ export const useSolarNetwork = (withoutProxy = false) => {
     headers,
     // Add Authorization header with Bearer token
     onRequest: ({ request, options }) => {
-      const side = process.server ? "SERVER" : "CLIENT"
+      const side = import.meta.server ? "SERVER" : "CLIENT"
       console.log(`[useSolarNetwork] onRequest for ${request} on ${side}`)
 
       // Transform request data from camelCase to snake_case
@@ -28,7 +35,7 @@ export const useSolarNetwork = (withoutProxy = false) => {
   })
 }
 
-export const useSolarNetworkUrl = (withoutProxy = false) => {
+export const useSolarNetworkUrl = () => {
   const config = useRuntimeConfig()
   return config.public.apiBase
 }

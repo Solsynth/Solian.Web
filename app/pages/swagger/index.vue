@@ -27,7 +27,7 @@ function loadTheme(mode: string) {
   }
 }
 
-const apiBase = useSolarNetworkUrl(true)
+const apiBase = useSolarNetworkUrl()
 
 onMounted(() => {
   const ui = SwaggerUIBundle({
