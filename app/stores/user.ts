@@ -17,21 +17,23 @@ export const useUserStore = defineStore("user", () => {
   async function fetchUser(reload = true) {
     if (isLoading.value) {
       console.log("[UserStore] Fetch already in progress. Skipping.")
-      return;
+      return
     }
     if (!reload && user.value) {
-      console.log(`[UserStore] User store was loaded with account @${user.value.name} and no reload. Skipping.`)
-      return;
+      console.log(
+        `[UserStore] User store was loaded with account @${user.value.name} and no reload. Skipping.`
+      )
+      return
     }
 
     isLoading.value = true
     error.value = null
     const api = useSolarNetwork()
     try {
-      const response = await api("/id/accounts/me")
-
-      user.value = response as SnAccount
-      console.log(`[UserStore] Logged in as ${user.value.name}`)
+      const response = await api<SnAccount>("/id/accounts/me")
+      console.log("[UserStore] Fetched user data: ", response)
+      user.value = response
+      console.log(`[UserStore] Logged in as @${user.value.name}`)
     } catch (e: unknown) {
       if (e instanceof FetchError && e.statusCode == 401) {
         error.value = "Unauthorized"
