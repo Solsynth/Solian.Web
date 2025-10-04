@@ -4,12 +4,9 @@ import { keysToCamel, keysToSnake } from "~/utils/transformKeys"
 export const useSolarNetwork = () => {
   const apiBase = useSolarNetworkUrl()
 
-  // Access SSR request event only on the server
-  const event = import.meta.server ? useRequestEvent() : null
-
   // Forward cookies from the incoming request
-  const headers: HeadersInit = import.meta.server && event
-    ? { cookie: event.headers.get('cookie') ?? '' }
+  const headers: HeadersInit = import.meta.server
+    ? useRequestHeaders()
     : {}
 
   return $fetch.create({
