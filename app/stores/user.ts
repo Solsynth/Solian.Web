@@ -9,43 +9,49 @@ export const useUserStore = defineStore("user", () => {
   const user = ref<SnAccount | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
+  const currentFetchPromise = ref<Promise<void> | null>(null)
 
   // Getters
   const isAuthenticated = computed(() => !!user.value)
 
   // Actions
-  async function fetchUser(reload = true) {
-    if (isLoading.value) {
-      console.log("[UserStore] Fetch already in progress. Skipping.")
-      return
+  async function fetchUser(reload = true): Promise<void> {
+    if (currentFetchPromise.value) {
+      console.log("[UserStore] Fetch already in progress. Waiting for existing fetch.")
+      return currentFetchPromise.value
     }
     if (!reload && user.value) {
       console.log(
         `[UserStore] User store was loaded with account @${user.value.name} and no reload. Skipping.`
       )
-      return
+      return Promise.resolve()
     }
 
-    isLoading.value = true
-    error.value = null
-    const api = useSolarNetwork()
-    try {
-      const response = await api<SnAccount>("/id/accounts/me")
-      console.log("[UserStore] Fetched user data: ", response)
-      user.value = response
-      console.log(`[UserStore] Logged in as @${user.value.name}`)
-    } catch (e: unknown) {
-      if (e instanceof FetchError && e.statusCode == 401) {
-        error.value = "Unauthorized"
-        user.value = null
-      } else {
-        error.value = e instanceof Error ? e.message : "An error occurred"
-        user.value = null // Clear user data on error
-        console.error("Failed to fetch user... ", e)
+    const fetchPromise = (async () => {
+      isLoading.value = true
+      error.value = null
+      const api = useSolarNetwork()
+      try {
+        const response = await api<SnAccount>("/id/accounts/me")
+        user.value = response
+        console.log(`[UserStore] Logged in as @${user.value.name}`)
+      } catch (e: unknown) {
+        if (e instanceof FetchError && e.statusCode == 401) {
+          error.value = "Unauthorized"
+          user.value = null
+        } else {
+          error.value = e instanceof Error ? e.message : "An error occurred"
+          user.value = null // Clear user data on error
+          console.error("Failed to fetch user... ", e)
+        }
+      } finally {
+        isLoading.value = false
+        currentFetchPromise.value = null
       }
-    } finally {
-      isLoading.value = false
-    }
+    })()
+
+    currentFetchPromise.value = fetchPromise
+    return fetchPromise
   }
 
   function logout() {
