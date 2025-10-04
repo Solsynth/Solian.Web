@@ -1,6 +1,5 @@
 // Solar Network aka the api client
 import { keysToCamel, keysToSnake } from "~/utils/transformKeys"
-import zlib from "zlib"
 
 export const useSolarNetwork = () => {
   const apiBase = useSolarNetworkUrl()
@@ -28,10 +27,7 @@ export const useSolarNetwork = () => {
       if (encoding) {
         console.log("[useSolarNetwork] Response encoding: ", encoding)
       }
-      if (encoding === "gzip") {
-        const buffer = Buffer.from(response._data)
-        response._data = JSON.parse(zlib.gunzipSync(buffer).toString("utf-8"))
-      }
+      // Then transform keys if applicable
       if (response._data) {
         response._data = keysToCamel(response._data)
       }
