@@ -5,7 +5,9 @@ export const useSolarNetwork = () => {
   const apiBase = useSolarNetworkUrl()
 
   // Forward cookies from the incoming request
-  const headers: HeadersInit = import.meta.server ? useRequestHeaders() : {}
+  const headers: HeadersInit = import.meta.server
+    ? { ...useRequestHeaders(), "accept-encoding": "identity" }
+    : {}
 
   return $fetch.create({
     baseURL: apiBase,
