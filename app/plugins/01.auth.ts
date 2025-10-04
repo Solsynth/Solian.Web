@@ -1,7 +1,7 @@
 import { useUserStore } from "~/stores/user"
 
 export default defineNuxtPlugin(() => {
-  const side = process.server ? "SERVER" : "CLIENT"
+  const side = import.meta.server ? "SERVER" : "CLIENT"
   console.log(`[AUTH PLUGIN] Running on ${side}`)
   const userStore = useUserStore()
 
