@@ -1,13 +1,12 @@
 // Solar Network aka the api client
 import { keysToCamel, keysToSnake } from "~/utils/transformKeys"
+import zlib from "zlib"
 
 export const useSolarNetwork = () => {
   const apiBase = useSolarNetworkUrl()
 
   // Forward cookies from the incoming request
-  const headers: HeadersInit = import.meta.server
-    ? useRequestHeaders()
-    : {}
+  const headers: HeadersInit = import.meta.server ? useRequestHeaders() : {}
 
   return $fetch.create({
     baseURL: apiBase,
@@ -25,6 +24,14 @@ export const useSolarNetwork = () => {
     },
     // Transform response keys from snake_case to camelCase
     onResponse: ({ response }) => {
+      const encoding = response.headers.get("content-encoding")
+      if (encoding) {
+        console.log("[useSolarNetwork] Response encoding: ", encoding)
+      }
+      if (encoding === "gzip") {
+        const buffer = Buffer.from(response._data)
+        response._data = JSON.parse(zlib.gunzipSync(buffer).toString("utf-8"))
+      }
       if (response._data) {
         response._data = keysToCamel(response._data)
       }

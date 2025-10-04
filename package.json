@@ -47,7 +47,8 @@
     "unified": "^11.0.5",
     "vue": "^3.5.21",
     "vue-router": "^4.5.1",
-    "vuetify-nuxt-module": "0.18.7"
+    "vuetify-nuxt-module": "0.18.7",
+    "zlib": "^1.0.5"
   },
   "devDependencies": {
     "@mdi/font": "^7.4.47",
