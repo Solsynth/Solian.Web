@@ -15,8 +15,14 @@ export const useUserStore = defineStore("user", () => {
 
   // Actions
   async function fetchUser(reload = true) {
-    if (isLoading.value) return
-    if (!reload && user.value) return // Skip fetching if already loaded and not forced to
+    if (isLoading.value) {
+      console.log("[UserStore] Fetch already in progress. Skipping.")
+      return;
+    }
+    if (!reload && user.value) {
+      console.log(`[UserStore] User store was loaded with account @${user.value.name} and no reload. Skipping.`)
+      return;
+    }
 
     isLoading.value = true
     error.value = null
