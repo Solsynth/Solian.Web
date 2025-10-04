@@ -3,10 +3,12 @@ import { keysToCamel, keysToSnake } from "~/utils/transformKeys"
 
 export const useSolarNetwork = (withoutProxy = false) => {
   const apiBase = useSolarNetworkUrl(withoutProxy)
+  const headers = process.server ? useRequestHeaders(["cookie"]) : {}
 
   return $fetch.create({
     baseURL: apiBase,
     credentials: "include",
+    headers,
     // Add Authorization header with Bearer token
     onRequest: ({ request, options }) => {
       const side = process.server ? "SERVER" : "CLIENT"
