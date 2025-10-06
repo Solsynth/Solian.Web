@@ -13,18 +13,19 @@
 <script lang="ts" setup>
 const route = useRoute()
 const provider = route.params.provider as string
-const query = route.fullPath.split('?')[1] || ''
 
 const apiBase = useSolarNetworkUrl()
-const redirectUrl = `${apiBase}/id/auth/callback/${provider}?${query}`
 
 useHead({
-  title: "Redirecting..."
+  title: "Redirecting"
 })
 
 definePageMeta({
   layout: "minimal"
 })
 
-await navigateTo(redirectUrl, { external: true })
+onMounted(() => {
+  const redirectUrl = `${apiBase}/id/auth/callback/${provider}${window.location.search}`
+  window.location.href = redirectUrl
+})
 </script>
