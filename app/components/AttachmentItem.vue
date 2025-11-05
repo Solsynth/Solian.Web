@@ -63,6 +63,23 @@ const imageLoaded = ref(false)
 const router = useRouter()
 
 function openExternally() {
+  // Capture image position for transition
+  const img = event?.target as HTMLImageElement
+  if (img && itemType.value === 'image') {
+    const rect = img.getBoundingClientRect()
+    const transitionData = {
+      src: remoteSource.value,
+      x: rect.left,
+      y: rect.top,
+      width: rect.width,
+      height: rect.height,
+      aspectRatio: aspectRatio.value
+    }
+
+    // Store transition data
+    sessionStorage.setItem('imageTransition', JSON.stringify(transitionData))
+  }
+
   router.push('/files/' + props.item.id)
 }
 

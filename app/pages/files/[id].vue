@@ -133,6 +133,19 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <!-- View Transition Overlay -->
+    <div
+      v-if="isTransitioning"
+      class="transition-overlay"
+      :style="transitionStyle"
+    >
+      <img
+        :src="transitionImage"
+        class="transition-image"
+        alt="Transitioning image"
+      />
+    </div>
   </div>
 </template>
 
@@ -143,10 +156,6 @@ import { computed, onMounted, ref } from "vue"
 import { downloadAndDecryptFile } from "./secure"
 import { formatBytes } from "./format"
 import type { SnCloudFile } from "~/types/api/post"
-
-useHead({
-  title: computed(() => fileInfo.value?.name ? `${fileInfo.value.name} - File Preview` : 'File Preview')
-})
 
 const route = useRoute()
 
@@ -161,9 +170,18 @@ const infoDialog = ref<boolean>(false)
 const secretDialog = ref<boolean>(false)
 const dialogPassword = ref<string>("")
 
+// View transition state
+const isTransitioning = ref<boolean>(false)
+const transitionImage = ref<string>("")
+const transitionStyle = ref<Record<string, string | number>>({})
+
 const api = useSolarNetwork()
 
 const fileInfo = ref<SnCloudFile | null>(null)
+
+useHead({
+  title: computed(() => fileInfo.value?.name ? `${fileInfo.value.name} - File Preview` : 'File Preview')
+})
 async function fetchFileInfo() {
   try {
     let url = "/drive/files/" + fileId + "/info"
@@ -176,7 +194,61 @@ async function fetchFileInfo() {
     error.value = (err as Error).message
   }
 }
-onMounted(() => fetchFileInfo())
+
+function checkForTransition() {
+  const transitionData = sessionStorage.getItem('imageTransition')
+  if (transitionData) {
+    try {
+      const data = JSON.parse(transitionData)
+      isTransitioning.value = true
+      transitionImage.value = data.src
+
+      // Calculate final position (centered in viewport)
+      const viewportWidth = window.innerWidth
+      const viewportHeight = window.innerHeight
+      const finalWidth = Math.min(viewportWidth * 0.9, data.width * (viewportHeight / data.height))
+      const finalHeight = finalWidth / data.aspectRatio
+      const finalX = (viewportWidth - finalWidth) / 2
+      const finalY = (viewportHeight - finalHeight) / 2
+
+      // Set initial position (from original image location)
+      transitionStyle.value = {
+        position: 'fixed',
+        top: `${data.y}px`,
+        left: `${data.x}px`,
+        width: `${data.width}px`,
+        height: `${data.height}px`,
+        zIndex: 9999,
+        transition: 'all 0.3s ease-out'
+      }
+
+      // Animate to final position
+      requestAnimationFrame(() => {
+        transitionStyle.value = {
+          ...transitionStyle.value,
+          top: `${finalY}px`,
+          left: `${finalX}px`,
+          width: `${finalWidth}px`,
+          height: `${finalHeight}px`
+        }
+
+        // Hide transition after animation
+        setTimeout(() => {
+          isTransitioning.value = false
+          sessionStorage.removeItem('imageTransition')
+        }, 300)
+      })
+    } catch (error) {
+      console.warn('Failed to parse transition data:', error)
+      sessionStorage.removeItem('imageTransition')
+    }
+  }
+}
+
+onMounted(() => {
+  fetchFileInfo()
+  checkForTransition()
+})
 
 const apiBase = useSolarNetworkUrl()
 
@@ -348,5 +420,18 @@ definePageMeta({
 /* Ensure toolbar doesn't interfere with content */
 .top-toolbar :deep(.v-app-bar__content) {
   padding: 0;
+}
+
+/* View transition styles */
+.transition-overlay {
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.transition-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
 }
 </style>
