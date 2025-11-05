@@ -206,14 +206,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue"
-import { unified } from "unified"
-import remarkParse from "remark-parse"
-import remarkMath from "remark-math"
-import remarkRehype from "remark-rehype"
-import rehypeKatex from "rehype-katex"
-import rehypeStringify from "rehype-stringify"
-import remarkBreaks from "remark-breaks"
-import remarkGfm from "remark-gfm"
+import { useMarkdownProcessor } from "~/composables/useMarkdownProcessor"
 import type { SnPost } from "~/types/api"
 
 import PostHeader from "~/components/PostHeader.vue"
@@ -223,16 +216,9 @@ import PostReactionList from "~/components/PostReactionList.vue"
 const route = useRoute()
 const id = route.params.id as string
 
-const processor = unified()
-  .use(remarkParse)
-  .use(remarkMath)
-  .use(remarkBreaks)
-  .use(remarkGfm)
-  .use(remarkRehype)
-  .use(rehypeKatex)
-  .use(rehypeStringify)
+const { render } = useMarkdownProcessor()
 
-const apiServer = useSolarNetwork(true)
+const apiServer = useSolarNetwork()
 
 const {
   data: postData,
@@ -244,7 +230,7 @@ const {
     const post = resp as SnPost
     let html = ""
     if (post.content) {
-      html = String(processor.processSync(post.content))
+      html = render(post.content)
     }
     return { post, html }
   } catch (e) {
@@ -314,7 +300,7 @@ function handleReaction(symbol: string, attitude: number, delta: number) {
   if (!post.value) return
 
   // Update the reactions count
-  const reactions = (post.value as any).reactions || {}
+  const reactions = post.value.reactionsCount || {}
   const currentCount = reactions[symbol] || 0
   const newCount = Math.max(0, currentCount + delta)
 
@@ -325,7 +311,7 @@ function handleReaction(symbol: string, attitude: number, delta: number) {
   }
 
   // Update the reactionsMade status
-  const reactionsMade = (post.value as any).reactionsMade || {}
+  const reactionsMade = post.value.reactionsMade || {}
   if (delta > 0) {
     reactionsMade[symbol] = true
   } else {
@@ -333,7 +319,7 @@ function handleReaction(symbol: string, attitude: number, delta: number) {
   }
 
   // Update the post object
-  ;(post.value as any).reactions = reactions
-  ;(post.value as any).reactionsMade = reactionsMade
+  post.value.reactionsCount = reactions
+  post.value.reactionsMade = reactionsMade
 }
 </script>

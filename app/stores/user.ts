@@ -36,7 +36,13 @@ export const useUserStore = defineStore("user", () => {
         user.value = response
         console.log(`[UserStore] Logged in as @${user.value.name}`)
       } catch (e: unknown) {
-        if (e instanceof FetchError && e.statusCode == 401) {
+        // Check for 401 Unauthorized error
+        const is401Error = (e instanceof FetchError && e.statusCode === 401) ||
+                          (e && typeof e === 'object' && 'status' in e && (e as { status: number }).status === 401) ||
+                          (e && typeof e === 'object' && 'statusCode' in e && (e as { statusCode: number }).statusCode === 401) ||
+                          (e instanceof Error && (e.message?.includes('401') || e.message?.includes('Unauthorized')))
+
+        if (is401Error) {
           error.value = "Unauthorized"
           user.value = null
         } else {

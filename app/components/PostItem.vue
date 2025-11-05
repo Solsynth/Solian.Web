@@ -49,14 +49,7 @@
 
 <script lang="ts" setup>
 import { ref, watch } from "vue"
-import { unified } from "unified"
-import remarkParse from "remark-parse"
-import remarkMath from "remark-math"
-import remarkRehype from "remark-rehype"
-import remarkBreaks from "remark-breaks"
-import remarkGfm from "remark-gfm"
-import rehypeKatex from "rehype-katex"
-import rehypeStringify from "rehype-stringify"
+import { useMarkdownProcessor } from "~/composables/useMarkdownProcessor"
 import type { SnPost } from "~/types/api"
 
 import PostHeader from "./PostHeader.vue"
@@ -64,50 +57,23 @@ import AttachmentItem from "./AttachmentItem.vue"
 import PostReactionList from "./PostReactionList.vue"
 
 const props = defineProps<{ item: SnPost }>()
+const emit = defineEmits<{
+  react: [symbol: string, attitude: number, delta: number]
+}>()
 
-const processor = unified()
-  .use(remarkParse)
-  .use(remarkMath)
-  .use(remarkBreaks)
-  .use(remarkGfm)
-  .use(remarkRehype)
-  .use(rehypeKatex)
-  .use(rehypeStringify)
+const { render } = useMarkdownProcessor()
 
 const htmlContent = ref<string>("")
 
 function handleReaction(symbol: string, attitude: number, delta: number) {
-  // Update the local item data
-  if (!props.item) return
-
-  const reactions = (props.item as any).reactions || {}
-  const currentCount = reactions[symbol] || 0
-  const newCount = Math.max(0, currentCount + delta)
-
-  if (newCount === 0) {
-    delete reactions[symbol]
-  } else {
-    reactions[symbol] = newCount
-  }
-
-  // Update the reactionsMade status
-  const reactionsMade = (props.item as any).reactionsMade || {}
-  if (delta > 0) {
-    reactionsMade[symbol] = true
-  } else {
-    delete reactionsMade[symbol]
-  }
-
-  // Update the item object (this will trigger reactivity)
-  ;(props.item as any).reactions = { ...reactions }
-  ;(props.item as any).reactionsMade = { ...reactionsMade }
+  emit('react', symbol, attitude, delta)
 }
 
 watch(
   props.item,
   (value) => {
     if (value.content)
-      htmlContent.value = String(processor.processSync(value.content))
+      htmlContent.value = render(value.content)
   },
   { immediate: true, deep: true }
 )

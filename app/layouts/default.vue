@@ -1,6 +1,6 @@
 <template>
   <v-app :theme="colorMode.preference">
-    <v-app-bar flat class="app-bar-blur">
+    <v-app-bar elevation="2" color="surface-lighten-5">
       <v-container class="mx-auto d-flex align-center justify-center">
         <img
           :src="colorMode.value == 'dark' ? IconDark : IconLight"
@@ -22,7 +22,7 @@
         <v-spacer />
 
         <v-menu>
-          <template v-slot:activator="{ props }">
+          <template #activator="{ props }">
             <v-avatar
               v-bind="props"
               class="me-4"
@@ -82,22 +82,3 @@ const links: NavLink[] = [
   }
 ]
 </script>
-
-<style scoped>
-.app-bar-blur {
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 1) 40%,
-    rgba(0, 0, 0, 0.5) 65%,
-    rgba(0, 0, 0, 0) 100%
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 1) 40%,
-    rgba(0, 0, 0, 0.5) 65%,
-    rgba(0, 0, 0, 0) 100%
-  );
-  mask-repeat: no-repeat;
-  mask-size: 100%;
-}
-</style>
