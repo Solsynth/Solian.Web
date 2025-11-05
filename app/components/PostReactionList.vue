@@ -1,15 +1,14 @@
 <template>
-  <v-chip-group class="d-flex flex-wrap gap-2">
+  <div class="d-flex flex-wrap gap-2">
     <!-- Add Reaction Button -->
     <v-chip
       v-if="canReact"
-      color="primary"
       rounded
       :disabled="submitting"
+      prepend-icon="mdi-plus"
       @click="showReactionDialog"
     >
-      <v-icon start size="16">mdi-plus</v-icon>
-      <span class="text-xs">React</span>
+      React
     </v-chip>
 
     <!-- Existing Reactions -->
@@ -27,7 +26,7 @@
         {{ count }}
       </v-chip>
     </v-chip>
-  </v-chip-group>
+  </div>
 
   <!-- Reaction Selection Dialog -->
   <v-dialog v-model="reactionDialog" max-width="500" height="600">
@@ -258,15 +257,6 @@ function getReactionCount(symbol: string): number {
 </script>
 
 <style scoped>
-.post-reaction-list {
-  min-height: 32px;
-}
-
-.reaction-chip {
-  height: 28px !important;
-  border-radius: 14px;
-}
-
 .reaction-emoji {
   font-size: 16px;
   margin-right: 4px;
@@ -278,22 +268,8 @@ function getReactionCount(symbol: string): number {
 }
 
 .reaction-count {
-  height: 16px !important;
   font-size: 10px;
   padding: 0 4px;
-}
-
-/* Dialog Styles */
-.reaction-dialog {
-  height: 600px;
-  display: flex;
-  flex-direction: column;
-}
-
-.dialog-content {
-  flex: 1;
-  overflow-y: auto;
-  max-height: calc(600px - 80px);
 }
 
 .reaction-section {

@@ -73,11 +73,19 @@ export interface SnPost {
   publisherId: string;
   publisher: SnPublisher;
   awards: unknown | null;
-  tags: string[];
-  categories: string[];
+  tags: SnPostCategory[];
+  categories: SnPostCategory[];
   isTruncated: boolean;
   resourceIdentifier: string;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
+}
+
+export interface SnPostCategory {
+  id: string;
+  slug: string;
+  name?: string;
+  posts?: SnPost[];
+  usage?: number;
 }
