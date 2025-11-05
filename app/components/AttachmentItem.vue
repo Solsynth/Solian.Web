@@ -24,6 +24,7 @@
         @click="openExternally"
       />
     </template>
+
     <audio
       v-else-if="itemType == 'audio'"
       class="w-full h-auto"
@@ -59,8 +60,10 @@ const aspectRatio = computed(
 )
 const imageLoaded = ref(false)
 
+const router = useRouter()
+
 function openExternally() {
-  window.open(remoteSource.value + "?original=true", "_blank")
+  router.push('/files/' + props.item.id)
 }
 
 const blurCanvas = ref<HTMLCanvasElement | null>(null)

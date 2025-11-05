@@ -1,4 +1,4 @@
-import type { SnAttachment } from './post'
+import type { SnCloudFile } from './post'
 import type { SnVerification } from './publisher'
 
 // Account link interface
@@ -63,8 +63,8 @@ export interface SnAccountProfile {
   socialCredits: number;
   socialCreditsLevel: number;
   levelingProgress: number;
-  picture: SnAttachment | null;
-  background: SnAttachment | null;
+  picture: SnCloudFile | null;
+  background: SnCloudFile | null;
   accountId: string;
   resourceIdentifier: string;
   createdAt: string;

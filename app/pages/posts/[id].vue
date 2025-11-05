@@ -61,7 +61,8 @@
           <v-card class="pa-6">
             <article
               v-if="htmlContent"
-              class="prose prose-xl dark:prose-invert prose-slate max-w-none mb-8"
+              class="prose dark:prose-invert prose-slate max-w-none mb-8"
+              :class="classesContent"
             >
               <div v-html="htmlContent" />
             </article>
@@ -164,6 +165,8 @@ const {
 
 const post = computed(() => postData.value?.post || null)
 const htmlContent = computed(() => postData.value?.html || "")
+
+const classesContent = computed(() => postData.value?.post.type == 1 ? 'prose-xl' : 'prose-md');
 
 useHead({
   title: computed(() => {

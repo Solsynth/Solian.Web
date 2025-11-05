@@ -28,7 +28,7 @@
               class="me-4"
               color="grey-darken-1"
               size="32"
-              icon="mdi-account-circle-outline"
+              icon="mdi-account-circle"
               :image="
                 user?.profile.picture
                   ? `${apiBase}/drive/files/${user?.profile.picture?.id}`

@@ -1,5 +1,5 @@
 // Re-export all types from separate files for easy importing
-export type { SnFileMeta, SnAttachment, SnPost } from './post'
+export type { SnFileMeta, SnCloudFile as SnAttachment, SnPost } from './post'
 export type { SnVerification, SnPublisher } from './publisher'
 export type { SnActivity } from './activity'
 export type { SnWalletOrder, OrderStatus } from './order'

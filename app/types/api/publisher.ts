@@ -1,4 +1,4 @@
-import type { SnAttachment } from './post'
+import type { SnCloudFile } from './post'
 
 // Verification interface
 export interface SnVerification {
@@ -17,8 +17,8 @@ export interface SnPublisher {
   bio: string;
   pictureId: string;
   backgroundId: string;
-  picture: SnAttachment | null;
-  background: SnAttachment | null;
+  picture: SnCloudFile | null;
+  background: SnCloudFile | null;
   verification: SnVerification | null;
   accountId: string;
   realmId: string | null;

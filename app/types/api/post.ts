@@ -23,7 +23,7 @@ export interface SnFileMeta {
 }
 
 // Attachment interface
-export interface SnAttachment {
+export interface SnCloudFile {
   id: string;
   name: string;
   fileMeta: SnFileMeta;
@@ -33,6 +33,7 @@ export interface SnAttachment {
   hash: string;
   size: number;
   hasCompression: boolean;
+  isEncrypted: boolean;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
@@ -69,7 +70,7 @@ export interface SnPost {
   forwardedPost: SnPost | null;
   realmId: string | null;
   realm: unknown | null;
-  attachments: SnAttachment[];
+  attachments: SnCloudFile[];
   publisherId: string;
   publisher: SnPublisher;
   awards: unknown | null;

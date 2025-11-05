@@ -1,137 +1,138 @@
 <template>
-  <div class="d-flex align-center justify-center fill-height">
-    <v-card class="pa-6" max-width="1200" width="100%">
+  <div class="lightbox-container">
+    <!-- Top Toolbar -->
+    <v-app-bar
+      v-if="fileInfo"
+      class="top-toolbar"
+      flat
+      height="56"
+      color="rgba(0,0,0,0.7)"
+      dark
+    >
+      <v-container fluid>
+        <v-row align="center" class="pa-2">
+          <v-col cols="12" md="4">
+            <div class="d-flex align-center gap-2">
+              <v-icon>mdi-file</v-icon>
+              <span>{{ fileInfo.name || "File" }}</span>
+            </div>
+          </v-col>
+          <v-col cols="12" md="8">
+            <div class="d-flex align-center justify-end gap-4">
+              <span>{{ fileInfo.mimeType }} ({{ fileType }})</span>
+              <span>{{ formatBytes(fileInfo.size) }}</span>
+              <span>{{ new Date(fileInfo.createdAt).toLocaleString() }}</span>
+              <v-btn icon size="small" density="compact" @click="handleDownload">
+                <v-icon>mdi-download</v-icon>
+              </v-btn>
+              <v-btn icon size="small" density="compact" @click="infoDialog = true">
+                <v-icon>mdi-information</v-icon>
+              </v-btn>
+            </div>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-app-bar>
+
+    <!-- Main Content - File Preview -->
+    <div class="preview-container">
       <v-progress-circular
         v-if="!fileInfo && !error"
         indeterminate
-        size="32"
+        size="64"
+        class="loading-spinner"
       ></v-progress-circular>
       <v-alert
+        v-else-if="error"
         type="error"
         title="No file was found"
         :text="error"
-        v-else-if="error"
+        class="error-alert"
       ></v-alert>
-      <div v-else>
-        <v-row>
-          <v-col cols="12" md="6">
-            <div v-if="fileInfo.isEncrypted">
-              <v-alert type="info" title="Encrypted file" class="mb-4">
-                The file has been encrypted. Preview not available. Please enter
-                the password to download it.
-              </v-alert>
-            </div>
-            <div v-else>
-              <v-img
-                v-if="fileType === 'image'"
-                :src="fileSource"
-                class="w-full"
-              />
-              <video
-                v-else-if="fileType === 'video'"
-                :src="fileSource"
-                controls
-                class="w-full"
-              />
-              <audio
-                v-else-if="fileType === 'audio'"
-                :src="fileSource"
-                controls
-                class="w-full"
-              />
-              <v-alert
-                type="warning"
-                title="Preview Unavailable"
-                text="How can you preview this file?"
-                v-else
-              />
-            </div>
-          </v-col>
-
-          <v-col cols="12" md="6">
-            <div class="mb-3">
-              <v-card
-                title="File Information"
-                prepend-icon="mdi-information-outline"
-                variant="tonal"
-              >
-                <v-card-text>
-                  <div class="d-flex gap-2 mb-2">
-                    <span class="flex-grow-1 d-flex align-center gap-2">
-                      <v-icon size="18">mdi-information</v-icon>
-                      File Type
-                    </span>
-                    <span>{{ fileInfo.mimeType }} ({{ fileType }})</span>
-                  </div>
-                  <div class="d-flex gap-2 mb-2">
-                    <span class="flex-grow-1 d-flex align-center gap-2">
-                      <v-icon size="18">mdi-chart-pie</v-icon>
-                      File Size
-                    </span>
-                    <span>{{ formatBytes(fileInfo.size) }}</span>
-                  </div>
-                  <div class="d-flex gap-2 mb-2">
-                    <span class="flex-grow-1 d-flex align-center gap-2">
-                      <v-icon size="18">mdi-upload</v-icon>
-                      Uploaded At
-                    </span>
-                    <span>{{
-                      new Date(fileInfo.createdAt).toLocaleString()
-                    }}</span>
-                  </div>
-                  <div class="d-flex gap-2 mb-2">
-                    <span class="flex-grow-1 d-flex align-center gap-2">
-                      <v-icon size="18">mdi-details</v-icon>
-                      Technical Info
-                    </span>
-                    <v-btn
-                      text
-                      size="x-small"
-                      @click="showTechDetails = !showTechDetails"
-                    >
-                      {{ showTechDetails ? "Hide" : "Show" }}
-                    </v-btn>
-                  </div>
-
-                  <v-expand-transition>
-                    <div
-                      v-if="showTechDetails"
-                      class="mt-2 d-flex flex-column gap-1"
-                    >
-                      <p class="text-caption opacity-75">#{{ fileInfo.id }}</p>
-
-                      <v-card class="pa-2" variant="outlined">
-                        <pre
-                          class="overflow-x-auto px-2 py-1"
-                        ><code>{{ JSON.stringify(fileInfo.fileMeta, null, 4) }}</code></pre>
-                      </v-card>
-                    </div>
-                  </v-expand-transition>
-                </v-card-text>
-              </v-card>
-            </div>
-
-            <div class="d-flex flex-column gap-3">
-              <v-text-field
-                v-if="fileInfo.isEncrypted"
-                label="Password"
-                v-model="filePass"
-                type="password"
-              />
-              <v-btn class="flex-grow-1" @click="downloadFile">Download</v-btn>
-            </div>
-            <v-expand-transition>
-              <v-progress-linear
-                v-if="!!progress"
-                :model-value="progress"
-                :indeterminate="progress < 100"
-                class="mt-4"
-              />
-            </v-expand-transition>
-          </v-col>
-        </v-row>
+      <div v-else class="preview-content">
+        <div v-if="fileInfo?.isEncrypted" class="encrypted-notice">
+          <v-alert type="info" title="Encrypted file" class="mb-4">
+            The file has been encrypted. Preview not available. Please enter the
+            password to download it.
+          </v-alert>
+        </div>
+        <div v-else class="file-preview">
+          <v-img
+            v-if="fileType === 'image'"
+            :src="fileSource"
+            class="preview-image"
+            contain
+          />
+          <video
+            v-else-if="fileType === 'video'"
+            :src="fileSource"
+            controls
+            class="preview-video"
+          />
+          <audio
+            v-else-if="fileType === 'audio'"
+            :src="fileSource"
+            controls
+            class="preview-audio"
+          />
+          <v-alert
+            v-else
+            type="warning"
+            title="Preview Unavailable"
+            text="How can you preview this file?"
+            class="preview-unavailable"
+          />
+        </div>
       </div>
-    </v-card>
+    </div>
+
+    <!-- Password Dialog -->
+    <v-dialog v-model="secretDialog" max-width="400">
+      <v-card>
+        <v-card-title>
+          <v-icon left>mdi-lock</v-icon>
+          Enter Password
+        </v-card-title>
+        <v-card-text>
+          <v-text-field
+            v-model="dialogPassword"
+            label="Password"
+            type="password"
+            variant="outlined"
+            autofocus
+            @keyup.enter="confirmDownload"
+          />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn @click="secretDialog = false">Cancel</v-btn>
+          <v-btn color="primary" @click="confirmDownload">Download</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Technical Details Dialog -->
+    <v-dialog v-model="infoDialog" max-width="640">
+      <v-card title="File Information" prepend-icon="mdi-information">
+        <v-card-text>
+          <div class="mb-4">
+            <b>FID</b> <span class="font-mono">#{{ fileInfo?.id }}</span>
+          </div>
+          <div class="mb-4">
+            <strong>Metadata:</strong>
+          </div>
+          <v-card variant="outlined" class="pa-2">
+            <pre
+              class="overflow-x-auto text-body-2"
+            ><code>{{ JSON.stringify(fileInfo?.fileMeta, null, 2) }}</code></pre>
+          </v-card>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn @click="infoDialog = false">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -141,29 +142,35 @@ import { computed, onMounted, ref } from "vue"
 
 import { downloadAndDecryptFile } from "./secure"
 import { formatBytes } from "./format"
+import type { SnCloudFile } from "~/types/api/post"
+
+useHead({
+  title: computed(() => fileInfo.value?.name ? `${fileInfo.value.name} - File Preview` : 'File Preview')
+})
 
 const route = useRoute()
 
 const error = ref<string | null>(null)
 
-const filePass = ref<string>("")
 const fileId = route.params.id
 const passcode = route.query.passcode as string | undefined
 
 const progress = ref<number | undefined>(0)
 
-const showTechDetails = ref<boolean>(false)
+const infoDialog = ref<boolean>(false)
+const secretDialog = ref<boolean>(false)
+const dialogPassword = ref<string>("")
 
 const api = useSolarNetwork()
 
-const fileInfo = ref<any>(null)
+const fileInfo = ref<SnCloudFile | null>(null)
 async function fetchFileInfo() {
   try {
     let url = "/drive/files/" + fileId + "/info"
     if (passcode) {
       url += `?passcode=${passcode}`
     }
-    const resp = await api(url)
+    const resp = await api<SnCloudFile>(url)
     fileInfo.value = resp
   } catch (err) {
     error.value = (err as Error).message
@@ -171,34 +178,47 @@ async function fetchFileInfo() {
 }
 onMounted(() => fetchFileInfo())
 
-const apiBase = useSolarNetworkUrl(false)
+const apiBase = useSolarNetworkUrl()
 
 const fileType = computed(() => {
   if (!fileInfo.value) return "unknown"
   return fileInfo.value.mimeType?.split("/")[0] || "unknown"
 })
 const fileSource = computed(() => {
-  let url = `${apiBase}/drive/files/${fileId}`
+  let url = `${apiBase}/drive/files/${fileId}?original=true`
   if (passcode) {
     url += `?passcode=${passcode}`
   }
   return url
 })
 
-async function downloadFile() {
-  if (fileInfo.value.isEncrypted && !filePass.value) {
-    alert("Please enter the password to download the file.")
+function handleDownload() {
+  if (fileInfo.value!.isEncrypted) {
+    secretDialog.value = true
+    dialogPassword.value = ""
+  } else {
+    performDownload("")
+  }
+}
+
+async function confirmDownload() {
+  if (!dialogPassword.value.trim()) {
     return
   }
-  if (fileInfo.value.isEncrypted) {
+  secretDialog.value = false
+  await performDownload(dialogPassword.value)
+}
+
+async function performDownload(password: string) {
+  if (fileInfo.value!.isEncrypted) {
     downloadAndDecryptFile(
       fileSource.value,
-      filePass.value,
-      fileInfo.value.name,
+      password,
+      fileInfo.value!.name,
       (p: number) => {
         progress.value = p * 100
       }
-    ).catch((err: any) => {
+    ).catch((err: Error) => {
       alert("Download failed: " + err.message)
       progress.value = undefined
     })
@@ -206,7 +226,7 @@ async function downloadFile() {
     const res = await fetch(fileSource.value)
     if (!res.ok) {
       throw new Error(
-        `Failed to download ${fileInfo.value.name}: ${res.statusText}`
+        `Failed to download ${fileInfo.value!.name}: ${res.statusText}`
       )
     }
 
@@ -235,12 +255,98 @@ async function downloadFile() {
     const a = document.createElement("a")
     a.href = blobUrl
     a.download =
-      fileInfo.value.fileName ||
-      "download." + fileInfo.value.mimeType.split("/")[1]
+      fileInfo.value!.name ||
+      "download." + fileInfo.value!.mimeType.split("/")[1]
     document.body.appendChild(a)
     a.click()
     a.remove()
     window.URL.revokeObjectURL(blobUrl)
   }
 }
+
+definePageMeta({
+  layout: "minimal"
+})
 </script>
+
+<style scoped>
+.lightbox-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+}
+
+.top-toolbar {
+  position: relative;
+  z-index: 1001;
+  backdrop-filter: blur(10px);
+}
+
+.preview-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow: auto;
+}
+
+.preview-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.file-preview {
+  width: 100%;
+  height: 100%;
+  max-width: calc(100vw - 40px);
+  max-height: calc(
+    100vh - 88px
+  ); /* Account for top toolbar (48px) + padding (40px) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.preview-video,
+.preview-audio {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.preview-unavailable {
+  max-width: 500px;
+}
+
+.loading-spinner {
+  color: white;
+}
+
+.error-alert {
+  max-width: 500px;
+}
+
+.encrypted-notice {
+  max-width: 500px;
+}
+
+/* Ensure toolbar doesn't interfere with content */
+.top-toolbar :deep(.v-app-bar__content) {
+  padding: 0;
+}
+</style>
