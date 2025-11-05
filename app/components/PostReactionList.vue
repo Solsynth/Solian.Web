@@ -9,14 +9,14 @@
       @click="showReactionDialog"
     >
       <v-icon start size="16">mdi-plus</v-icon>
-      <span class="text-caption">React</span>
+      <span class="text-xs">React</span>
     </v-chip>
 
     <!-- Existing Reactions -->
     <v-chip
       v-for="(count, symbol) in reactions"
-      rounded
       :key="symbol"
+      rounded
       :color="getReactionColor(symbol)"
       :disabled="submitting"
       @click="reactToPost(symbol)"
@@ -38,7 +38,7 @@
         <div class="reaction-section">
           <div class="section-header d-flex align-center px-6 py-3">
             <v-icon class="me-2">mdi-emoticon-happy</v-icon>
-            <span class="text-subtitle-1 font-weight-bold">Positive</span>
+            <span class="font-bold">Positive</span>
           </div>
           <div class="reaction-grid">
             <v-card
@@ -51,12 +51,12 @@
             >
               <div class="d-flex flex-column align-center justify-center pa-3">
                 <span class="text-h4 mb-1">{{ reaction.emoji }}</span>
-                <span class="text-caption text-center mb-1">{{
+                <span class="text-xs text-center mb-1">{{
                   reaction.symbol
                 }}</span>
                 <span
                   v-if="getReactionCount(reaction.symbol) > 0"
-                  class="text-caption font-weight-bold"
+                  class="text-xs"
                 >
                   x{{ getReactionCount(reaction.symbol) }}
                 </span>
@@ -70,7 +70,7 @@
         <div class="reaction-section">
           <div class="section-header d-flex align-center px-6 py-3">
             <v-icon class="me-2">mdi-emoticon-neutral</v-icon>
-            <span class="text-subtitle-1 font-weight-bold">Neutral</span>
+            <span class="font-bold">Neutral</span>
           </div>
           <div class="reaction-grid">
             <v-card
@@ -83,12 +83,12 @@
             >
               <div class="d-flex flex-column align-center justify-center pa-3">
                 <span class="text-h4 mb-1">{{ reaction.emoji }}</span>
-                <span class="text-caption text-center mb-1">{{
+                <span class="text-xs text-center mb-1">{{
                   reaction.symbol
                 }}</span>
                 <span
                   v-if="getReactionCount(reaction.symbol) > 0"
-                  class="text-caption font-weight-bold"
+                  class="text-xs"
                 >
                   x{{ getReactionCount(reaction.symbol) }}
                 </span>
@@ -102,7 +102,7 @@
         <div class="reaction-section">
           <div class="section-header d-flex align-center px-6 py-3">
             <v-icon class="me-2">mdi-emoticon-sad</v-icon>
-            <span class="text-subtitle-1 font-weight-bold">Negative</span>
+            <span class="font-bold">Negative</span>
           </div>
           <div class="reaction-grid">
             <v-card
@@ -115,12 +115,12 @@
             >
               <div class="d-flex flex-column align-center justify-center pa-3">
                 <span class="text-h4 mb-1">{{ reaction.emoji }}</span>
-                <span class="text-caption text-center mb-1">{{
+                <span class="text-xs text-center mb-1">{{
                   reaction.symbol
                 }}</span>
                 <span
                   v-if="getReactionCount(reaction.symbol) > 0"
-                  class="text-caption font-weight-bold"
+                  class="text-xs"
                 >
                   x{{ getReactionCount(reaction.symbol) }}
                 </span>
@@ -135,7 +135,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue"
+import { ref } from "vue"
 
 interface Props {
   parentId: string
@@ -209,20 +209,21 @@ async function reactToPost(symbol: string) {
   try {
     submitting.value = true
     const api = useSolarNetwork()
-    const response = await api(`/sphere/posts/${props.parentId}/reactions`, {
+    let statusCode = 200 // default status
+
+    await api(`/sphere/posts/${props.parentId}/reactions`, {
       method: "POST",
       body: {
         symbol: symbol,
         attitude: reaction.attitude
+      },
+      onResponse: (res) => {
+        statusCode = res.response.status
       }
     })
 
     // Check if we're removing the reaction (204 status) or adding (200)
-    // In Nuxt, we can check the response status through the fetch response
-    const isRemoving =
-      response && typeof response === "object" && "status" in response
-        ? (response as any).status === 204
-        : false
+    const isRemoving = statusCode === 204
     const delta = isRemoving ? -1 : 1
 
     emit("react", symbol, reaction.attitude, delta)
@@ -242,14 +243,6 @@ function selectReaction(symbol: string) {
   reactionDialog.value = false
   reactToPost(symbol)
 }
-
-// Computed properties and helper functions
-const totalReactionsCount = computed(() => {
-  return Object.values(props.reactions || {}).reduce(
-    (sum, count) => sum + count,
-    0
-  )
-})
 
 function getReactionsByAttitude(attitude: number): ReactionTemplate[] {
   return availableReactions.filter((reaction) => reaction.attitude === attitude)

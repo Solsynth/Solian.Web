@@ -74,16 +74,7 @@
             </article>
 
             <!-- Attachments within Content Section -->
-            <div v-if="post.attachments && post.attachments.length > 0">
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <attachment-item
-                  v-for="attachment in post.attachments"
-                  :key="attachment.id"
-                  :item="attachment"
-                  class="w-full"
-                />
-              </div>
-            </div>
+            <attachment-list :attachments="post.attachments || []" />
           </v-card-text>
         </v-card>
       </template>
@@ -149,16 +140,7 @@
             </article>
 
             <!-- Attachments within Merged Section -->
-            <div v-if="post.attachments && post.attachments.length > 0">
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <attachment-item
-                  v-for="attachment in post.attachments"
-                  :key="attachment.id"
-                  :item="attachment"
-                  class="w-full"
-                />
-              </div>
-            </div>
+            <attachment-list :attachments="post.attachments || []" />
           </v-card-text>
         </v-card>
       </template>
@@ -210,7 +192,7 @@ import { useMarkdownProcessor } from "~/composables/useMarkdownProcessor"
 import type { SnPost } from "~/types/api"
 
 import PostHeader from "~/components/PostHeader.vue"
-import AttachmentItem from "~/components/AttachmentItem.vue"
+import AttachmentList from "~/components/AttachmentList.vue"
 import PostReactionList from "~/components/PostReactionList.vue"
 
 const route = useRoute()

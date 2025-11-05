@@ -20,16 +20,11 @@
           <div v-html="htmlContent" />
         </article>
 
-        <div
-          v-if="props.item.attachments.length > 0"
-          class="d-flex gap-2 flex-wrap"
-          @click.stop
-        >
-          <attachment-item
-            v-for="attachment in props.item.attachments"
-            :key="attachment.id"
-            :item="attachment"
-          />
+        <attachment-list :attachments="props.item.attachments" :max-height="640" />
+
+        <div v-if="props.item.isTruncated" class="flex gap-2 text-xs opacity-80">
+          <v-icon icon="mdi-dots-horizontal" size="small" />
+          <p>Post truncated, tap to see details...</p>
         </div>
 
         <!-- Post Reactions -->
@@ -53,7 +48,7 @@ import { useMarkdownProcessor } from "~/composables/useMarkdownProcessor"
 import type { SnPost } from "~/types/api"
 
 import PostHeader from "./PostHeader.vue"
-import AttachmentItem from "./AttachmentItem.vue"
+import AttachmentList from "./AttachmentList.vue"
 import PostReactionList from "./PostReactionList.vue"
 
 const props = defineProps<{ item: SnPost }>()
@@ -66,14 +61,13 @@ const { render } = useMarkdownProcessor()
 const htmlContent = ref<string>("")
 
 function handleReaction(symbol: string, attitude: number, delta: number) {
-  emit('react', symbol, attitude, delta)
+  emit("react", symbol, attitude, delta)
 }
 
 watch(
   props.item,
   (value) => {
-    if (value.content)
-      htmlContent.value = render(value.content)
+    if (value.content) htmlContent.value = render(value.content)
   },
   { immediate: true, deep: true }
 )

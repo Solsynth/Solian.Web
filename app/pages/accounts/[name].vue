@@ -25,8 +25,8 @@
             density="comfortable"
           >
             <v-card-text class="flex flex-col gap-2">
-              <div class="flex gap-2" v-if="user?.profile?.time_zone">
-                <span class="flex items-center gap-2 flex-grow">
+              <div v-if="user?.profile?.timeZone" class="flex gap-2">
+                <span class="flex items-center gap-2 grow">
                   <v-icon>mdi-clock-outline</v-icon>
                   Time Zone
                 </span>
@@ -34,18 +34,18 @@
                   <span>
                     {{
                       new Date().toLocaleTimeString(void 0, {
-                        timeZone: user.profile.time_zone
+                        timeZone: user.profile.timeZone
                       })
                     }}
                   </span>
                   <span class="font-bold">·</span>
-                  <span>{{ getOffsetUTCString(user.profile.time_zone) }}</span>
+                  <span>{{ getOffsetUTCString(user.profile.timeZone) }}</span>
                   <span class="font-bold">·</span>
-                  <span>{{ user.profile.time_zone }}</span>
+                  <span>{{ user.profile.timeZone }}</span>
                 </span>
               </div>
-              <div class="flex gap-2" v-if="user?.profile?.location">
-                <span class="flex items-center gap-2 flex-grow">
+              <div v-if="user?.profile?.location" class="flex gap-2">
+                <span class="flex items-center gap-2 grow">
                   <v-icon>mdi-map-marker-outline</v-icon>
                   Location
                 </span>
@@ -54,19 +54,19 @@
                 </span>
               </div>
               <div
+                v-if="user?.profile?.firstName || user?.profile?.lastName"
                 class="flex gap-2"
-                v-if="user?.profile?.first_name || user?.profile?.last_name"
               >
-                <span class="flex items-center gap-2 flex-grow">
+                <span class="flex items-center gap-2 grow">
                   <v-icon>mdi-account-edit-outline</v-icon>
                   Name
                 </span>
                 <span>
                   {{
                     [
-                      user.profile.first_name,
-                      user.profile.middle_name,
-                      user.profile.last_name
+                      user.profile.firstName,
+                      user.profile.middleName,
+                      user.profile.lastName
                     ]
                       .filter(Boolean)
                       .join(" ")
@@ -74,10 +74,10 @@
                 </span>
               </div>
               <div
-                class="flex gap-2"
                 v-if="user?.profile?.gender || user?.profile?.pronouns"
+                class="flex gap-2"
               >
-                <span class="flex items-center gap-2 flex-grow">
+                <span class="flex items-center gap-2 grow">
                   <v-icon>mdi-account-circle</v-icon>
                   Gender
                 </span>
@@ -88,16 +88,16 @@
                 </span>
               </div>
               <div class="flex gap-2">
-                <span class="flex items-center gap-2 flex-grow">
+                <span class="flex items-center gap-2 grow">
                   <v-icon>mdi-calendar-month-outline</v-icon>
                   Joined at
                 </span>
                 <span>{{
-                  user ? new Date(user.created_at).toLocaleDateString() : ""
+                  user ? new Date(user.createdAt).toLocaleDateString() : ""
                 }}</span>
               </div>
-              <div class="flex gap-2" v-if="user?.profile?.birthday">
-                <span class="flex items-center gap-2 flex-grow">
+              <div v-if="user?.profile?.birthday" class="flex gap-2">
+                <span class="flex items-center gap-2 grow">
                   <v-icon>mdi-cake-variant-outline</v-icon>
                   Birthday
                 </span>
@@ -114,13 +114,13 @@
               </div>
             </v-card-text>
           </v-card>
-          <v-card v-if="user?.perk_subscription">
+          <v-card v-if="user?.perkSubscription">
             <v-card-text>
               <div class="flex justify-between items-center">
                 <div class="flex flex-col">
                   <div class="text-xl font-bold">
                     {{
-                      perkSubscriptionNames[user.perk_subscription.identifier]
+                      perkSubscriptionNames[user.perkSubscription.identifier]
                         ?.name || "Unknown"
                     }}
                     Tier
@@ -130,7 +130,7 @@
                 <v-icon
                   size="48"
                   :color="
-                    perkSubscriptionNames[user.perk_subscription.identifier]
+                    perkSubscriptionNames[user.perkSubscription.identifier]
                       ?.color || '#2196f3'
                   "
                 >
@@ -146,7 +146,7 @@
                 <div>{{ user?.profile?.experience || 0 }} XP</div>
               </div>
               <v-progress-linear
-                :model-value="user?.profile?.leveling_progress || 0"
+                :model-value="user?.profile?.levelingProgress || 0"
                 color="success"
                 class="mb-0"
                 rounded
@@ -181,19 +181,13 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue"
-import { unified } from "unified"
-import remarkParse from "remark-parse"
-import remarkMath from "remark-math"
-import remarkBreaks from "remark-breaks"
-import remarkRehype from "remark-rehype"
-import rehypeKatex from "rehype-katex"
-import rehypeStringify from "rehype-stringify"
-import remarkGfm from "remark-gfm"
+import { useMarkdownProcessor } from "~/composables/useMarkdownProcessor"
+import type { SnAccount } from "~/types/api"
 
 const route = useRoute()
 
 const notFound = ref<boolean>(false)
-const user = ref<any>(null)
+const user = ref<SnAccount | null>(null)
 
 const username = computed(() => {
   const nameStr = route.params.name?.toString()
@@ -206,7 +200,7 @@ const apiBase = useSolarNetworkUrl()
 const apiBaseServer = useSolarNetworkUrl()
 
 try {
-  const { data, error } = await useFetch(
+  const { data, error } = await useFetch<SnAccount>(
     `${apiBaseServer}/id/accounts/${username.value}`,
     { server: true }
   )
@@ -214,7 +208,7 @@ try {
   if (error.value) {
     console.error("Failed to fetch user:", error.value)
     notFound.value = true
-  } else {
+  } else if (data.value) {
     user.value = data.value
   }
 } catch (err) {
@@ -246,14 +240,7 @@ const perkSubscriptionNames: Record<string, PerkSubscriptionInfo> = {
   }
 }
 
-const processor = unified()
-  .use(remarkParse)
-  .use(remarkMath)
-  .use(remarkBreaks)
-  .use(remarkGfm)
-  .use(remarkRehype)
-  .use(rehypeKatex)
-  .use(rehypeStringify)
+const { render } = useMarkdownProcessor()
 
 const htmlBio = ref<string | undefined>(undefined)
 
@@ -261,7 +248,7 @@ watch(
   user,
   (value) => {
     htmlBio.value = value?.profile.bio
-      ? String(processor.processSync(value.profile.bio))
+      ? render(value.profile.bio)
       : undefined
   },
   { immediate: true, deep: true }
