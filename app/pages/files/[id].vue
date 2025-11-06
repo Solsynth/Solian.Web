@@ -94,11 +94,12 @@
             password to download it.
           </v-alert>
         </div>
-        <div v-else class="file-preview">
+        <div v-else class="file-preview" @wheel="handleZoom" @touchstart="handleTouchStart" @touchmove="handleTouchMove" @touchend="handleTouchEnd" @dblclick="handleDoubleClick">
           <v-img
             v-if="fileType === 'image'"
             :src="fileSource"
             class="preview-image"
+            :style="{ transform: `scale(${zoomLevel})` }"
           />
           <video
             v-else-if="fileType === 'video'"
@@ -187,7 +188,8 @@
           </div>
           <v-card variant="outlined" class="pa-2">
             <pre
-              class="overflow-x-auto text-xs"
+              class="overflow-x-auto"
+              style="font-size: 14px;"
             ><code>{{ JSON.stringify(fileInfo?.fileMeta, null, 2) }}</code></pre>
           </v-card>
         </v-card-text>
@@ -233,6 +235,11 @@ const progress = ref<number | undefined>(0)
 const infoDialog = ref<boolean>(false)
 const secretDialog = ref<boolean>(false)
 const dialogPassword = ref<string>("")
+
+// Zoom functionality
+const zoomLevel = ref<number>(1)
+const initialDistance = ref<number>(0)
+const isPinching = ref<boolean>(false)
 
 // View transition state
 const isTransitioning = ref<boolean>(false)
@@ -367,6 +374,54 @@ async function confirmDownload() {
   await performDownload(dialogPassword.value)
 }
 
+function handleZoom(event: WheelEvent) {
+  if (fileType.value !== 'image') return
+
+  event.preventDefault()
+  const delta = event.deltaY > 0 ? -0.1 : 0.1
+  zoomLevel.value = Math.max(0.1, Math.min(5, zoomLevel.value + delta))
+}
+
+function handleTouchStart(event: TouchEvent) {
+  if (fileType.value !== 'image' || event.touches.length !== 2) return
+
+  event.preventDefault()
+  isPinching.value = true
+  const touch1 = event.touches[0]!
+  const touch2 = event.touches[1]!
+  initialDistance.value = Math.sqrt(
+    Math.pow(touch2.clientX - touch1.clientX, 2) +
+    Math.pow(touch2.clientY - touch1.clientY, 2)
+  )
+}
+
+function handleTouchMove(event: TouchEvent) {
+  if (fileType.value !== 'image' || !isPinching.value || event.touches.length !== 2) return
+
+  event.preventDefault()
+  const touch1 = event.touches[0]!
+  const touch2 = event.touches[1]!
+  const currentDistance = Math.sqrt(
+    Math.pow(touch2.clientX - touch1.clientX, 2) +
+    Math.pow(touch2.clientY - touch1.clientY, 2)
+  )
+
+  const scale = currentDistance / initialDistance.value
+  zoomLevel.value = Math.max(0.1, Math.min(5, scale))
+}
+
+function handleTouchEnd(event: TouchEvent) {
+  if (fileType.value !== 'image') return
+
+  isPinching.value = false
+}
+
+function handleDoubleClick() {
+  if (fileType.value !== 'image') return
+
+  zoomLevel.value = zoomLevel.value > 1 ? 1 : 2
+}
+
 async function performDownload(password: string) {
   if (fileInfo.value!.isEncrypted) {
     downloadAndDecryptFile(
@@ -479,6 +534,8 @@ definePageMeta({
   width: 100%;
   height: 100%;
   object-fit: contain;
+  transition: all .3s ease-in-out;
+  will-change: contents;
 }
 
 .preview-video,
