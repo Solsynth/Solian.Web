@@ -1,10 +1,11 @@
-import {
-  createMarkdownExit,
-  type PluginWithParams
-} from "markdown-exit"
+import { createMarkdownExit, type PluginWithParams } from "markdown-exit"
+import hljs from "highlight.js"
+import hljsMarkdown from "markdown-it-highlightjs"
 // @ts-ignore
 import texmath from "markdown-it-texmath"
 import katex from "katex"
+
+import "highlight.js/styles/a11y-dark.min.css"
 
 export function useMarkdownProcessor() {
   const serverUrl = useSolarNetworkUrl()
@@ -21,6 +22,7 @@ export function useMarkdownProcessor() {
       delimiters: "dollars",
       katexOptions: { macros: { "\\RR": "\\mathbb{R}" } }
     })
+    .use(hljsMarkdown, { hljs })
     .use(imgSolarNetworkPlugin, { serverUrl: serverUrl })
 
   // Keep the empty lines
