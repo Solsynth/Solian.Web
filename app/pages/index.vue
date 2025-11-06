@@ -44,8 +44,8 @@ import { useUserStore } from "~/stores/user"
 import { useSolarNetwork } from "~/composables/useSolarNetwork"
 import type { SnVersion, SnActivity } from "~/types/api"
 
-import PostEditor from "~/components/PostEditor.vue"
-import PostItem from "~/components/PostItem.vue"
+import PostEditor from "~/components/Post/PostEditor.vue"
+import PostItem from "~/components/Post/PostItem.vue"
 
 import IconLight from "~/assets/images/cloudy-lamb.png"
 

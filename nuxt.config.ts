@@ -21,6 +21,12 @@ export default defineNuxtConfig({
       link: [{ rel: "icon", type: "image/png", href: "/favicon.png" }]
     }
   },
+  components: [
+    {
+      path: "~/components",
+      pathPrefix: false
+    }
+  ],
   site: {
     url: process.env.NUXT_PUBLIC_SITE_URL || "https://solian.app",
     name: "Solar Network"

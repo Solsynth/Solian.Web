@@ -131,10 +131,6 @@ import { computed } from "vue"
 import { useMarkdownProcessor } from "~/composables/useMarkdownProcessor"
 import type { SnPost } from "~/types/api"
 
-import PostHeader from "~/components/PostHeader.vue"
-import AttachmentList from "~/components/AttachmentList.vue"
-import PostReactionList from "~/components/PostReactionList.vue"
-
 const route = useRoute()
 const id = route.params.id as string
 
