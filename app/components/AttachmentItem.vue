@@ -45,7 +45,11 @@ import { computed, ref, onMounted, watch } from "vue"
 import { decode } from "blurhash"
 import type { SnAttachment } from "~/types/api"
 
-const props = defineProps<{ item: SnAttachment; maxHeight?: string }>()
+const props = defineProps<{
+  item: SnAttachment
+  original?: boolean
+  maxHeight?: string
+}>()
 
 const itemType = computed(() => props.item.mimeType.split("/")[0] ?? "unknown")
 const blurhash = computed(() => props.item.fileMeta?.blur)
@@ -65,7 +69,7 @@ const router = useRouter()
 function openExternally() {
   // Capture image position for transition
   const img = event?.target as HTMLImageElement
-  if (img && itemType.value === 'image') {
+  if (img && itemType.value === "image") {
     const rect = img.getBoundingClientRect()
     const transitionData = {
       src: remoteSource.value,
@@ -77,16 +81,20 @@ function openExternally() {
     }
 
     // Store transition data
-    sessionStorage.setItem('imageTransition', JSON.stringify(transitionData))
+    sessionStorage.setItem("imageTransition", JSON.stringify(transitionData))
   }
 
-  router.push('/files/' + props.item.id)
+  router.push("/files/" + props.item.id)
 }
 
 const blurCanvas = ref<HTMLCanvasElement | null>(null)
 
 const apiBase = useSolarNetworkUrl()
-const remoteSource = computed(() => `${apiBase}/drive/files/${props.item.id}`)
+const remoteSource = computed(
+  () =>
+    `${apiBase}/drive/files/${props.item.id}` +
+    (props.original ? "?original=true" : "")
+)
 
 const blurhashContainerStyle = computed(() => {
   return {

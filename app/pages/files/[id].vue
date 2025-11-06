@@ -13,19 +13,57 @@
         <v-row align="center" class="pa-2">
           <v-col cols="12" md="4">
             <div class="d-flex align-center gap-2">
-              <v-icon>mdi-file</v-icon>
-              <span>{{ fileInfo.name || "File" }}</span>
+              <v-tooltip location="bottom" :text="fileInfo.mimeType">
+                <template #activator="{ props }">
+                  <v-icon v-bind="props" :icon="fileIcon"></v-icon>
+                </template>
+              </v-tooltip>
+              <v-tooltip location="bottom" :text="fileInfo.name || 'File'">
+                <template #activator="{ props }">
+                  <span class="line-clamp-1" v-bind="props">
+                    {{ fileInfo.name || "File" }}
+                  </span>
+                </template>
+              </v-tooltip>
+              <!-- Action buttons on mobile -->
+              <div class="d-flex d-md-none gap-2 ml-auto">
+                <v-btn
+                  icon
+                  size="small"
+                  density="compact"
+                  @click="handleDownload"
+                >
+                  <v-icon>mdi-download</v-icon>
+                </v-btn>
+                <v-btn
+                  icon
+                  size="small"
+                  density="compact"
+                  @click="infoDialog = true"
+                >
+                  <v-icon>mdi-information</v-icon>
+                </v-btn>
+              </div>
             </div>
           </v-col>
-          <v-col cols="12" md="8">
+          <v-col cols="12" md="8" class="d-none d-md-block">
             <div class="d-flex align-center justify-end gap-4">
-              <span>{{ fileInfo.mimeType }} ({{ fileType }})</span>
               <span>{{ formatBytes(fileInfo.size) }}</span>
               <span>{{ new Date(fileInfo.createdAt).toLocaleString() }}</span>
-              <v-btn icon size="small" density="compact" @click="handleDownload">
+              <v-btn
+                icon
+                size="small"
+                density="compact"
+                @click="handleDownload"
+              >
                 <v-icon>mdi-download</v-icon>
               </v-btn>
-              <v-btn icon size="small" density="compact" @click="infoDialog = true">
+              <v-btn
+                icon
+                size="small"
+                density="compact"
+                @click="infoDialog = true"
+              >
                 <v-icon>mdi-information</v-icon>
               </v-btn>
             </div>
@@ -61,7 +99,6 @@
             v-if="fileType === 'image'"
             :src="fileSource"
             class="preview-image"
-            contain
           />
           <video
             v-else-if="fileType === 'video'"
@@ -115,15 +152,42 @@
     <v-dialog v-model="infoDialog" max-width="640">
       <v-card title="File Information" prepend-icon="mdi-information">
         <v-card-text>
-          <div class="mb-4">
-            <b>FID</b> <span class="font-mono">#{{ fileInfo?.id }}</span>
-          </div>
+          <v-row>
+            <v-col cols="12" md="6">
+              <div class="mb-4">
+                <strong>File ID</strong>
+                <div class="text-xs">#{{ fileInfo?.id }}</div>
+              </div>
+              <div class="mb-4">
+                <strong>File Name</strong>
+                <div class="text-xs">{{ fileInfo?.name || 'N/A' }}</div>
+              </div>
+              <div class="mb-4">
+                <strong>MIME Type</strong>
+                <div class="text-xs">{{ fileInfo?.mimeType || 'N/A' }}</div>
+              </div>
+              <div class="mb-4">
+                <strong>File Size</strong>
+                <div class="text-xs">{{ fileInfo?.size ? formatBytes(fileInfo.size) : 'N/A' }}</div>
+              </div>
+            </v-col>
+            <v-col cols="12" md="6">
+              <div class="mb-4">
+                <strong>Created At</strong>
+                <div class="text-xs">{{ fileInfo?.createdAt ? new Date(fileInfo.createdAt).toLocaleString() : 'N/A' }}</div>
+              </div>
+              <div class="mb-4">
+                <strong>Encrypted</strong>
+                <div class="text-xs">{{ fileInfo?.isEncrypted ? 'Yes' : 'No' }}</div>
+              </div>
+            </v-col>
+          </v-row>
           <div class="mb-4">
             <strong>Metadata:</strong>
           </div>
           <v-card variant="outlined" class="pa-2">
             <pre
-              class="overflow-x-auto text-body-2"
+              class="overflow-x-auto text-xs"
             ><code>{{ JSON.stringify(fileInfo?.fileMeta, null, 2) }}</code></pre>
           </v-card>
         </v-card-text>
@@ -180,7 +244,11 @@ const api = useSolarNetwork()
 const fileInfo = ref<SnCloudFile | null>(null)
 
 useHead({
-  title: computed(() => fileInfo.value?.name ? `${fileInfo.value.name} - File Preview` : 'File Preview')
+  title: computed(() =>
+    fileInfo.value?.name
+      ? `${fileInfo.value.name} - File Preview`
+      : "File Preview"
+  )
 })
 async function fetchFileInfo() {
   try {
@@ -196,7 +264,7 @@ async function fetchFileInfo() {
 }
 
 function checkForTransition() {
-  const transitionData = sessionStorage.getItem('imageTransition')
+  const transitionData = sessionStorage.getItem("imageTransition")
   if (transitionData) {
     try {
       const data = JSON.parse(transitionData)
@@ -206,20 +274,23 @@ function checkForTransition() {
       // Calculate final position (centered in viewport)
       const viewportWidth = window.innerWidth
       const viewportHeight = window.innerHeight
-      const finalWidth = Math.min(viewportWidth * 0.9, data.width * (viewportHeight / data.height))
+      const finalWidth = Math.min(
+        viewportWidth * 0.9,
+        data.width * (viewportHeight / data.height)
+      )
       const finalHeight = finalWidth / data.aspectRatio
       const finalX = (viewportWidth - finalWidth) / 2
       const finalY = (viewportHeight - finalHeight) / 2
 
       // Set initial position (from original image location)
       transitionStyle.value = {
-        position: 'fixed',
+        position: "fixed",
         top: `${data.y}px`,
         left: `${data.x}px`,
         width: `${data.width}px`,
         height: `${data.height}px`,
         zIndex: 9999,
-        transition: 'all 0.3s ease-out'
+        transition: "all 0.3s ease-out"
       }
 
       // Animate to final position
@@ -235,12 +306,12 @@ function checkForTransition() {
         // Hide transition after animation
         setTimeout(() => {
           isTransitioning.value = false
-          sessionStorage.removeItem('imageTransition')
+          sessionStorage.removeItem("imageTransition")
         }, 300)
       })
     } catch (error) {
-      console.warn('Failed to parse transition data:', error)
-      sessionStorage.removeItem('imageTransition')
+      console.warn("Failed to parse transition data:", error)
+      sessionStorage.removeItem("imageTransition")
     }
   }
 }
@@ -255,6 +326,21 @@ const apiBase = useSolarNetworkUrl()
 const fileType = computed(() => {
   if (!fileInfo.value) return "unknown"
   return fileInfo.value.mimeType?.split("/")[0] || "unknown"
+})
+const fileIcon = computed(() => {
+  if (!fileInfo.value?.mimeType) return 'mdi-file'
+
+  const mime = fileInfo.value.mimeType.toLowerCase()
+
+  if (mime.startsWith('image/')) return 'mdi-file-image'
+  if (mime.startsWith('video/')) return 'mdi-file-video'
+  if (mime.startsWith('audio/')) return 'mdi-file-music'
+  if (mime === 'application/pdf') return 'mdi-file-pdf'
+  if (mime.startsWith('text/') || mime.includes('javascript') || mime.includes('json') || mime.includes('xml')) return 'mdi-file-code'
+  if (mime.includes('zip') || mime.includes('rar') || mime.includes('tar')) return 'mdi-zip-box'
+  if (mime.includes('document') || mime.includes('word') || mime.includes('excel') || mime.includes('powerpoint')) return 'mdi-file-document'
+
+  return 'mdi-file'
 })
 const fileSource = computed(() => {
   let url = `${apiBase}/drive/files/${fileId}?original=true`

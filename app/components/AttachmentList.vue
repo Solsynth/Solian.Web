@@ -14,7 +14,7 @@
         class="carousel-container rounded-lg overflow-hidden"
         :style="carouselStyle"
       >
-        <v-card width="100%" border>
+        <v-card width="100%" class="transition-all duration-300" border>
           <v-carousel
             height="100%"
             hide-delimiter-background
@@ -25,9 +25,13 @@
             <v-carousel-item
               v-for="attachment in attachments"
               :key="attachment.id"
-              :src="getAttachmentUrl(attachment)"
               cover
-            />
+            >
+              <attachment-item
+                original
+                :item="attachment"
+              />
+            </v-carousel-item>
           </v-carousel>
         </v-card>
       </div>
