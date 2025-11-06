@@ -68,10 +68,15 @@
             </article>
 
             <!-- Attachments within Content Section -->
-            <attachment-list :attachments="post.attachments || []" />
+            <attachment-list v-if="post.type != 1" :attachments="post.attachments || []" />
           </v-card>
 
-          <v-card title="Replies" prepend-icon="mdi-comment-text-multiple" color="transparent" flat>
+          <v-card
+            title="Replies"
+            prepend-icon="mdi-comment-text-multiple"
+            color="transparent"
+            flat
+          >
             <replies-list :params="{ postId: post.id }" />
           </v-card>
         </div>
@@ -90,7 +95,7 @@
                 <v-chip
                   v-for="category in post.categories"
                   :key="category.id"
-                  prepend-icon="mdi-tshape"
+                  prepend-icon="mdi-shape"
                   rounded
                 >
                   {{ category.slug }}
@@ -248,4 +253,30 @@ function handleReaction(symbol: string, attitude: number, delta: number) {
   post.value.reactionsCount = reactions
   post.value.reactionsMade = reactionsMade
 }
+
+onMounted(() => {
+  setTimeout(() => makeEmbedImageClickable(), 100)
+})
+
+function makeEmbedImageClickable() {
+  const elements = document.getElementsByClassName("prose-img-solar-network")
+  let count = 0;
+  for (const element of elements) {
+    if (element instanceof HTMLImageElement) {
+      count += 1;
+      element.addEventListener("click", (evt) => {
+        const targetImg = evt.target as HTMLImageElement
+        window.open("/files/" + targetImg.src.split("/").findLast((_) => true))
+      })
+      element.style['cursor'] = 'pointer';
+    }
+  }
+  console.log(`[Article] Made ${count} image(s) clickable in the article.`);
+}
 </script>
+
+<style>
+.prose-img-solar-network img {
+  border-radius: 8px;
+}
+</style>

@@ -1,24 +1,32 @@
-import { createMarkdownExit } from "markdown-exit"
+import {
+  createMarkdownExit,
+  type PluginWithParams
+} from "markdown-exit"
 // @ts-ignore
 import texmath from "markdown-it-texmath"
 import katex from "katex"
 
 export function useMarkdownProcessor() {
+  const serverUrl = useSolarNetworkUrl()
+
   const processor = createMarkdownExit({
     breaks: true,
     html: true,
     linkify: true,
     typographer: true
-    // @ts-ignore
-  }).use(texmath, {
-    engine: katex,
-    delimiters: "dollars",
-    katexOptions: { macros: { "\\RR": "\\mathbb{R}" } }
   })
+    // @ts-ignore
+    .use(texmath, {
+      engine: katex,
+      delimiters: "dollars",
+      katexOptions: { macros: { "\\RR": "\\mathbb{R}" } }
+    })
+    .use(imgSolarNetworkPlugin, { serverUrl: serverUrl })
 
+  // Keep the empty lines
   const defaultParagraphRenderer =
     processor.renderer.rules.paragraph_open ||
-    ((tokens, idx, options, env, self) =>
+    ((tokens, idx, options, _env, self) =>
       self.renderToken(tokens, idx, options))
   processor.renderer.rules.paragraph_open = function (
     tokens,
@@ -51,5 +59,34 @@ export function useMarkdownProcessor() {
 
   return {
     render: (content: string) => processor.render(content)
+  }
+}
+
+const imgSolarNetworkPlugin: PluginWithParams = (
+  md,
+  { serverUrl }: { serverUrl: string }
+) => {
+  const originalImageRender = md.renderer.rules.image!
+
+  md.renderer.rules.image = (
+    tokens,
+    index,
+    options,
+    env,
+    self
+  ): Promise<string> | string => {
+    tokens[index]!.attrSet("loading", "lazy")
+
+    const ogSrc = tokens[index]!.attrGet("src")
+    if (ogSrc && ogSrc.startsWith("solian://files/")) {
+      const newSrc = ogSrc.replace(
+        "solian://files/",
+        serverUrl + "/drive/files/"
+      )
+      tokens[index]!.attrSet("src", newSrc)
+      tokens[index]!.attrSet("class", "prose-img-solar-network")
+    }
+
+    return originalImageRender(tokens, index, options, env, self)
   }
 }
