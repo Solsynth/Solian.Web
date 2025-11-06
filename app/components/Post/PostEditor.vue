@@ -23,8 +23,6 @@ import { ref } from 'vue'
 import * as tus from 'tus-js-client'
 import { useSolarNetwork } from '~/composables/useSolarNetwork'
 
-import PubSelect from './PubSelect.vue'
-
 // Interface for uploaded files in the editor
 interface UploadedFile {
   name: string

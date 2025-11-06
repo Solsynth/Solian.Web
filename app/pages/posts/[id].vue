@@ -70,6 +70,10 @@
             <!-- Attachments within Content Section -->
             <attachment-list :attachments="post.attachments || []" />
           </v-card>
+
+          <v-card title="Replies" prepend-icon="mdi-comment-text-multiple" color="transparent" flat>
+            <replies-list :params="{ postId: post.id }" />
+          </v-card>
         </div>
 
         <!-- Sidebar Column -->
@@ -162,7 +166,9 @@ const {
 const post = computed(() => postData.value?.post || null)
 const htmlContent = computed(() => postData.value?.html || "")
 
-const classesContent = computed(() => postData.value?.post.type == 1 ? 'prose-xl' : 'prose-md');
+const classesContent = computed(() =>
+  postData.value?.post.type == 1 ? "prose-xl" : "prose-md"
+)
 
 useHead({
   title: computed(() => {

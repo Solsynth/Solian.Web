@@ -22,6 +22,10 @@
 
         <attachment-list :attachments="props.item.attachments" :max-height="640" />
 
+        <div v-if="props.item.repliesCount" class="flex gap-2 text-xs opacity-80">
+          <v-icon icon="mdi-comment-text-multiple" size="small" />
+          <p>{{ props.item.repliesCount }} replies</p>
+        </div>
         <div v-if="props.item.isTruncated" class="flex gap-2 text-xs opacity-80">
           <v-icon icon="mdi-dots-horizontal" size="small" />
           <p>Post truncated, tap to see details...</p>
@@ -46,10 +50,6 @@
 import { ref, watch } from "vue"
 import { useMarkdownProcessor } from "~/composables/useMarkdownProcessor"
 import type { SnPost } from "~/types/api"
-
-import PostHeader from "./PostHeader.vue"
-import AttachmentList from "./AttachmentList.vue"
-import PostReactionList from "./PostReactionList.vue"
 
 const props = defineProps<{ item: SnPost }>()
 const emit = defineEmits<{
