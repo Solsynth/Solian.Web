@@ -1,6 +1,6 @@
 <template>
   <div class="replies-list">
-    <post-quick-reply v-if="!props.hideQuickReply" />
+    <post-quick-reply v-if="!props.hideQuickReply" class="mb-4" />
 
     <!-- Error State -->
     <v-alert
@@ -75,7 +75,7 @@ const { replies, hasError, error, loadMore, refresh } = useRepliesList(
 </script>
 
 <style>
-.replies-list .v-infinite-scroll:first-child .v-infinite-scroll__side {
+.replies-list .v-infinite-scroll .v-infinite-scroll__side:first-child {
   display: none;
 }
 </style>
