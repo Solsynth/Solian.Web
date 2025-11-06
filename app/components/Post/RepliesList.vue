@@ -1,5 +1,7 @@
 <template>
   <div class="replies-list">
+    <post-quick-reply v-if="!props.hideQuickReply" />
+
     <!-- Error State -->
     <v-alert
       v-if="hasError"
@@ -60,6 +62,7 @@ const router = useRouter()
 
 const props = defineProps<{
   params: RepliesListParams
+  hideQuickReply: boolean
 }>()
 
 defineEmits<{
