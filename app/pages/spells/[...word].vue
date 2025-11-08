@@ -2,13 +2,13 @@
   <div class="d-flex align-center justify-center fill-height">
     <v-card max-width="400" title="Magic Spell" prepend-icon="mdi-magic-staff" class="pa-2">
       <v-card-text>
-        <v-alert type="success" v-if="done" class="mb-4">
+        <v-alert v-if="done" type="success" class="mb-4">
           The magic spell has been applied successfully. Now you can close this
           tab and back to the Solar Network!
         </v-alert>
         <v-alert
-          type="error"
           v-else-if="!!error"
+          type="error"
           title="Something went wrong"
           class="mb-4"
           >{{ error }}</v-alert
@@ -28,7 +28,7 @@
               new Date(spell.createdAt ?? spell.affectedAt).toLocaleString()
             }}</strong>
           </div>
-          <div class="d-flex align-center gap-2 mb-4" v-if="spell.expiredAt">
+          <div v-if="spell.expiredAt" class="d-flex align-center gap-2 mb-4">
             <v-icon size="18">mdi-calendar</v-icon>
             <span>Until</span>
             <strong>{{ spell.expiredAt.toString() }}</strong>
@@ -68,7 +68,16 @@ const spellWord: string =
   typeof route.params.word === "string"
     ? route.params.word
     : route.params.word?.join("/") || ""
-const spell = ref<any>(null)
+interface SnSpell {
+  type: number
+  account: {
+    name: string
+  }
+  createdAt: string
+  affectedAt: string
+  expiredAt?: string
+}
+const spell = ref<SnSpell | null>(null)
 const error = ref<string | null>(null)
 
 const newPassword = ref<string>()

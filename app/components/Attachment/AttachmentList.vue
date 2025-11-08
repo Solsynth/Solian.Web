@@ -58,7 +58,6 @@ const props = defineProps<{
   maxHeight?: number
 }>()
 
-const apiBase = useSolarNetworkUrl()
 
 const isAllImages = computed(
   () =>
@@ -193,9 +192,5 @@ function calculateAspectRatio(): number {
   return mostFrequent.length % 2 === 0
     ? (mostFrequent[mid - 1]! + mostFrequent[mid]!) / 2
     : mostFrequent[mid]!
-}
-
-function getAttachmentUrl(attachment: SnAttachment): string {
-  return `${apiBase}/drive/files/${attachment.id}`
 }
 </script>

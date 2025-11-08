@@ -47,8 +47,6 @@ import type { SnVersion, SnActivity } from "~/types/api"
 import PostEditor from "~/components/Post/PostEditor.vue"
 import PostItem from "~/components/Post/PostItem.vue"
 
-import IconLight from "~/assets/images/cloudy-lamb.png"
-
 const router = useRouter()
 
 useHead({

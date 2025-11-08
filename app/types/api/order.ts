@@ -13,11 +13,11 @@ export interface SnWalletOrder {
   remarks?: string
   appIdentifier?: string
   productIdentifier?: string
-  meta?: Record<string, any>
+  meta?: Record<string, unknown>
   amount: number
   expiredAt: string
   payeeWalletId?: string
-  payeeWallet?: any
+  payeeWallet?: unknown
   transactionId?: string
-  transaction?: any
+  transaction?: unknown
 }

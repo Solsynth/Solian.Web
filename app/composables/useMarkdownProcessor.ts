@@ -1,4 +1,8 @@
-import { createMarkdownExit, type PluginWithParams } from "markdown-exit"
+import {
+  createMarkdownExit,
+  type PluginSimple,
+  type PluginWithParams
+} from "markdown-exit"
 import hljs from "highlight.js"
 import hljsMarkdown from "markdown-it-highlightjs"
 // @ts-ignore
@@ -7,7 +11,11 @@ import katex from "katex"
 
 import "highlight.js/styles/a11y-dark.min.css"
 
-export function useMarkdownProcessor() {
+export function useMarkdownProcessor(
+  { preserveEmptyLines }: { preserveEmptyLines?: boolean } = {
+    preserveEmptyLines: true
+  }
+) {
   const serverUrl = useSolarNetworkUrl()
 
   const processor = createMarkdownExit({
@@ -25,12 +33,22 @@ export function useMarkdownProcessor() {
     .use(hljsMarkdown, { hljs })
     .use(imgSolarNetworkPlugin, { serverUrl: serverUrl })
 
-  // Keep the empty lines
+  if (preserveEmptyLines) {
+    processor.use(preserveEmptyLinesPlugin)
+  }
+
+  return {
+    render: (content: string) => processor.render(content)
+  }
+}
+
+const preserveEmptyLinesPlugin: PluginSimple = (md) => {
   const defaultParagraphRenderer =
-    processor.renderer.rules.paragraph_open ||
+    md.renderer.rules.paragraph_open ||
     ((tokens, idx, options, _env, self) =>
       self.renderToken(tokens, idx, options))
-  processor.renderer.rules.paragraph_open = function (
+
+  md.renderer.rules.paragraph_open = function (
     tokens,
     idx,
     options,
@@ -57,10 +75,6 @@ export function useMarkdownProcessor() {
       }
     }
     return result + defaultParagraphRenderer(tokens, idx, options, env, self)
-  }
-
-  return {
-    render: (content: string) => processor.render(content)
   }
 }
 

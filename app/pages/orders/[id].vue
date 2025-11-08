@@ -7,13 +7,13 @@
       class="pa-2"
     >
       <v-card-text>
-        <v-alert type="success" v-if="done" class="mb-4">
+        <v-alert v-if="done" type="success" class="mb-4">
           The order has been paid successfully. Now you can close this tab and
           back to the Solar Network!
         </v-alert>
         <v-alert
-          type="error"
           v-else-if="!!error"
+          type="error"
           title="Something went wrong"
           class="mb-4"
           >{{ error }}</v-alert
@@ -31,7 +31,7 @@
             <span>Amount</span>
             <strong>{{ order.amount }} {{ order.currency }}</strong>
           </div>
-          <div class="d-flex align-center gap-2 mb-4" v-if="order.expiredAt">
+          <div v-if="order.expiredAt" class="d-flex align-center gap-2 mb-4">
             <v-icon size="18">mdi-calendar</v-icon>
             <span>Until</span>
             <strong>{{ new Date(order.expiredAt).toLocaleString() }}</strong>
@@ -47,8 +47,8 @@
             <v-btn
               color="primary"
               :loading="submitting"
-              @click="pay"
               class="mt-4"
+              @click="pay"
             >
               <v-icon left>mdi-check</v-icon>
               Pay

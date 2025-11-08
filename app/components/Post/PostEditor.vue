@@ -20,7 +20,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import * as tus from 'tus-js-client'
 import { useSolarNetwork } from '~/composables/useSolarNetwork'
 
 // Interface for uploaded files in the editor
@@ -35,7 +34,6 @@ const emits = defineEmits(['posted'])
 const publisher = ref<string | undefined>()
 const content = ref('')
 
-const selectedFiles = ref<File[]>([])
 const fileList = ref<UploadedFile[]>([])
 
 const submitting = ref(false)
@@ -60,55 +58,5 @@ async function submit() {
   content.value = ''
   fileList.value = []
   emits('posted')
-}
-
-function handleFileSelect() {
-  selectedFiles.value.forEach(file => {
-    uploadFile(file)
-  })
-  selectedFiles.value = []
-}
-
-function uploadFile(file: File) {
-  const upload = new tus.Upload(file, {
-    endpoint: '/cgi/drive/tus',
-    retryDelays: [0, 3000, 5000, 10000, 20000],
-    removeFingerprintOnSuccess: false,
-    uploadDataDuringCreation: false,
-    metadata: {
-      filename: file.name,
-      'content-type': file.type ?? 'application/octet-stream',
-    },
-    headers: {
-      'X-DirectUpload': 'true',
-    },
-    onShouldRetry: () => false,
-    onError: function (error) {
-      console.error('[DRIVE] Upload failed:', error)
-    },
-    onProgress: function (_bytesUploaded, _bytesTotal) {
-      // Could show progress
-    },
-    onSuccess: function (payload) {
-      const rawInfo = payload.lastResponse.getHeader('x-fileinfo')
-      const jsonInfo = JSON.parse(rawInfo as string)
-      console.log('[DRIVE] Upload successful: ', jsonInfo)
-      fileList.value.push({
-        name: file.name,
-        url: `/cgi/drive/files/${jsonInfo.id}`,
-        type: jsonInfo.mime_type,
-      })
-    },
-    onBeforeRequest: function (req) {
-      const xhr = req.getUnderlyingObject()
-      xhr.withCredentials = true
-    },
-  })
-  upload.findPreviousUploads().then(function (previousUploads) {
-    if (previousUploads.length > 0 && previousUploads[0]) {
-      upload.resumeFromPreviousUpload(previousUploads[0])
-    }
-    upload.start()
-  })
 }
 </script>

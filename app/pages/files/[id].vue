@@ -439,7 +439,7 @@ function handleTouchMove(event: TouchEvent) {
   zoomLevel.value = Math.max(0.1, Math.min(5, scale))
 }
 
-function handleTouchEnd(event: TouchEvent) {
+function handleTouchEnd(_event: TouchEvent) {
   if (fileType.value !== "image") return
 
   isPinching.value = false

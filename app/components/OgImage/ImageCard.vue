@@ -4,49 +4,23 @@ import { useSiteConfig } from "#site-config/app/composables"
 import { computed, defineComponent, h, resolveComponent } from "vue"
 
 const props = defineProps({
-  colorMode: { type: String, required: false },
+  colorMode: { type: String, required: false, default: "light" },
   title: { type: String, required: false, default: "title" },
-  description: { type: String, required: false },
-  icon: { type: [String, Boolean], required: false },
-  siteName: { type: String, required: false },
-  siteLogo: { type: String, required: false },
+  description: { type: String, required: false, default: null },
+  icon: { type: [String, Boolean], required: false, default: null },
+  siteName: { type: String, required: false, default: null },
+  siteLogo: { type: String, required: false, default: null },
   theme: { type: String, required: false, default: "#3f51b5" },
-  backgroundImage: { type: String, required: false },
-  avatarUrl: { type: String, required: false }
+  backgroundImage: { type: String, required: false, default: null },
+  avatarUrl: { type: String, required: false, default: null }
 })
-const HexRegex = /^#(?:[0-9a-f]{3}){1,2}$/i
 const runtimeConfig = useOgImageRuntimeConfig()
 const colorMode = computed(() => {
   return props.colorMode || runtimeConfig.colorPreference || "light"
 })
 
-const themeHex = computed(() => {
-  if (HexRegex.test(props.theme)) return props.theme
-  if (HexRegex.test(`#${props.theme}`)) return `#${props.theme}`
-  if (props.theme.startsWith("rgb")) {
-    const rgb = props.theme
-      .replace("rgb(", "")
-      .replace("rgba(", "")
-      .replace(")", "")
-      .split(",")
-      .map((v) => Number.parseInt(v.trim(), 10))
-    const hex = rgb
-      .map((v) => {
-        const hex2 = v.toString(16)
-        return hex2.length === 1 ? `0${hex2}` : hex2
-      })
-      .join("")
-    return `#${hex}`
-  }
-  return "#FFFFFF"
-})
-const themeRgb = computed(() => {
-  return themeHex.value
-    .replace("#", "")
-    .match(/.{1,2}/g)
-    ?.map((v) => Number.parseInt(v, 16))
-    .join(", ")
-})
+
+
 const textShadow = computed(() => {
   return '2px 2px 8px rgba(0,0,0,0.8)'
 })
@@ -54,9 +28,7 @@ const siteConfig = useSiteConfig()
 const siteName = computed(() => {
   return props.siteName || siteConfig.name
 })
-const siteLogo = computed(() => {
-  return props.siteLogo || siteConfig.logo
-})
+
 const IconComponent = runtimeConfig.hasNuxtIcon
   ? resolveComponent("Icon")
   : defineComponent({
@@ -67,7 +39,7 @@ const IconComponent = runtimeConfig.hasNuxtIcon
 if (
   typeof props.icon === "string" &&
   !runtimeConfig.hasNuxtIcon &&
-  process.dev
+  import.meta.dev
 ) {
   console.warn(
     "Please install `@nuxt/icon` to use icons with the fallback OG Image component."

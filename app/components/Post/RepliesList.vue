@@ -62,7 +62,7 @@ const router = useRouter()
 
 const props = defineProps<{
   params: RepliesListParams
-  hideQuickReply: boolean
+  hideQuickReply?: boolean
 }>()
 
 defineEmits<{

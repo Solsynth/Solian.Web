@@ -74,18 +74,18 @@
                   <v-btn
                     color="primary"
                     :loading="isAuthorizing"
-                    @click="handleAuthorize"
                     class="flex-grow-1"
                     size="large"
+                    @click="handleAuthorize"
                   >
                     Authorize
                   </v-btn>
                   <v-btn
                     variant="outlined"
                     :disabled="isAuthorizing"
-                    @click="handleDeny"
                     class="flex-grow-1"
                     size="large"
+                    @click="handleDeny"
                   >
                     Deny
                   </v-btn>
@@ -140,9 +140,10 @@ async function fetchClientInfo() {
     const queryString = window.location.search.slice(1)
     clientInfo.value = await api(`/id/auth/open/authorize?${queryString}`)
     checkIfNewApp()
-  } catch (err: any) {
+  } catch (err) {
     error.value =
-      err.message || "An error occurred while loading the authorization request"
+      (err instanceof Error ? err.message : String(err)) ||
+      "An error occurred while loading the authorization request"
   } finally {
     isLoading.value = false
   }
@@ -171,8 +172,10 @@ async function handleAuthorize(authorize = true) {
     if (data.redirectUri) {
       window.location.href = data.redirectUri
     }
-  } catch (err: any) {
-    error.value = err.message || "An error occurred during authorization"
+  } catch (err) {
+    error.value =
+      (err instanceof Error ? err.message : String(err)) ||
+      "An error occurred during authorization"
   } finally {
     isAuthorizing.value = false
   }

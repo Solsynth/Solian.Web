@@ -68,7 +68,10 @@
             </article>
 
             <!-- Attachments within Content Section -->
-            <attachment-list v-if="post.type != 1" :attachments="post.attachments || []" />
+            <attachment-list
+              v-if="post.type != 1"
+              :attachments="post.attachments || []"
+            />
           </v-card>
 
           <v-card
@@ -141,7 +144,8 @@ import { useMarkdownProcessor } from "~/composables/useMarkdownProcessor"
 import type { SnPost } from "~/types/api"
 
 const route = useRoute()
-const id = route.params.id as string
+const slugParts = route.params.slug as string[]
+const id = slugParts.join("/")
 
 const { render } = useMarkdownProcessor()
 
@@ -168,6 +172,16 @@ const {
   }
 })
 
+if (postData.value?.post) {
+  const p = postData.value.post
+  if (p.publisher?.name && p.slug) {
+    const slugUrl = `/posts/${p.publisher.name}/${p.slug}`
+    if (route.path !== slugUrl) {
+      await navigateTo(slugUrl, { redirectCode: 301 })
+    }
+  }
+}
+
 const post = computed(() => postData.value?.post || null)
 const htmlContent = computed(() => postData.value?.html || "")
 
@@ -189,6 +203,13 @@ useHead({
       return [{ name: "description", content: description }]
     }
     return []
+  }),
+  link: computed(() => {
+    if (post.value && post.value.publisher?.name && post.value.slug) {
+      const slugUrl = `/posts/${post.value.publisher.name}/${post.value.slug}`
+      return [{ rel: "canonical", href: slugUrl }]
+    }
+    return []
   })
 })
 
@@ -205,7 +226,9 @@ const userBackground = computed(() => {
   )
   return firstImageAttachment
     ? `${apiBase}/drive/files/${firstImageAttachment.id}`
-    : undefined
+    : post.value?.publisher.background
+      ? `${apiBase}/drive/files/${post.value?.publisher.background.id}`
+      : undefined
 })
 
 defineOgImage({
@@ -260,18 +283,18 @@ onMounted(() => {
 
 function makeEmbedImageClickable() {
   const elements = document.getElementsByClassName("prose-img-solar-network")
-  let count = 0;
+  let count = 0
   for (const element of elements) {
     if (element instanceof HTMLImageElement) {
-      count += 1;
+      count += 1
       element.addEventListener("click", (evt) => {
         const targetImg = evt.target as HTMLImageElement
         window.open("/files/" + targetImg.src.split("/").findLast((_) => true))
       })
-      element.style['cursor'] = 'pointer';
+      element.style["cursor"] = "pointer"
     }
   }
-  console.log(`[Article] Made ${count} image(s) clickable in the article.`);
+  console.log(`[Article] Made ${count} image(s) clickable in the article.`)
 }
 </script>
 

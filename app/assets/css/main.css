@@ -43,3 +43,7 @@ body {
   opacity: 0;
   filter: blur(1rem);
 }
+
+.prose pre {
+  padding: 0;
+}
