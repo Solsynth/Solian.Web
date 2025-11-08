@@ -1,14 +1,7 @@
 <template>
   <div class="lightbox-container">
     <!-- Top Toolbar -->
-    <v-app-bar
-      v-if="fileInfo"
-      class="top-toolbar"
-      flat
-      height="56"
-      color="rgba(0,0,0,0.7)"
-      dark
-    >
+    <v-app-bar v-if="fileInfo" class="top-toolbar" flat height="56">
       <v-container fluid>
         <v-row align="center" class="pa-2">
           <v-col cols="12" md="4">
@@ -94,7 +87,15 @@
             password to download it.
           </v-alert>
         </div>
-        <div v-else class="file-preview" @wheel="handleZoom" @touchstart="handleTouchStart" @touchmove="handleTouchMove" @touchend="handleTouchEnd" @dblclick="handleDoubleClick">
+        <div
+          v-else
+          class="file-preview"
+          @wheel="handleZoom"
+          @touchstart="handleTouchStart"
+          @touchmove="handleTouchMove"
+          @touchend="handleTouchEnd"
+          @dblclick="handleDoubleClick"
+        >
           <v-img
             v-if="fileType === 'image'"
             :src="fileSource"
@@ -161,25 +162,35 @@
               </div>
               <div class="mb-4">
                 <strong>File Name</strong>
-                <div class="text-xs">{{ fileInfo?.name || 'N/A' }}</div>
+                <div class="text-xs">{{ fileInfo?.name || "N/A" }}</div>
               </div>
               <div class="mb-4">
                 <strong>MIME Type</strong>
-                <div class="text-xs">{{ fileInfo?.mimeType || 'N/A' }}</div>
+                <div class="text-xs">{{ fileInfo?.mimeType || "N/A" }}</div>
               </div>
               <div class="mb-4">
                 <strong>File Size</strong>
-                <div class="text-xs">{{ fileInfo?.size ? formatBytes(fileInfo.size) : 'N/A' }}</div>
+                <div class="text-xs">
+                  {{ fileInfo?.size ? formatBytes(fileInfo.size) : "N/A" }}
+                </div>
               </div>
             </v-col>
             <v-col cols="12" md="6">
               <div class="mb-4">
                 <strong>Created At</strong>
-                <div class="text-xs">{{ fileInfo?.createdAt ? new Date(fileInfo.createdAt).toLocaleString() : 'N/A' }}</div>
+                <div class="text-xs">
+                  {{
+                    fileInfo?.createdAt
+                      ? new Date(fileInfo.createdAt).toLocaleString()
+                      : "N/A"
+                  }}
+                </div>
               </div>
               <div class="mb-4">
                 <strong>Encrypted</strong>
-                <div class="text-xs">{{ fileInfo?.isEncrypted ? 'Yes' : 'No' }}</div>
+                <div class="text-xs">
+                  {{ fileInfo?.isEncrypted ? "Yes" : "No" }}
+                </div>
               </div>
             </v-col>
           </v-row>
@@ -189,7 +200,7 @@
           <v-card variant="outlined" class="pa-2">
             <pre
               class="overflow-x-auto"
-              style="font-size: 14px;"
+              style="font-size: 14px"
             ><code>{{ JSON.stringify(fileInfo?.fileMeta, null, 2) }}</code></pre>
           </v-card>
         </v-card-text>
@@ -335,19 +346,32 @@ const fileType = computed(() => {
   return fileInfo.value.mimeType?.split("/")[0] || "unknown"
 })
 const fileIcon = computed(() => {
-  if (!fileInfo.value?.mimeType) return 'mdi-file'
+  if (!fileInfo.value?.mimeType) return "mdi-file"
 
   const mime = fileInfo.value.mimeType.toLowerCase()
 
-  if (mime.startsWith('image/')) return 'mdi-file-image'
-  if (mime.startsWith('video/')) return 'mdi-file-video'
-  if (mime.startsWith('audio/')) return 'mdi-file-music'
-  if (mime === 'application/pdf') return 'mdi-file-pdf'
-  if (mime.startsWith('text/') || mime.includes('javascript') || mime.includes('json') || mime.includes('xml')) return 'mdi-file-code'
-  if (mime.includes('zip') || mime.includes('rar') || mime.includes('tar')) return 'mdi-zip-box'
-  if (mime.includes('document') || mime.includes('word') || mime.includes('excel') || mime.includes('powerpoint')) return 'mdi-file-document'
+  if (mime.startsWith("image/")) return "mdi-file-image"
+  if (mime.startsWith("video/")) return "mdi-file-video"
+  if (mime.startsWith("audio/")) return "mdi-file-music"
+  if (mime === "application/pdf") return "mdi-file-pdf"
+  if (
+    mime.startsWith("text/") ||
+    mime.includes("javascript") ||
+    mime.includes("json") ||
+    mime.includes("xml")
+  )
+    return "mdi-file-code"
+  if (mime.includes("zip") || mime.includes("rar") || mime.includes("tar"))
+    return "mdi-zip-box"
+  if (
+    mime.includes("document") ||
+    mime.includes("word") ||
+    mime.includes("excel") ||
+    mime.includes("powerpoint")
+  )
+    return "mdi-file-document"
 
-  return 'mdi-file'
+  return "mdi-file"
 })
 const fileSource = computed(() => {
   let url = `${apiBase}/drive/files/${fileId}?original=true`
@@ -375,7 +399,7 @@ async function confirmDownload() {
 }
 
 function handleZoom(event: WheelEvent) {
-  if (fileType.value !== 'image') return
+  if (fileType.value !== "image") return
 
   event.preventDefault()
   const delta = event.deltaY > 0 ? -0.1 : 0.1
@@ -383,7 +407,7 @@ function handleZoom(event: WheelEvent) {
 }
 
 function handleTouchStart(event: TouchEvent) {
-  if (fileType.value !== 'image' || event.touches.length !== 2) return
+  if (fileType.value !== "image" || event.touches.length !== 2) return
 
   event.preventDefault()
   isPinching.value = true
@@ -391,19 +415,24 @@ function handleTouchStart(event: TouchEvent) {
   const touch2 = event.touches[1]!
   initialDistance.value = Math.sqrt(
     Math.pow(touch2.clientX - touch1.clientX, 2) +
-    Math.pow(touch2.clientY - touch1.clientY, 2)
+      Math.pow(touch2.clientY - touch1.clientY, 2)
   )
 }
 
 function handleTouchMove(event: TouchEvent) {
-  if (fileType.value !== 'image' || !isPinching.value || event.touches.length !== 2) return
+  if (
+    fileType.value !== "image" ||
+    !isPinching.value ||
+    event.touches.length !== 2
+  )
+    return
 
   event.preventDefault()
   const touch1 = event.touches[0]!
   const touch2 = event.touches[1]!
   const currentDistance = Math.sqrt(
     Math.pow(touch2.clientX - touch1.clientX, 2) +
-    Math.pow(touch2.clientY - touch1.clientY, 2)
+      Math.pow(touch2.clientY - touch1.clientY, 2)
   )
 
   const scale = currentDistance / initialDistance.value
@@ -411,13 +440,13 @@ function handleTouchMove(event: TouchEvent) {
 }
 
 function handleTouchEnd(event: TouchEvent) {
-  if (fileType.value !== 'image') return
+  if (fileType.value !== "image") return
 
   isPinching.value = false
 }
 
 function handleDoubleClick() {
-  if (fileType.value !== 'image') return
+  if (fileType.value !== "image") return
 
   zoomLevel.value = zoomLevel.value > 1 ? 1 : 2
 }
@@ -498,7 +527,6 @@ definePageMeta({
 .top-toolbar {
   position: relative;
   z-index: 1001;
-  backdrop-filter: blur(10px);
 }
 
 .preview-container {
@@ -534,7 +562,7 @@ definePageMeta({
   width: 100%;
   height: 100%;
   object-fit: contain;
-  transition: all .3s ease-in-out;
+  transition: all 0.3s ease-in-out;
   will-change: contents;
 }
 

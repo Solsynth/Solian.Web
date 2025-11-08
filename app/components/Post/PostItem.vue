@@ -1,5 +1,5 @@
 <template>
-  <v-card class="px-4 py-3">
+  <v-card>
     <v-card-text>
       <div class="flex flex-col gap-3">
         <post-header :item="props.item" />
@@ -20,13 +20,22 @@
           <div v-html="htmlContent" />
         </article>
 
-        <attachment-list :attachments="props.item.attachments" :max-height="640" />
+        <attachment-list
+          :attachments="props.item.attachments"
+          :max-height="640"
+        />
 
-        <div v-if="props.item.repliesCount" class="flex gap-2 text-xs opacity-80">
+        <div
+          v-if="props.item.repliesCount"
+          class="flex gap-2 text-xs opacity-80"
+        >
           <v-icon icon="mdi-comment-text-multiple" size="small" />
           <p>{{ props.item.repliesCount }} replies</p>
         </div>
-        <div v-if="props.item.isTruncated" class="flex gap-2 text-xs opacity-80">
+        <div
+          v-if="props.item.isTruncated"
+          class="flex gap-2 text-xs opacity-80"
+        >
           <v-icon icon="mdi-dots-horizontal" size="small" />
           <p>Post truncated, tap to see details...</p>
         </div>

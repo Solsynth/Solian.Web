@@ -60,7 +60,7 @@ const aspectRatio = computed(
     props.item.fileMeta?.ratio ??
     (imageWidth.value && imageHeight.value
       ? imageHeight.value / imageWidth.value
-      : 1)
+      : null)
 )
 const imageLoaded = ref(false)
 
@@ -77,7 +77,7 @@ function openExternally() {
       y: rect.top,
       width: rect.width,
       height: rect.height,
-      aspectRatio: aspectRatio.value
+      aspectRatio: aspectRatio.value == null ? 0 : aspectRatio.value
     }
 
     // Store transition data
@@ -98,7 +98,7 @@ const remoteSource = computed(
 
 const blurhashContainerStyle = computed(() => {
   return {
-    "padding-bottom": `${aspectRatio.value * 100}%`
+    "padding-bottom": `${aspectRatio.value == null ? 0 : aspectRatio.value * 100}%`
   }
 })
 
