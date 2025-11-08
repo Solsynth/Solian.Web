@@ -1,3 +1,4 @@
+import { computed, unref, type Ref } from "vue"
 import {
   createMarkdownExit,
   type PluginSimple,
@@ -12,33 +13,38 @@ import katex from "katex"
 import "highlight.js/styles/a11y-dark.min.css"
 
 export function useMarkdownProcessor(
-  { preserveEmptyLines }: { preserveEmptyLines?: boolean } = {
+  options: { preserveEmptyLines?: boolean | Ref<boolean> } = {
     preserveEmptyLines: true
   }
 ) {
   const serverUrl = useSolarNetworkUrl()
 
-  const processor = createMarkdownExit({
-    breaks: true,
-    html: true,
-    linkify: true,
-    typographer: true
-  })
-    // @ts-ignore
-    .use(texmath, {
-      engine: katex,
-      delimiters: "dollars",
-      katexOptions: { macros: { "\\RR": "\\mathbb{R}" } }
-    })
-    .use(hljsMarkdown, { hljs })
-    .use(imgSolarNetworkPlugin, { serverUrl: serverUrl })
+  const processor = computed(() => {
+    const currentPreserveEmptyLines = unref(options.preserveEmptyLines)
 
-  if (preserveEmptyLines) {
-    processor.use(preserveEmptyLinesPlugin)
-  }
+    const md = createMarkdownExit({
+      breaks: true,
+      html: true,
+      linkify: true,
+      typographer: true
+    })
+      // @ts-ignore
+      .use(texmath, {
+        engine: katex,
+        delimiters: "dollars",
+        katexOptions: { macros: { "\\RR": "\\mathbb{R}" } }
+      })
+      .use(hljsMarkdown, { hljs })
+      .use(imgSolarNetworkPlugin, { serverUrl: serverUrl })
+
+    if (currentPreserveEmptyLines) {
+      md.use(preserveEmptyLinesPlugin)
+    }
+    return md
+  })
 
   return {
-    render: (content: string) => processor.render(content)
+    render: (content: string) => processor.value.render(content)
   }
 }
 

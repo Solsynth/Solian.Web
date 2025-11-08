@@ -65,7 +65,11 @@ const emit = defineEmits<{
   react: [symbol: string, attitude: number, delta: number]
 }>()
 
-const { render } = useMarkdownProcessor()
+const preserveEmptyLinesRef = ref(true) // New ref for the option
+
+const { render } = useMarkdownProcessor({
+  preserveEmptyLines: preserveEmptyLinesRef
+})
 
 const htmlContent = ref<string>("")
 
@@ -74,8 +78,9 @@ function handleReaction(symbol: string, attitude: number, delta: number) {
 }
 
 watch(
-  props.item,
+  () => props.item, // Watch the item prop directly
   (value) => {
+    preserveEmptyLinesRef.value = value.type !== 1 // Update the ref
     if (value.content) htmlContent.value = render(value.content)
   },
   { immediate: true, deep: true }

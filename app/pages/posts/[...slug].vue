@@ -139,7 +139,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue"
+import { computed, ref } from "vue" // Added ref
 import { useMarkdownProcessor } from "~/composables/useMarkdownProcessor"
 import type { SnPost } from "~/types/api"
 
@@ -147,9 +147,13 @@ const route = useRoute()
 const slugParts = route.params.slug as string[]
 const id = slugParts.join("/")
 
-const { render } = useMarkdownProcessor()
-
 const apiServer = useSolarNetwork()
+
+const preserveEmptyLinesRef = ref(true) // New ref for the option
+
+const { render } = useMarkdownProcessor({
+  preserveEmptyLines: preserveEmptyLinesRef
+})
 
 const {
   data: postData,
@@ -159,6 +163,10 @@ const {
   try {
     const resp = await apiServer(`/sphere/posts/${id}`)
     const post = resp as SnPost
+
+    // Update the ref based on post.type
+    preserveEmptyLinesRef.value = post.type !== 1
+
     let html = ""
     if (post.content) {
       html = render(post.content)
