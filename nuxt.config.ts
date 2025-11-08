@@ -13,7 +13,11 @@ export default defineNuxtConfig({
     "@nuxtjs/color-mode",
     "nuxt-og-image"
   ],
-  css: ["~/assets/css/main.css", "katex/dist/katex.min.css"],
+  css: [
+    "~/assets/css/main.css",
+    "~/assets/css/globals.scss",
+    "katex/dist/katex.min.css"
+  ],
   app: {
     pageTransition: { name: "page", mode: "out-in" },
     head: {
@@ -64,5 +68,14 @@ export default defineNuxtConfig({
   },
   vite: {
     plugins: [tailwindcss()]
+  },
+  vuetify: {
+    moduleOptions: {
+      disableVuetifyStyles: true,
+      styles: {
+        configFile: "assets/css/components.scss"
+      }
+    },
+    vuetifyOptions: "./vuetify.config.ts"
   }
 })

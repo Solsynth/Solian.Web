@@ -1,7 +1,7 @@
 <template>
   <v-app :theme="colorMode.preference">
     <v-app-bar elevation="2" color="surface-lighten-5">
-      <v-container class="mx-auto d-flex align-center justify-center">
+      <v-container class="mx-auto flex align-center justify-center">
         <img
           :src="colorMode.value == 'dark' ? IconDark : IconLight"
           width="32"

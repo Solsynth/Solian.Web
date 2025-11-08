@@ -4,6 +4,19 @@
   :root {
     --font-family: "Nunito Variable", "Helvatica", sans-serif;
   }
+
+  .prose p,
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4,
+  .prose h5,
+  .prose h6,
+  .prose ul,
+  .prose ol,
+  .prose blockquote {
+    margin: revert;
+  }
 }
 
 @plugin "@tailwindcss/typography";
