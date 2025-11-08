@@ -108,8 +108,13 @@ export const useRepliesList = (params: RepliesListParams | Ref<RepliesListParams
     side: string
     done: (status: "empty" | "loading" | "error" | "ok") => void
   }) => {
-    if (!state.value.hasMore || state.value.loading) {
+    if (!state.value.hasMore) {
       options?.done("empty")
+      return
+    }
+
+    if (state.value.loading) {
+      options?.done("loading")
       return
     }
 

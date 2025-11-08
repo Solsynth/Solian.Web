@@ -1,8 +1,8 @@
 <template>
-  <v-card>
-    <v-card-text>
-      <div class="flex flex-col gap-3">
-        <post-header :item="props.item" />
+  <v-card :flat="props.flat">
+    <v-card-text :style="props.slim ? 'padding: 0' : null">
+      <div :class="['flex flex-col', compact ? 'gap-1' : 'gap-3']">
+        <post-header :item="props.item" :compact="compact" />
 
         <div v-if="props.item.title || props.item.description">
           <h2 v-if="props.item.title" class="text-lg">
@@ -20,13 +20,62 @@
           <div v-html="htmlContent" />
         </article>
 
+        <template v-if="showReferenced">
+          <div v-if="props.item.repliedPost || props.item.repliedGone">
+            <v-card
+              title="Replying to"
+              prepend-icon="mdi-reply"
+              density="compact"
+              flat
+              border
+            >
+              <div v-if="props.item.repliedGone" class="px-4 pb-3 text-sm opacity-60">
+                Post unavailable
+              </div>
+              <post-item
+                v-else-if="props.item.repliedPost"
+                class="px-4 pb-3"
+                :item="props.item.repliedPost"
+                slim
+                compact
+                flat
+                @react="handleReaction"
+              />
+            </v-card>
+          </div>
+
+          <div v-if="props.item.forwardedPost || props.item.forwardedGone">
+            <v-card
+              title="Forwarded"
+              prepend-icon="mdi-forward"
+              density="compact"
+              flat
+              border
+            >
+              <div v-if="props.item.forwardedGone" class="px-4 pb-3 text-sm opacity-60">
+                Post unavailable
+              </div>
+              <post-item
+                v-else-if="props.item.forwardedPost"
+                class="px-4 pb-3"
+                :item="props.item.forwardedPost"
+                slim
+                compact
+                flat
+                @react="handleReaction"
+              />
+            </v-card>
+          </div>
+        </template>
+
         <attachment-list
+          v-if="!compact"
           :attachments="props.item.attachments"
           :max-height="640"
         />
 
         <v-lazy
-          v-if="props.item.repliesCount"
+          v-if="props.item.repliesCount && !compact"
           :options="{ threshold: 0.5 }"
           transition="fade-transition"
         >
@@ -45,7 +94,7 @@
         </div>
 
         <!-- Post Reactions -->
-        <div @click.stop>
+        <div v-if="!compact" @click.stop>
           <post-reaction-list
             :parent-id="props.item.id"
             :reactions="props.item.reactionsCount"
@@ -64,7 +113,16 @@ import { ref, watch } from "vue"
 import { useMarkdownProcessor } from "~/composables/useMarkdownProcessor"
 import type { SnPost } from "~/types/api"
 
-const props = defineProps<{ item: SnPost }>()
+const props = withDefaults(
+  defineProps<{
+    item: SnPost
+    showReferenced?: boolean
+    compact?: boolean
+    flat?: boolean
+    slim?: boolean
+  }>(),
+  { showReferenced: true, compact: false, flat: false, slim: false }
+)
 const emit = defineEmits<{
   react: [symbol: string, attitude: number, delta: number]
 }>()
@@ -81,7 +139,12 @@ function handleReaction(symbol: string, attitude: number, delta: number) {
   emit("react", symbol, attitude, delta)
 }
 
-function handleReplyReaction(postId: string, symbol: string, attitude: number, delta: number) {
+function handleReplyReaction(
+  postId: string,
+  symbol: string,
+  attitude: number,
+  delta: number
+) {
   emit("react", symbol, attitude, delta)
 }
 

@@ -302,7 +302,7 @@ function getOffsetUTCString(targetTimeZone: string): string {
 }
 
 definePageMeta({
-  alias: ["/@:name()"]
+  alias: ["/@:name()", "/u/:name()"]
 })
 
 useHead({

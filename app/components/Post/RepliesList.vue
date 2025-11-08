@@ -23,6 +23,7 @@
     >
       <template v-for="item in replies" :key="item.id">
         <post-item
+          :show-referenced="false"
           :item="item"
           @click="router.push('/posts/' + item.id)"
           @react="

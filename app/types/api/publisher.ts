@@ -1,4 +1,5 @@
 import type { SnCloudFile } from "./post"
+import type { SnAccount } from "./user"
 
 // Verification interface
 export interface SnVerification {
@@ -20,7 +21,7 @@ export interface SnPublisher {
   verification: SnVerification | null
   accountId: string
   realmId: string | null
-  account: unknown | null
+  account: SnAccount | null
   resourceIdentifier: string
   createdAt: string
   updatedAt: string

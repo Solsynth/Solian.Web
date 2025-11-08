@@ -14,13 +14,15 @@
     <!-- Posts List -->
     <v-infinite-scroll
       height="auto"
-      class="space-y-4"
+      class="space-y-4 overflow-y-hidden"
+      side="end"
       @load="loadMore"
     >
       <template v-for="item in posts" :key="item.id">
         <post-item
           :item="item"
           @react="(symbol, attitude, delta) => $emit('react', item.id, symbol, attitude, delta)"
+          @click="router.push('/posts/' + item.id)"
         />
       </template>
 
@@ -39,18 +41,6 @@
         </div>
       </template>
     </v-infinite-scroll>
-
-    <!-- Refresh Button -->
-    <div class="flex justify-center mt-4">
-      <v-btn
-        variant="outlined"
-        :loading="isLoading"
-        prepend-icon="mdi-refresh"
-        @click="refresh"
-      >
-        Refresh
-      </v-btn>
-    </div>
   </div>
 </template>
 
@@ -60,6 +50,8 @@ import type { PostListParams } from "~/composables/usePostList"
 
 import PostItem from "./PostItem.vue"
 
+const router = useRouter()
+
 const props = defineProps<{
   params?: PostListParams
 }>()
@@ -68,6 +60,12 @@ defineEmits<{
   react: [postId: string, symbol: string, attitude: number, delta: number]
 }>()
 
-const { posts, isLoading, hasError, error, loadMore, refresh } =
+const { posts, hasError, error, loadMore, refresh } =
   usePostList(props.params)
 </script>
+
+<style>
+.post-list .v-infinite-scroll .v-infinite-scroll__side:first-child {
+  display: none;
+}
+</style>

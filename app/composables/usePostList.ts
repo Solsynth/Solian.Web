@@ -123,10 +123,15 @@ export const usePostList = (params: PostListParams = {}) => {
 
   const loadMore = async (options?: {
     side: string
-    done: (status: "empty" | "loading" | "error") => void
+    done: (status: "empty" | "loading" | "error" | "ok") => void
   }) => {
-    if (!state.value.hasMore || state.value.loading) {
+    if (!state.value.hasMore) {
       options?.done("empty")
+      return
+    }
+
+    if (state.value.loading) {
+      options?.done("loading")
       return
     }
 
@@ -134,6 +139,8 @@ export const usePostList = (params: PostListParams = {}) => {
 
     if (result.hasReachedEnd) {
       options?.done("empty")
+    } else {
+      options?.done("ok")
     }
   }
 
