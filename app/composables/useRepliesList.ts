@@ -14,7 +14,7 @@ export interface RepliesListState {
   total: number
 }
 
-export const useRepliesList = (params: RepliesListParams) => {
+export const useRepliesList = (params: RepliesListParams | Ref<RepliesListParams>) => {
   const api = useSolarNetwork()
   const pageSize = 20
 
@@ -32,6 +32,12 @@ export const useRepliesList = (params: RepliesListParams) => {
   const replies = computed(() => state.value.replies)
   const hasMore = computed(() => state.value.hasMore)
 
+  // Get the current postId, handling both direct params and reactive params
+  const currentPostId = computed(() => {
+    const p = isRef(params) ? params.value : params
+    return p.postId
+  })
+
   const buildQueryParams = (cursor: string | null = null) => {
     const offset = cursor ? parseInt(cursor) : 0
 
@@ -44,6 +50,11 @@ export const useRepliesList = (params: RepliesListParams) => {
   }
 
   const fetchReplies = async (cursor: string | null = null, append = false) => {
+    // Don't fetch if postId is empty
+    if (!currentPostId.value) {
+      return { hasReachedEnd: false }
+    }
+
     try {
       state.value.loading = true
       state.value.error = null
@@ -52,7 +63,7 @@ export const useRepliesList = (params: RepliesListParams) => {
 
       let total: number = 0
       const response = await api<SnPost[]>(
-        `/sphere/posts/${params.postId}/replies`,
+        `/sphere/posts/${currentPostId.value}/replies`,
         {
           method: "GET",
           query: queryParams,
@@ -113,8 +124,22 @@ export const useRepliesList = (params: RepliesListParams) => {
     fetchReplies(null, false)
   }
 
-  // Initial load
-  fetchReplies()
+  // Watch for postId changes and fetch when it becomes valid
+  watch(currentPostId, (newPostId, oldPostId) => {
+    if (newPostId && newPostId !== oldPostId) {
+      // Clear existing data when postId changes
+      state.value.replies = []
+      state.value.error = null
+      state.value.cursor = null
+      state.value.hasMore = true
+      fetchReplies()
+    }
+  })
+
+  // Initial load (only if postId is already valid)
+  if (currentPostId.value) {
+    fetchReplies()
+  }
 
   return {
     replies,

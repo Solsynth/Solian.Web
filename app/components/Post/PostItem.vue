@@ -25,13 +25,17 @@
           :max-height="640"
         />
 
-        <div
+        <v-lazy
           v-if="props.item.repliesCount"
-          class="flex gap-2 text-xs opacity-80"
+          :options="{ threshold: 0.5 }"
+          transition="fade-transition"
         >
-          <v-icon icon="mdi-comment-text-multiple" size="small" />
-          <p>{{ props.item.repliesCount }} replies</p>
-        </div>
+          <replies-compact-list
+            :params="{ postId: props.item.id }"
+            :hide-quick-reply="true"
+            @react="handleReplyReaction"
+          />
+        </v-lazy>
         <div
           v-if="props.item.isTruncated"
           class="flex gap-2 text-xs opacity-80"
@@ -74,6 +78,10 @@ const { render } = useMarkdownProcessor({
 const htmlContent = ref<string>("")
 
 function handleReaction(symbol: string, attitude: number, delta: number) {
+  emit("react", symbol, attitude, delta)
+}
+
+function handleReplyReaction(postId: string, symbol: string, attitude: number, delta: number) {
   emit("react", symbol, attitude, delta)
 }
 
