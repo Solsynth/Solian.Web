@@ -295,7 +295,7 @@ async function handleCreateAccount() {
   error.value = null
 
   try {
-    await api("/id/accounts", {
+    await api("/pass/accounts", {
       method: "POST",
       body: {
         name: formModel.name,

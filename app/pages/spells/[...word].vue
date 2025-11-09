@@ -97,7 +97,7 @@ const api = useSolarNetwork()
 
 async function fetchSpell() {
   try {
-    const resp = await api(`/id/spells/${encodeURIComponent(spellWord)}`)
+    const resp = await api(`/pass/spells/${encodeURIComponent(spellWord)}`)
     spell.value = resp
   } catch (err: unknown) {
     error.value = err instanceof Error ? err.message : String(err)
@@ -107,7 +107,7 @@ async function fetchSpell() {
 async function applySpell() {
   submitting.value = true
   try {
-    await api(`/id/spells/${encodeURIComponent(spellWord)}/apply`, {
+    await api(`/pass/spells/${encodeURIComponent(spellWord)}/apply`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: newPassword.value

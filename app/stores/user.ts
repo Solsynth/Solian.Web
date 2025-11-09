@@ -32,7 +32,7 @@ export const useUserStore = defineStore("user", () => {
       error.value = null
       const api = useSolarNetwork()
       try {
-        const response = await api<SnAccount>("/id/accounts/me")
+        const response = await api<SnAccount>("/pass/accounts/me")
         user.value = response
         console.log(`[UserStore] Logged in as @${user.value.name}`)
       } catch (e: unknown) {
