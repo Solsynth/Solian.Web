@@ -71,7 +71,7 @@ async function handleFindAccount() {
   error.value = null
 
   try {
-    challenge.value = await api("/pass/auth/challenge", {
+    challenge.value = await api("/id/auth/challenge", {
       method: "POST",
       body: {
         platform: 1,
@@ -96,7 +96,7 @@ async function getFactors() {
   error.value = null
   try {
     const availableFactors = await api<SnAuthFactor[]>(
-      `/pass/auth/challenge/${challenge.value.id}/factors`
+      `/id/auth/challenge/${challenge.value.id}/factors`
     )
     factors.value = availableFactors.filter(
       (f: SnAuthFactor) => !challenge.value!.blacklistFactors.includes(f.id)
@@ -123,7 +123,7 @@ async function requestVerificationCode() {
 
   try {
     await api(
-      `/pass/auth/challenge/${challenge.value.id}/factors/${selectedFactorId.value}`,
+      `/id/auth/challenge/${challenge.value.id}/factors/${selectedFactorId.value}`,
       { method: "POST" }
     )
   } catch (e: unknown) {
@@ -170,7 +170,7 @@ async function handleVerifyFactor() {
   error.value = null
 
   try {
-    challenge.value = await api(`/pass/auth/challenge/${challenge.value.id}`, {
+    challenge.value = await api(`/id/auth/challenge/${challenge.value.id}`, {
       method: "PATCH",
       body: {
         factor_id: selectedFactorId.value,
@@ -202,7 +202,7 @@ async function exchangeToken() {
   error.value = null
   try {
     // The token endpoint gives the Set-Cookie header
-    await api<{ token: string }>("/pass/auth/token", {
+    await api<{ token: string }>("/id/auth/token", {
       method: "POST",
       body: {
         grant_type: "authorization_code",

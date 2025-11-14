@@ -201,7 +201,7 @@ const apiBaseServer = useSolarNetworkUrl()
 
 try {
   const { data, error } = await useFetch<SnAccount>(
-    `${apiBaseServer}/pass/accounts/${username.value}`,
+    `${apiBaseServer}/id/accounts/${username.value}`,
     { server: true }
   )
 

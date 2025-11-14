@@ -25,7 +25,7 @@ definePageMeta({
 })
 
 onMounted(() => {
-  const redirectUrl = `${apiBase}/pass/auth/callback/${provider}${window.location.search}`
+  const redirectUrl = `${apiBase}/id/auth/callback/${provider}${window.location.search}`
   window.location.href = redirectUrl
 })
 </script>
