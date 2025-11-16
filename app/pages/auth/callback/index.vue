@@ -18,4 +18,13 @@ useHead({
 definePageMeta({
   layout: "minimal"
 })
+
+const route = useRoute()
+
+onMounted(() => {
+  if (route.query.token || route.query.challenge) {
+    // Goes to the client
+    window.location.href = `solian://auth/callback${window.location.search}`
+  }
+})
 </script>
