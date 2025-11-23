@@ -51,6 +51,14 @@ onMounted(() => {
       {
         url: `${apiBase}/swagger/develop/v1/swagger.json`,
         name: "DysonNetwork.Develop"
+      },
+      {
+        url: `${apiBase}/swagger/insight/v1/swagger.json`,
+        name: "DysonNetwork.Insight"
+      },
+      {
+        url: `${apiBase}/swagger/zone/v1/swagger.json`,
+        name: "DysonNetwork.Zone"
       }
     ],
     dom_id: "#swagger-ui",
