@@ -1,4 +1,7 @@
-import tailwindcss from "@tailwindcss/vite"
+import tailwindcss from '@tailwindcss/vite'
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -8,15 +11,13 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "@nuxt/eslint",
     "@pinia/nuxt",
-    "vuetify-nuxt-module",
     "@nuxtjs/i18n",
     "@nuxtjs/color-mode",
-    "nuxt-og-image"
+    "nuxt-og-image",
+    "@bg-dev/nuxt-naiveui",
   ],
   css: [
     "~/assets/css/main.css",
-    "~/assets/css/globals.scss",
-    "katex/dist/katex.min.css"
   ],
   app: {
     pageTransition: { name: "page", mode: "out-in" },
@@ -67,15 +68,23 @@ export default defineNuxtConfig({
     }
   },
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [
+      tailwindcss(),
+      AutoImport({
+        imports: [
+          {
+            'naive-ui': [
+              'useDialog',
+              'useMessage',
+              'useNotification',
+              'useLoadingBar'
+            ]
+          }
+        ]
+      }),
+      Components({
+        resolvers: [NaiveUiResolver()],
+      })
+    ]
   },
-  vuetify: {
-    moduleOptions: {
-      disableVuetifyStyles: true,
-      styles: {
-        configFile: "assets/css/components.scss"
-      }
-    },
-    vuetifyOptions: "./vuetify.config.ts"
-  }
 })

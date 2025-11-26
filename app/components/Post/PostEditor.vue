@@ -1,19 +1,20 @@
 <template>
   <div class="flex flex-col gap-2">
     <pub-select v-model:value="publisher" />
-    <v-textarea
-      v-model="content"
+    <n-input
+      v-model:value="content"
+      type="textarea"
       placeholder="What's happended?!"
       @keydown.meta.enter.exact="submit"
       @keydown.ctrl.enter.exact="submit"
     />
     <div class="flex justify-between">
-      <v-btn type="primary" :loading="submitting" @click="submit">
+      <n-button type="primary" :loading="submitting" @click="submit">
         Post
-        <template #append>
-          <v-icon>mdi-send</v-icon>
+        <template #icon>
+          <span class="mdi mdi-send"></span>
         </template>
-      </v-btn>
+      </n-button>
     </div>
   </div>
 </template>

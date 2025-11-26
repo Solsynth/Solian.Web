@@ -6,15 +6,15 @@
       <span>FloatingIsland</span>
     </div>
     <div class="flex flex-wrap gap-1.5">
-      <a class="link" target="_blank" href="https://solsynth.dev/terms">
+      <a class="hover:underline" target="_blank" href="https://solsynth.dev/terms">
         Terms of Services
       </a>
       <span class="font-bold">·</span>
-      <a class="link" target="_blank" href="https://status.solsynth.dev">
+      <a class="hover:underline" target="_blank" href="https://status.solsynth.dev">
         Service Status
       </a>
       <span class="font-bold">·</span>
-      <nuxt-link class="link" target="_blank" to="/swagger"> API </nuxt-link>
+      <nuxt-link class="hover:underline" target="_blank" to="/swagger"> API </nuxt-link>
     </div>
     <p class="mt-2 opacity-80">
       The FloatingIsland do not provides all the features the Solar Network has,
@@ -23,9 +23,3 @@
     </p>
   </div>
 </template>
-
-<style scoped>
-.link:hover {
-  text-decoration: underline;
-}
-</style>

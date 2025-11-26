@@ -1,49 +1,30 @@
 @import "tailwindcss";
+@plugin "daisyui";
+@plugin "@tailwindcss/typography";
+
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css" layer(utilities);
 
 @layer base {
   :root {
     --font-family: "Nunito Variable", "Helvatica", sans-serif;
   }
 
-  .prose p,
-  .prose h1,
-  .prose h2,
-  .prose h3,
-  .prose h4,
-  .prose h5,
-  .prose h6,
-  .prose ul,
-  .prose ol,
-  .prose blockquote {
-    margin: revert;
+  html,
+  body {
+    font-family: var(--font-family);
   }
-}
-
-@plugin "@tailwindcss/typography";
-
-@import "@fontsource-variable/nunito";
-@import "@mdi/font/css/materialdesignicons.css";
-
-@layer theme, base, components, utilities;
-@import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/utilities.css" layer(utilities);
-
-html,
-body {
-  font-family: var(--font-family);
-  background-color: rgba(var(--v-theme-background), 1);
 }
 
 .page-enter-active,
 .page-leave-active {
   transition: all 0.4s;
 }
+
 .page-enter-from,
 .page-leave-to {
   opacity: 0;
   filter: blur(1rem);
-}
-
-.prose pre {
-  padding: 0;
 }

@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <div class="container mx-auto">
     <div class="layout">
       <div class="main">
         <div v-for="activity in activites" :key="activity.id" class="mb-4">
@@ -11,8 +11,9 @@
         </div>
       </div>
       <div class="sidebar flex flex-col gap-3">
-        <v-card v-if="!userStore.isAuthenticated" class="w-full" title="About">
-          <v-card-text>
+        <div v-if="!userStore.isAuthenticated" class="card w-full bg-base-100 shadow-xl">
+          <div class="card-body">
+            <h2 class="card-title">About</h2>
             <p>Welcome to the <b>Solar Network</b></p>
             <p>The open social network. Friendly to everyone.</p>
 
@@ -24,17 +25,17 @@
                 {{ version.updatedAt }}
               </span>
             </p>
-          </v-card-text>
-        </v-card>
-        <v-card v-else class="w-full">
-          <v-card-text>
+          </div>
+        </div>
+        <div v-else class="card w-full bg-base-100 shadow-xl">
+          <div class="card-body">
             <post-editor @posted="refreshActivities" />
-          </v-card-text>
-        </v-card>
+          </div>
+        </div>
         <sidebar-footer class="max-lg:hidden" />
       </div>
     </div>
-  </v-container>
+  </div>
 </template>
 
 <script setup lang="ts">

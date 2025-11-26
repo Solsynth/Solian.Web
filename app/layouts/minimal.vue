@@ -1,12 +1,14 @@
 <template>
-  <v-app :theme="colorMode.preference">
-    <v-main>
+  <div class="min-h-screen" :data-theme="colorMode.preference">
+    <main>
       <slot />
-    </v-main>
+    </main>
 
     <nuxt-link to="/">
-      <v-footer app fixed flat height="48">
-        <v-container class="mx-auto d-flex align-center justify-between">
+      <footer
+        class="footer items-center h-12 px-4 bg-neutral text-neutral-content sticky bottom-0"
+      >
+        <div class="container mx-auto flex items-center">
           <img
             :src="Icon"
             alt="Cloudy Lamb"
@@ -15,10 +17,10 @@
             class="mr-2"
           />
           <p class="text-sm">Solar Network</p>
-        </v-container>
-      </v-footer>
+        </div>
+      </footer>
     </nuxt-link>
-  </v-app>
+  </div>
 </template>
 
 <script lang="ts" setup>

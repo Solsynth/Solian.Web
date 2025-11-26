@@ -1,44 +1,57 @@
 <template>
-  <v-select
-    :items="pubStore.publishers"
-    item-title="nick"
-    item-value="name"
-    :model-value="props.value"
-    @update:model-value="(v) => emits('update:value', v)"
-  >
-    <template #item="{ props: itemProps, item }">
-      <v-list-item v-bind="itemProps">
-        <template #prepend>
-          <v-avatar
-            :image="item.raw.picture ? `${apiBase}/drive/files/${item.raw.picture.id}` : undefined"
-            size="small"
-          />
-        </template>
-        <v-list-item-subtitle>@{{ item.raw?.name }}</v-list-item-subtitle>
-      </v-list-item>
-    </template>
-    <template #selection="{ item }">
-      <div class="d-flex align-center">
-        <v-avatar
-          :image="item.raw.picture ? `${apiBase}/drive/files/${item.raw.picture.id}` : undefined"
-          size="24"
-          class="me-2"
-        />
-        {{ item.raw?.nick }}
-      </div>
-    </template>
-  </v-select>
+  <n-select
+    :options="pubStore.publishers"
+    label-field="nick"
+    value-field="name"
+    :value="props.value"
+    @update:value="(v) => emits('update:value', v)"
+    :render-label="renderLabel"
+    :render-tag="renderTag"
+  />
 </template>
 
 <script setup lang="ts">
 import { usePubStore } from '~/stores/pub'
-import { watch } from 'vue'
+import { watch, h } from 'vue'
+import type { SelectRenderLabel, SelectRenderTag } from 'naive-ui'
 
 const pubStore = usePubStore()
 const apiBase = useSolarNetworkUrl()
 
 const props = defineProps<{ value: string | undefined }>()
 const emits = defineEmits(['update:value'])
+
+const renderLabel: SelectRenderLabel = (option) => {
+  return h('div', { class: 'flex items-center' }, [
+    h(NAvatar, {
+      src: option.picture ? `${apiBase.value}/drive/files/${option.picture.id}` : undefined,
+      size: 'small',
+      class: 'mr-2'
+    }),
+    h('div', null, [
+      h('div', null, option.nick as string),
+      h('div', { class: 'text-xs text-gray-500' }, `@${option.name as string}`)
+    ])
+  ])
+}
+
+const renderTag: SelectRenderTag = ({ option }) => {
+  return h(
+    'div',
+    {
+      class: 'flex items-center'
+    },
+    [
+      h(NAvatar, {
+        src: option.picture ? `${apiBase.value}/drive/files/${option.picture.id}` : undefined,
+        size: 'small',
+        class: 'mr-2'
+      }),
+      option.nick as string
+    ]
+  )
+}
+
 
 watch(
   pubStore,

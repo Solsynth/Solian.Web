@@ -1,6 +1,6 @@
 <template>
-  <v-card :flat="props.flat">
-    <v-card-text :style="props.slim ? 'padding: 0' : null">
+  <div :class="['card', { 'shadow-none': props.flat }]">
+    <div :class="['card-body', { 'p-0': props.slim }]">
       <div :class="['flex flex-col', compact ? 'gap-1' : 'gap-3']">
         <post-header :item="props.item" :compact="compact" />
 
@@ -21,50 +21,42 @@
         </article>
 
         <template v-if="showReferenced">
-          <div v-if="props.item.repliedPost || props.item.repliedGone">
-            <v-card
-              title="Replying to"
-              prepend-icon="mdi-reply"
-              density="compact"
+          <div v-if="props.item.repliedPost || props.item.repliedGone" class="border rounded-md">
+            <div class="p-2 flex items-center gap-2">
+              <span class="mdi mdi-reply"></span>
+              <span class="font-bold">Replying to</span>
+            </div>
+            <div v-if="props.item.repliedGone" class="px-4 pb-3 text-sm opacity-60">
+              Post unavailable
+            </div>
+            <post-item
+              v-else-if="props.item.repliedPost"
+              class="px-4 pb-3"
+              :item="props.item.repliedPost"
+              slim
+              compact
               flat
-              border
-            >
-              <div v-if="props.item.repliedGone" class="px-4 pb-3 text-sm opacity-60">
-                Post unavailable
-              </div>
-              <post-item
-                v-else-if="props.item.repliedPost"
-                class="px-4 pb-3"
-                :item="props.item.repliedPost"
-                slim
-                compact
-                flat
-                @react="handleReaction"
-              />
-            </v-card>
+              @react="handleReaction"
+            />
           </div>
 
-          <div v-if="props.item.forwardedPost || props.item.forwardedGone">
-            <v-card
-              title="Forwarded"
-              prepend-icon="mdi-forward"
-              density="compact"
+          <div v-if="props.item.forwardedPost || props.item.forwardedGone" class="border rounded-md">
+            <div class="p-2 flex items-center gap-2">
+              <span class="mdi mdi-forward"></span>
+              <span class="font-bold">Forwarded</span>
+            </div>
+            <div v-if="props.item.forwardedGone" class="px-4 pb-3 text-sm opacity-60">
+              Post unavailable
+            </div>
+            <post-item
+              v-else-if="props.item.forwardedPost"
+              class="px-4 pb-3"
+              :item="props.item.forwardedPost"
+              slim
+              compact
               flat
-              border
-            >
-              <div v-if="props.item.forwardedGone" class="px-4 pb-3 text-sm opacity-60">
-                Post unavailable
-              </div>
-              <post-item
-                v-else-if="props.item.forwardedPost"
-                class="px-4 pb-3"
-                :item="props.item.forwardedPost"
-                slim
-                compact
-                flat
-                @react="handleReaction"
-              />
-            </v-card>
+              @react="handleReaction"
+            />
           </div>
         </template>
 
@@ -74,22 +66,19 @@
           :max-height="640"
         />
 
-        <v-lazy
-          v-if="props.item.repliesCount && !compact"
-          :options="{ threshold: 0.5 }"
-          transition="fade-transition"
-        >
+        <div ref="repliesTarget">
           <replies-compact-list
+            v-if="props.item.repliesCount && !compact && repliesVisible"
             :params="{ postId: props.item.id }"
             :hide-quick-reply="true"
             @react="handleReplyReaction"
           />
-        </v-lazy>
+        </div>
         <div
           v-if="props.item.isTruncated"
-          class="flex gap-2 text-xs opacity-80"
+          class="flex gap-2 text-xs opacity-80 items-center"
         >
-          <v-icon icon="mdi-dots-horizontal" size="small" />
+          <span class="mdi mdi-dots-horizontal"></span>
           <p>Post truncated, tap to see details...</p>
         </div>
 
@@ -104,14 +93,15 @@
           />
         </div>
       </div>
-    </v-card-text>
-  </v-card>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, watch } from "vue"
 import { useMarkdownProcessor } from "~/composables/useMarkdownProcessor"
 import type { SnPost } from "~/types/api"
+import { useIntersectionObserver } from '@vueuse/core'
 
 const props = withDefaults(
   defineProps<{
@@ -155,5 +145,20 @@ watch(
     if (value.content) htmlContent.value = render(value.content)
   },
   { immediate: true, deep: true }
+)
+
+const repliesTarget = ref(null)
+const repliesVisible = ref(false)
+
+useIntersectionObserver(
+  repliesTarget,
+  ([{ isIntersecting }]) => {
+    if (isIntersecting) {
+      repliesVisible.value = true
+    }
+  },
+  {
+    threshold: 0.5
+  }
 )
 </script>
