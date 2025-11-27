@@ -3,15 +3,15 @@
     <post-quick-reply v-if="!props.hideQuickReply" class="mb-4" />
 
     <!-- Error State -->
-    <v-alert
+    <n-alert
       v-if="hasError"
       type="error"
       class="mb-4"
-      closable
-      @click:close="refresh"
+      :closable="true"
+      @close="refresh"
     >
       {{ error }}
-    </v-alert>
+    </n-alert>
 
     <!-- Replies List -->
     <v-infinite-scroll
@@ -36,18 +36,16 @@
       <!-- Loading State -->
       <template #loading>
         <div class="flex justify-center py-4">
-          <v-progress-circular indeterminate size="32" />
+          <n-spin size="large" />
         </div>
       </template>
 
       <!-- Empty State -->
       <template #empty>
         <div v-if="!replies" class="text-center py-8 text-muted-foreground">
-          <v-icon
-            icon="mdi-comment-outline"
-            size="48"
-            class="mb-2 opacity-50"
-          />
+          <n-icon size="48" class="mb-2 opacity-50">
+            <i class="mdi mdi-comment-outline"></i>
+          </n-icon>
           <p>No replies yet</p>
         </div>
       </template>

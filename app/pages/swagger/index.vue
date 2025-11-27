@@ -6,26 +6,7 @@
 // @ts-ignore
 import { SwaggerUIBundle, SwaggerUIStandalonePreset } from "swagger-ui-dist"
 import "swagger-ui-dist/swagger-ui.css"
-
-const colorMode = useColorMode()
-
-onMounted(() => {
-  // Load theme once on page load
-  loadTheme(colorMode.value)
-
-  // Reactively switch if user toggles mode
-  watch(colorMode, (newVal) => {
-    loadTheme(newVal.value)
-  })
-})
-
-function loadTheme(mode: string) {
-  if (mode === "dark") {
-    import("swagger-themes/themes/one-dark.css")
-  } else {
-    import("swagger-themes/themes/material.css")
-  }
-}
+import "swagger-themes/themes/one-dark.css"
 
 const apiBase = useSolarNetworkUrl()
 

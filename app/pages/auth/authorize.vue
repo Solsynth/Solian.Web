@@ -6,12 +6,7 @@
       </div>
       <div class="pa-8">
         <div class="mb-4">
-          <img
-            :src="colorMode.value == 'dark' ? IconDark : IconLight"
-            alt="CloudyLamb"
-            height="60"
-            width="60"
-          />
+          <img :src="IconLight" alt="CloudyLamb" height="60" width="60" />
         </div>
         <v-row>
           <v-col cols="12" lg="6" class="d-flex align-start justify-start">
@@ -74,7 +69,7 @@
                   <v-btn
                     color="primary"
                     :loading="isAuthorizing"
-                    class="flex-grow-1"
+                    class="grow"
                     size="large"
                     @click="handleAuthorize"
                   >
@@ -83,7 +78,7 @@
                   <v-btn
                     variant="outlined"
                     :disabled="isAuthorizing"
-                    class="flex-grow-1"
+                    class="grow"
                     size="large"
                     @click="handleDeny"
                   >
@@ -106,9 +101,6 @@ import { useRoute } from "vue-router"
 import { useSolarNetwork } from "~/composables/useSolarNetwork"
 
 import IconLight from "~/assets/images/cloudy-lamb.png"
-import IconDark from "~/assets/images/cloudy-lamb@dark.png"
-
-const colorMode = useColorMode()
 
 const route = useRoute()
 const api = useSolarNetwork()

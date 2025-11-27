@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen" :data-theme="colorMode.preference">
+  <div class="min-h-screen">
     <main>
       <slot />
     </main>
@@ -25,6 +25,4 @@
 
 <script lang="ts" setup>
 import Icon from "~/assets/images/cloudy-lamb.png"
-
-const colorMode = useColorMode()
 </script>

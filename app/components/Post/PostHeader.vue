@@ -1,8 +1,9 @@
 <template>
   <div :class="['flex gap-3 items-center', { 'gap-2': compact }]">
-    <v-avatar
-      :image="publisherAvatar"
-      :size="compact ? 24 : 40"
+    <n-avatar
+      round
+      :src="publisherAvatar"
+      :size="compact ? 24 : 36"
       :border="compact"
       @click="router.push('/publishers/' + props.item.publisher.name)"
     />

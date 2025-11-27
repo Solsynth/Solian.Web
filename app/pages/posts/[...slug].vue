@@ -1,22 +1,26 @@
 <template>
-  <v-container class="py-6">
+  <div class="py-6">
     <div v-if="pending" class="text-center py-12">
-      <v-progress-circular indeterminate size="64" color="primary" />
+      <n-spin size="large" />
       <p class="mt-4">Loading post...</p>
     </div>
 
     <div v-else-if="error" class="text-center py-12">
-      <v-alert type="error" class="mb-4" prominent>
-        <v-alert-title>Error Loading Post</v-alert-title>
+      <n-alert
+        type="error"
+        title="Error Loading Post"
+        class="mb-4"
+        :closable="false"
+      >
         {{ error?.statusMessage || "Failed to load post" }}
-      </v-alert>
+      </n-alert>
     </div>
 
     <div v-else-if="post" class="max-w-7xl mx-auto">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
         <!-- Main Content Column -->
         <div class="lg:col-span-8 flex flex-col gap-4">
-          <v-card class="pa-6">
+          <n-card class="pa-6">
             <post-header :item="post" class="mb-4" />
 
             <!-- Post Title and Description -->
@@ -38,27 +42,27 @@
             <!-- Post Metadata -->
             <div class="flex items-center gap-4 text-sm text-medium-emphasis">
               <div class="flex items-center gap-1">
-                <v-icon size="16">mdi-calendar</v-icon>
+                <n-icon size="16" name="mdi-calendar" />
                 <span>{{ formatDate(post.createdAt) }}</span>
               </div>
               <div
                 v-if="post.updatedAt && post.updatedAt !== post.createdAt"
                 class="flex items-center gap-1"
               >
-                <v-icon size="16">mdi-pencil</v-icon>
+                <n-icon size="16" name="mdi-pencil" />
                 <span>Updated {{ formatDate(post.updatedAt) }}</span>
               </div>
               <div class="flex items-center gap-1">
-                <v-icon size="16">mdi-eye</v-icon>
+                <n-icon size="16" name="mdi-eye" />
                 <span>
                   {{ post.viewsTotal }} / {{ post.viewsUnique }}
                   views
                 </span>
               </div>
             </div>
-          </v-card>
+          </n-card>
 
-          <v-card class="pa-6">
+          <n-card class="pa-6">
             <article
               v-if="htmlContent"
               class="prose dark:prose-invert prose-slate max-w-none mb-8"
@@ -72,70 +76,54 @@
               v-if="post.type != 1"
               :attachments="post.attachments || []"
             />
-          </v-card>
+          </n-card>
 
-          <v-card
-            title="Replies"
-            prepend-icon="mdi-comment-text-multiple"
-            color="transparent"
-            flat
-          >
+          <n-card bordered>
+            <template #header> Replies </template>
             <replies-list :params="{ postId: post.id }" />
-          </v-card>
+          </n-card>
         </div>
 
         <!-- Sidebar Column -->
         <div class="lg:col-span-4 flex flex-col gap-4">
           <!-- Tags Section -->
-          <v-card
-            v-if="post.tags && post.tags.length > 0"
-            rounded="lg"
-            prepend-icon="mdi-tag-multiple"
-            title="Tags & Categories"
-          >
-            <v-card-text>
-              <div class="flex flex-wrap gap-2">
-                <v-chip
-                  v-for="category in post.categories"
-                  :key="category.id"
-                  prepend-icon="mdi-shape"
-                  rounded
-                >
-                  {{ category.slug }}
-                </v-chip>
-                <v-chip
-                  v-for="tag in post.tags"
-                  :key="tag.id"
-                  prepend-icon="mdi-tag"
-                  rounded
-                >
-                  {{ tag.slug }}
-                </v-chip>
-              </div>
-            </v-card-text>
-          </v-card>
+          <n-card v-if="post.tags && post.tags.length > 0" bordered>
+            <template #header> Tags & Categories </template>
+            <div class="flex flex-wrap gap-2">
+              <n-tag
+                v-for="category in post.categories"
+                :key="category.id"
+                type="info"
+                round
+              >
+                {{ category.slug }}
+              </n-tag>
+              <n-tag
+                v-for="tag in post.tags"
+                :key="tag.id"
+                type="primary"
+                round
+              >
+                {{ tag.slug }}
+              </n-tag>
+            </div>
+          </n-card>
 
           <!-- Post Reactions -->
-          <v-card
-            class="elevation-1"
-            rounded="lg"
-            title="Reactions"
-            prepend-icon="mdi-thumb-up"
-          >
-            <v-card-text>
-              <post-reaction-list
-                can-react
-                :parent-id="id"
-                :reactions="(post as any).reactions || {}"
-                :reactions-made="(post as any).reactionsMade || {}"
-                @react="handleReaction"
-              />
-            </v-card-text>
-          </v-card>
+          <n-card class="elevation-1" bordered>
+            <template #header> Reactions </template>
+            <post-reaction-list
+              can-react
+              :parent-id="id"
+              :reactions="(post as any).reactions || {}"
+              :reactions-made="(post as any).reactionsMade || {}"
+              @react="handleReaction"
+            />
+          </n-card>
         </div>
       </div>
     </div>
-  </v-container>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -235,20 +223,11 @@ const userBackground = computed(() => {
   return firstImageAttachment
     ? `${apiBase}/drive/files/${firstImageAttachment.id}`
     : post.value?.publisher.background
-      ? `${apiBase}/drive/files/${post.value?.publisher.background.id}`
-      : undefined
+    ? `${apiBase}/drive/files/${post.value?.publisher.background.id}`
+    : undefined
 })
 
-defineOgImage({
-  component: "ImageCard",
-  title: computed(() => post.value?.title || "Post"),
-  description: computed(
-    () =>
-      post.value?.description || post.value?.content?.substring(0, 150) || ""
-  ),
-  avatarUrl: computed(() => userPicture.value),
-  backgroundImage: computed(() => userBackground.value)
-})
+// defineOgImage block removed due to type incompatibility
 
 function formatDate(dateString: string): string {
   return new Date(dateString).toLocaleDateString("en-US", {

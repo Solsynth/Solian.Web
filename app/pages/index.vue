@@ -11,8 +11,11 @@
         </div>
       </div>
       <div class="sidebar flex flex-col gap-3">
-        <div v-if="!userStore.isAuthenticated" class="card w-full bg-base-100 shadow-xl">
-          <div class="card-body">
+        <div
+          v-if="!userStore.isAuthenticated"
+          class="card w-full bg-base-100 shadow-xl"
+        >
+          <n-card>
             <h2 class="card-title">About</h2>
             <p>Welcome to the <b>Solar Network</b></p>
             <p>The open social network. Friendly to everyone.</p>
@@ -25,7 +28,7 @@
                 {{ version.updatedAt }}
               </span>
             </p>
-          </div>
+          </n-card>
         </div>
         <div v-else class="card w-full bg-base-100 shadow-xl">
           <div class="card-body">
@@ -70,7 +73,7 @@ const userStore = useUserStore()
 const version = ref<SnVersion | null>(null)
 async function fetchVersion() {
   const api = useSolarNetwork()
-  const resp = await api("/sphere/version")
+  const resp = await api("/version")
   version.value = resp as SnVersion
 }
 onMounted(() => fetchVersion())
@@ -118,6 +121,7 @@ async function refreshActivities() {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }

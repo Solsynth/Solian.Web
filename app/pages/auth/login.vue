@@ -242,8 +242,6 @@ function getFactorName(factorType: number) {
       return "Unknown Factor"
   }
 }
-
-const colorMode = useColorMode()
 </script>
 
 <template>
@@ -254,12 +252,7 @@ const colorMode = useColorMode()
       </div>
       <div class="pa-8">
         <div class="mb-4">
-          <img
-            :src="colorMode.value == 'dark' ? IconDark : IconLight"
-            alt="CloudyLamb"
-            height="60"
-            width="60"
-          />
+          <img :src="IconLight" alt="CloudyLamb" height="60" width="60" />
         </div>
         <v-row>
           <v-col cols="12" lg="6" class="d-flex align-start justify-start">
@@ -370,14 +363,14 @@ const colorMode = useColorMode()
                             factor.type === 0
                               ? "mdi-lock"
                               : factor.type === 1
-                                ? "mdi-email"
-                                : factor.type === 2
-                                  ? "mdi-cellphone"
-                                  : factor.type === 3
-                                    ? "mdi-clock"
-                                    : factor.type === 4
-                                      ? "mdi-numeric"
-                                      : "mdi-shield-key"
+                              ? "mdi-email"
+                              : factor.type === 2
+                              ? "mdi-cellphone"
+                              : factor.type === 3
+                              ? "mdi-clock"
+                              : factor.type === 4
+                              ? "mdi-numeric"
+                              : "mdi-shield-key"
                           }}</v-icon>
                         </template>
                       </v-list-item>

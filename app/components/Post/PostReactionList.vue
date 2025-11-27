@@ -1,140 +1,57 @@
 <template>
-  <div class="d-flex flex-wrap gap-2">
+  <div class="flex flex-wrap gap-3">
     <!-- Add Reaction Button -->
-    <v-chip
+    <n-tag
       v-if="canReact"
-      rounded
+      clickable
+      style="cursor: pointer"
+      type="primary"
       :disabled="submitting"
-      prepend-icon="mdi-plus"
       @click="showReactionDialog"
     >
+      <template #icon>
+        <n-icon :component="HeartPlus" />
+      </template>
       React
-    </v-chip>
+    </n-tag>
 
     <!-- Existing Reactions -->
-    <v-chip
-      v-for="(count, symbol) in reactions"
-      :key="symbol"
-      rounded
-      :color="getReactionColor(symbol)"
-      :disabled="submitting"
-      @click="reactToPost(symbol)"
-    >
-      <span class="reaction-emoji">{{ getReactionEmoji(symbol) }}</span>
-      <span class="reaction-symbol">{{ symbol }}</span>
-      <v-chip size="x-small" variant="flat" class="reaction-count ms-1">
-        {{ count }}
-      </v-chip>
-    </v-chip>
+    <n-space>
+      <n-tag
+        v-for="(count, symbol) in reactions"
+        :key="symbol"
+        :type="getReactionColor(symbol)"
+        :disabled="submitting"
+        @click="reactToPost(symbol)"
+        style="cursor: pointer"
+        class="reaction-tag"
+      >
+        <span class="reaction-emoji">{{ getReactionEmoji(symbol) }}</span>
+        <span class="reaction-symbol ms-2">{{ symbol }}</span>
+        <code class="text-xs ms-1.5">x{{ count }}</code>
+      </n-tag>
+    </n-space>
   </div>
 
   <!-- Reaction Selection Dialog -->
-  <v-dialog v-model="reactionDialog" max-width="500" height="600">
-    <v-card prepend-icon="mdi-emoticon-outline" title="React Post">
-      <!-- Dialog Content -->
+  <n-modal v-model:show="reactionDialog">
+    <n-card class="max-w-[540px]">
+      <template #header>
+        <span class="font-bold">React Post</span>
+      </template>
       <div class="dialog-content">
-        <!-- Positive Reactions -->
-        <div class="reaction-section">
-          <div class="section-header d-flex align-center px-6 py-3">
-            <v-icon class="me-2">mdi-emoticon-happy</v-icon>
-            <span class="font-bold">Positive</span>
-          </div>
-          <div class="reaction-grid">
-            <v-card
-              v-for="reaction in getReactionsByAttitude(0)"
-              :key="reaction.symbol"
-              class="reaction-card mx-2"
-              :class="{ selected: isReactionMade(reaction.symbol) }"
-              :disabled="submitting"
-              @click="selectReaction(reaction.symbol)"
-            >
-              <div class="d-flex flex-column align-center justify-center pa-3">
-                <span class="text-h4 mb-1">{{ reaction.emoji }}</span>
-                <span class="text-xs text-center mb-1">{{
-                  reaction.symbol
-                }}</span>
-                <span
-                  v-if="getReactionCount(reaction.symbol) > 0"
-                  class="text-xs"
-                >
-                  x{{ getReactionCount(reaction.symbol) }}
-                </span>
-                <div v-else class="spacer"></div>
-              </div>
-            </v-card>
-          </div>
-        </div>
-
-        <!-- Neutral Reactions -->
-        <div class="reaction-section">
-          <div class="section-header d-flex align-center px-6 py-3">
-            <v-icon class="me-2">mdi-emoticon-neutral</v-icon>
-            <span class="font-bold">Neutral</span>
-          </div>
-          <div class="reaction-grid">
-            <v-card
-              v-for="reaction in getReactionsByAttitude(1)"
-              :key="reaction.symbol"
-              class="reaction-card mx-2"
-              :class="{ selected: isReactionMade(reaction.symbol) }"
-              :disabled="submitting"
-              @click="selectReaction(reaction.symbol)"
-            >
-              <div class="d-flex flex-column align-center justify-center pa-3">
-                <span class="text-h4 mb-1">{{ reaction.emoji }}</span>
-                <span class="text-xs text-center mb-1">{{
-                  reaction.symbol
-                }}</span>
-                <span
-                  v-if="getReactionCount(reaction.symbol) > 0"
-                  class="text-xs"
-                >
-                  x{{ getReactionCount(reaction.symbol) }}
-                </span>
-                <div v-else class="spacer"></div>
-              </div>
-            </v-card>
-          </div>
-        </div>
-
-        <!-- Negative Reactions -->
-        <div class="reaction-section">
-          <div class="section-header d-flex align-center px-6 py-3">
-            <v-icon class="me-2">mdi-emoticon-sad</v-icon>
-            <span class="font-bold">Negative</span>
-          </div>
-          <div class="reaction-grid">
-            <v-card
-              v-for="reaction in getReactionsByAttitude(2)"
-              :key="reaction.symbol"
-              class="reaction-card mx-2"
-              :class="{ selected: isReactionMade(reaction.symbol) }"
-              :disabled="submitting"
-              @click="selectReaction(reaction.symbol)"
-            >
-              <div class="d-flex flex-column align-center justify-center pa-3">
-                <span class="text-h4 mb-1">{{ reaction.emoji }}</span>
-                <span class="text-xs text-center mb-1">{{
-                  reaction.symbol
-                }}</span>
-                <span
-                  v-if="getReactionCount(reaction.symbol) > 0"
-                  class="text-xs"
-                >
-                  x{{ getReactionCount(reaction.symbol) }}
-                </span>
-                <div v-else class="spacer"></div>
-              </div>
-            </v-card>
-          </div>
-        </div>
+        <n-alert type="info" title="Reaction not available">
+          Due to various of reasons, we stop providing the react creation on the
+          FloatingIsland. To react post, head to web.solian.app
+        </n-alert>
       </div>
-    </v-card>
-  </v-dialog>
+    </n-card>
+  </n-modal>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue"
+import { Smile, Meh, Frown, HeartPlus } from "lucide-vue-next"
 
 interface Props {
   parentId: string
@@ -191,12 +108,21 @@ function getReactionEmoji(symbol: string): string {
   return reaction?.emoji || "❓"
 }
 
-function getReactionColor(symbol: string): string {
-  const attitude =
-    availableReactions.find((r) => r.symbol === symbol)?.attitude || 1
+function getReactionColor(
+  symbol: string
+):
+  | "success"
+  | "error"
+  | "primary"
+  | "default"
+  | "info"
+  | "warning"
+  | undefined {
+  const attitude = availableReactions.find((r) => r.symbol === symbol)?.attitude
   if (attitude === 0) return "success"
   if (attitude === 2) return "error"
-  return "primary"
+  // neutral or unspecified attitudes use default
+  return "default"
 }
 
 async function reactToPost(symbol: string) {
@@ -255,64 +181,3 @@ function getReactionCount(symbol: string): number {
   return (props.reactions || {})[symbol] || 0
 }
 </script>
-
-<style scoped>
-.reaction-emoji {
-  font-size: 16px;
-  margin-right: 4px;
-}
-
-.reaction-symbol {
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.reaction-count {
-  font-size: 10px;
-  padding: 0 4px;
-}
-
-.reaction-section {
-  margin-bottom: 16px;
-}
-
-.section-header {
-  background-color: rgba(var(--v-theme-surface-variant), 0.5);
-  border-bottom: 1px solid rgb(var(--v-theme-outline-variant));
-}
-
-.reaction-grid {
-  display: flex;
-  overflow-x: auto;
-  gap: 8px;
-  padding: 16px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.reaction-grid::-webkit-scrollbar {
-  display: none;
-}
-
-.reaction-card {
-  min-width: 80px;
-  height: 100px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: 2px solid transparent;
-}
-
-.reaction-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.reaction-card.selected {
-  border-color: rgb(var(--v-theme-primary));
-  background-color: rgb(var(--v-theme-primary-container));
-}
-
-.spacer {
-  height: 16px;
-}
-</style>

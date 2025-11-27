@@ -1,7 +1,8 @@
-import tailwindcss from '@tailwindcss/vite'
-import AutoImport from 'unplugin-auto-import/vite'
-import Components from 'unplugin-vue-components/vite'
-import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
+import tailwindcss from "@tailwindcss/vite"
+import AutoImport from "unplugin-auto-import/vite"
+import Components from "unplugin-vue-components/vite"
+import { NaiveUiResolver } from "unplugin-vue-components/resolvers"
+import { generateTailwindColorThemes } from "@bg-dev/nuxt-naiveui/utils"
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -12,13 +13,10 @@ export default defineNuxtConfig({
     "@nuxt/eslint",
     "@pinia/nuxt",
     "@nuxtjs/i18n",
-    "@nuxtjs/color-mode",
     "nuxt-og-image",
-    "@bg-dev/nuxt-naiveui",
+    "@bg-dev/nuxt-naiveui"
   ],
-  css: [
-    "~/assets/css/main.css",
-  ],
+  css: ["~/assets/css/main.css"],
   app: {
     pageTransition: { name: "page", mode: "out-in" },
     head: {
@@ -43,10 +41,6 @@ export default defineNuxtConfig({
       "Noto+Sans+JP:400",
       "Nunito:400"
     ]
-  },
-  colorMode: {
-    preference: "system",
-    fallback: "light"
   },
   features: {
     inlineStyles: false
@@ -73,18 +67,37 @@ export default defineNuxtConfig({
       AutoImport({
         imports: [
           {
-            'naive-ui': [
-              'useDialog',
-              'useMessage',
-              'useNotification',
-              'useLoadingBar'
+            "naive-ui": [
+              "useDialog",
+              "useMessage",
+              "useNotification",
+              "useLoadingBar"
             ]
           }
         ]
       }),
       Components({
-        resolvers: [NaiveUiResolver()],
+        resolvers: [NaiveUiResolver()]
       })
     ]
   },
+  naiveui: {
+    themeConfig: {
+      ...generateTailwindColorThemes(),
+      shared: {
+        common: {
+          fontFamily:
+            "Nunito Variable, v-sans, ui-system, -apple-system, sans-serif",
+          primaryColor: "#3F51B5FF",
+          primaryColorHover: "#5767C1FF",
+          primaryColorPressed: "#3546A4FF",
+          primaryColorSuppl: "#4C5EC5FF",
+          borderRadius: "16px",
+          borderRadiusSmall: "8px"
+        }
+      },
+      light: {},
+      dark: {}
+    }
+  }
 })

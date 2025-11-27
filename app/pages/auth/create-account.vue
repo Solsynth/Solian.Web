@@ -6,12 +6,7 @@
       </div>
       <div class="pa-8">
         <div class="mb-4">
-          <img
-            :src="colorMode.value == 'dark' ? IconDark : IconLight"
-            alt="CloudyLamb"
-            height="60"
-            width="60"
-          />
+          <img :src="IconLight" alt="CloudyLamb" height="60" width="60" />
         </div>
         <v-row>
           <v-col cols="12" lg="6" class="d-flex align-start justify-start">
@@ -148,12 +143,9 @@ import { useSolarNetwork } from "~/composables/useSolarNetwork"
 import CaptchaWidget from "~/components/CaptchaWidget.vue"
 
 import IconLight from "~/assets/images/cloudy-lamb.png"
-import IconDark from "~/assets/images/cloudy-lamb@dark.png"
 
 const router = useRouter()
 const api = useSolarNetwork()
-
-const colorMode = useColorMode()
 
 useHead({
   title: "Create Account"

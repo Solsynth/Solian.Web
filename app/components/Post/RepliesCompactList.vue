@@ -1,29 +1,22 @@
 <template>
-  <v-card
+  <n-card
     class="replies-compact-list"
-    flat
-    border
+    embedded
     title="Replies"
     prepend-icon="mdi-comment-text-multiple"
-    density="compact"
+    size="small"
   >
     <!-- Error State -->
-    <v-alert
-      v-if="hasError"
-      type="error"
-      class="mb-4"
-      closable
-      @click:close="refresh"
-    >
+    <n-alert v-if="hasError" type="error" closable @click:close="refresh">
       {{ error }}
-    </v-alert>
+    </n-alert>
 
     <!-- Replies List -->
-    <div class="flex flex-col gap-2 pb-2.5">
+    <div class="flex flex-col gap-2">
       <template v-for="item in replies" :key="item.id">
-        <v-sheet class="px-4" @click="router.push('/posts/' + item.id)">
+        <div @click="router.push('/posts/' + item.id)">
           <div class="flex gap-3">
-            <v-avatar :image="getPublisherAvatar(item)" size="24" border />
+            <n-avatar :src="getPublisherAvatar(item)" :size="24" round />
             <article
               v-if="getHtmlContent(item)"
               class="prose prose-sm dark:prose-invert prose-slate prose-p:m-0 max-w-none flex-1"
@@ -31,24 +24,22 @@
               <div v-html="getHtmlContent(item)" />
             </article>
           </div>
-        </v-sheet>
+        </div>
       </template>
 
       <!-- Empty State -->
-      <div v-if="!replies || replies.length === 0" class="text-center py-8 text-muted-foreground">
-        <v-icon
-          icon="mdi-comment-outline"
-          size="48"
-          class="mb-2 opacity-50"
-        />
+      <div
+        v-if="!replies || replies.length === 0"
+        class="text-center py-8 text-muted-foreground"
+      >
+        <v-icon icon="mdi-comment-outline" size="48" class="mb-2 opacity-50" />
         <p>No replies yet</p>
       </div>
     </div>
-  </v-card>
+  </n-card>
 </template>
 
 <script setup lang="ts">
-
 import { useRepliesList } from "~/composables/useRepliesList"
 import { useMarkdownProcessor } from "~/composables/useMarkdownProcessor"
 import type { RepliesListParams } from "~/composables/useRepliesList"
