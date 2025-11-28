@@ -1,20 +1,37 @@
 <template>
-  <div class="container mx-auto">
+  <div class="container mx-auto px-5">
     <div class="layout">
       <div class="main">
-        <div v-for="activity in activites" :key="activity.id" class="mb-4">
-          <post-item
-            v-if="activity.type.startsWith('posts')"
-            :item="activity.data"
-            @click="router.push('/posts/' + activity.id)"
-          />
-        </div>
+        <n-infinite-scroll
+          style="overflow: auto"
+          :distance="0"
+          @load="fetchActivites"
+        >
+          <div v-for="activity in activites" :key="activity.id" class="mb-4">
+            <post-item
+              v-if="activity.type.startsWith('posts')"
+              :item="activity.data"
+              @click="router.push('/posts/' + activity.id)"
+            />
+          </div>
+
+          <div v-if="loading" class="flex justify-center py-4">
+            <n-spin size="large" />
+          </div>
+
+          <div
+            v-if="!loading && activites.length === 0"
+            class="text-center py-8 text-muted-foreground"
+          >
+            <n-icon size="48" class="mb-2 opacity-50">
+              <i class="mdi mdi-post-outline"></i>
+            </n-icon>
+            <p>No posts yet</p>
+          </div>
+        </n-infinite-scroll>
       </div>
       <div class="sidebar flex flex-col gap-3">
-        <div
-          v-if="!userStore.isAuthenticated"
-          class="card w-full bg-base-100 shadow-xl"
-        >
+        <div v-if="!userStore.isAuthenticated">
           <n-card>
             <h2 class="card-title">About</h2>
             <p>Welcome to the <b>Solar Network</b></p>
@@ -43,7 +60,6 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue"
-import { useInfiniteScroll } from "@vueuse/core"
 import { useUserStore } from "~/stores/user"
 import { useSolarNetwork } from "~/composables/useSolarNetwork"
 import type { SnVersion, SnActivity } from "~/types/api"
@@ -104,11 +120,6 @@ async function fetchActivites() {
   loading.value = false
 }
 onMounted(() => fetchActivites())
-
-useInfiniteScroll(window, fetchActivites, {
-  canLoadMore: () => !loading.value && activitesHasMore.value,
-  distance: 10
-})
 
 async function refreshActivities() {
   activites.value = []

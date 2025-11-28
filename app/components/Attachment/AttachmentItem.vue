@@ -15,13 +15,12 @@
         />
       </div>
       <!-- Main image -->
-      <img
+      <n-image
         :src="remoteSource"
         class="w-full h-auto rounded-md transition-opacity duration-500 object-cover cursor-pointer"
         :class="{ 'opacity-0': !imageLoaded && blurhash }"
         @load="imageLoaded = true"
         @error="imageLoaded = true"
-        @click="openExternally"
       />
     </template>
 
@@ -98,7 +97,9 @@ const remoteSource = computed(
 
 const blurhashContainerStyle = computed(() => {
   return {
-    "padding-bottom": `${aspectRatio.value == null ? 0 : aspectRatio.value * 100}%`
+    "padding-bottom": `${
+      aspectRatio.value == null ? 0 : aspectRatio.value * 100
+    }%`
   }
 })
 

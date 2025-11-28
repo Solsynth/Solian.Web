@@ -1,5 +1,5 @@
 <template>
-  <n-card>
+  <n-card :size="compact ? 'small' : 'medium'">
     <div :class="['flex flex-col', compact ? 'gap-1' : 'gap-3']">
       <post-header :item="props.item" :compact="compact" />
 
@@ -22,10 +22,10 @@
       <template v-if="showReferenced">
         <div
           v-if="props.item.repliedPost || props.item.repliedGone"
-          class="border rounded-md"
+          class="border rounded-xl"
         >
           <div class="p-2 flex items-center gap-2">
-            <span class="mdi mdi-reply"></span>
+            <n-icon :component="ReplyIcon" class="ms-2" />
             <span class="font-bold">Replying to</span>
           </div>
           <div
@@ -47,10 +47,10 @@
 
         <div
           v-if="props.item.forwardedPost || props.item.forwardedGone"
-          class="border rounded-md"
+          class="border rounded-xl"
         >
           <div class="p-2 flex items-center gap-2">
-            <span class="mdi mdi-forward"></span>
+            <n-icon :component="ForwardIcon" class="ms-2" />
             <span class="font-bold">Forwarded</span>
           </div>
           <div
@@ -112,6 +112,7 @@ import { ref, watch } from "vue"
 import { useMarkdownProcessor } from "~/composables/useMarkdownProcessor"
 import type { SnPost } from "~/types/api"
 import { useIntersectionObserver } from "@vueuse/core"
+import { ForwardIcon, ReplyIcon } from "lucide-vue-next"
 
 const props = withDefaults(
   defineProps<{

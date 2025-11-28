@@ -42,18 +42,18 @@
             <!-- Post Metadata -->
             <div class="flex items-center gap-4 text-sm text-medium-emphasis">
               <div class="flex items-center gap-1">
-                <n-icon size="16" name="mdi-calendar" />
+                <n-icon :component="CalendarIcon" />
                 <span>{{ formatDate(post.createdAt) }}</span>
               </div>
               <div
                 v-if="post.updatedAt && post.updatedAt !== post.createdAt"
                 class="flex items-center gap-1"
               >
-                <n-icon size="16" name="mdi-pencil" />
+                <n-icon :component="PencilIcon" />
                 <span>Updated {{ formatDate(post.updatedAt) }}</span>
               </div>
               <div class="flex items-center gap-1">
-                <n-icon size="16" name="mdi-eye" />
+                <n-icon :component="EyeIcon" />
                 <span>
                   {{ post.viewsTotal }} / {{ post.viewsUnique }}
                   views
@@ -62,7 +62,7 @@
             </div>
           </n-card>
 
-          <n-card class="pa-6">
+          <n-card class="px-6 py-0">
             <article
               v-if="htmlContent"
               class="prose dark:prose-invert prose-slate max-w-none mb-8"
@@ -127,6 +127,7 @@
 </template>
 
 <script setup lang="ts">
+import { CalendarIcon, EyeIcon, PencilIcon } from "lucide-vue-next"
 import { computed, ref } from "vue" // Added ref
 import { useMarkdownProcessor } from "~/composables/useMarkdownProcessor"
 import type { SnPost } from "~/types/api"

@@ -14,28 +14,16 @@
         class="carousel-container rounded-lg overflow-hidden"
         :style="carouselStyle"
       >
-        <v-card width="100%" height="100%" class="transition-all duration-300" border>
-          <v-carousel
+        <n-carousel height="100%" show-arrow>
+          <n-carousel-item
+            v-for="attachment in attachments"
+            :key="attachment.id"
             height="100%"
-            hide-delimiter-background
-            show-arrows="hover"
-            hide-delimiters
-            progress="primary"
+            cover
           >
-            <v-carousel-item
-              v-for="attachment in attachments"
-              :key="attachment.id"
-              height="100%"
-              cover
-            >
-              <attachment-item
-                original
-                class="h-full"
-                :item="attachment"
-              />
-            </v-carousel-item>
-          </v-carousel>
-        </v-card>
+            <attachment-item original class="h-full" :item="attachment" />
+          </n-carousel-item>
+        </n-carousel>
       </div>
 
       <!-- Mixed content: vertical scrollable -->
@@ -59,7 +47,6 @@ const props = defineProps<{
   attachments: SnAttachment[]
   maxHeight?: number
 }>()
-
 
 const isAllImages = computed(
   () =>

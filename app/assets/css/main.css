@@ -27,3 +27,11 @@
   opacity: 0;
   filter: blur(1rem);
 }
+
+.n-image-preview-toolbar .n-base-icon {
+  padding: 0;
+}
+
+.n-image-preview-toolbar {
+  gap: 1rem;
+}

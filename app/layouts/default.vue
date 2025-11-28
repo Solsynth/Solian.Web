@@ -24,14 +24,13 @@
           <n-avatar
             round
             class="mr-4 cursor-pointer"
-            :size="32"
             :src="
               user?.profile.picture
                 ? `${apiBase}/drive/files/${user?.profile.picture?.id}`
                 : undefined
             "
           >
-            <span v-if="!user" class="mdi mdi-account-circle text-3xl"></span>
+            <n-icon :component="UserCircleIcon" />
           </n-avatar>
         </n-dropdown>
       </div>
@@ -49,7 +48,7 @@ import IconLight from "~/assets/images/cloudy-lamb.png"
 import type { MenuOption } from "naive-ui"
 import { computed, h } from "vue"
 import { useRouter, useRoute } from "vue-router"
-import { CompassIcon } from "lucide-vue-next"
+import { CompassIcon, UserCircleIcon } from "lucide-vue-next"
 
 const apiBase = useSolarNetworkUrl()
 const router = useRouter()

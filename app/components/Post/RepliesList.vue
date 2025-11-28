@@ -14,17 +14,16 @@
     </n-alert>
 
     <!-- Replies List -->
-    <v-infinite-scroll
+    <n-infinite-scroll
       class="flex flex-col gap-4 mt-0"
-      height="auto"
-      side="end"
-      manual
+      :distance="10"
       @load="loadMore"
     >
       <template v-for="item in replies" :key="item.id">
         <post-item
           :show-referenced="false"
           :item="item"
+          class="mb-4"
           @click="router.push('/posts/' + item.id)"
           @react="
             (symbol, attitude, delta) =>
@@ -33,23 +32,17 @@
         />
       </template>
 
-      <!-- Loading State -->
-      <template #loading>
-        <div class="flex justify-center py-4">
-          <n-spin size="large" />
-        </div>
-      </template>
-
       <!-- Empty State -->
-      <template #empty>
-        <div v-if="!replies" class="text-center py-8 text-muted-foreground">
-          <n-icon size="48" class="mb-2 opacity-50">
-            <i class="mdi mdi-comment-outline"></i>
-          </n-icon>
-          <p>No replies yet</p>
-        </div>
-      </template>
-    </v-infinite-scroll>
+      <div
+        v-if="!replies || replies.length === 0"
+        class="text-center py-8 text-muted-foreground"
+      >
+        <n-icon size="48" class="mb-2 opacity-50">
+          <i class="mdi mdi-comment-outline"></i>
+        </n-icon>
+        <p>No replies yet</p>
+      </div>
+    </n-infinite-scroll>
   </div>
 </template>
 
@@ -74,7 +67,5 @@ const { replies, hasError, error, loadMore, refresh } = useRepliesList(
 </script>
 
 <style>
-.replies-list .v-infinite-scroll .v-infinite-scroll__side:first-child {
-  display: none;
-}
+/* Removed Vuetify-specific styles */
 </style>
