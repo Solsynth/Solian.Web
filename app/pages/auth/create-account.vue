@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center justify-center h-screen-no-header px-4">
+  <div class="flex items-center justify-center h-layout px-4">
     <n-card class="w-full max-w-[1000px]" size="large">
       <div class="p-4 md:p-8">
         <div class="mb-4">

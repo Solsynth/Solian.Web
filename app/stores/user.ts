@@ -17,7 +17,9 @@ export const useUserStore = defineStore("user", () => {
   // Actions
   async function fetchUser(reload = true): Promise<void> {
     if (currentFetchPromise.value) {
-      console.log("[UserStore] Fetch already in progress. Waiting for existing fetch.")
+      console.log(
+        "[UserStore] Fetch already in progress. Waiting for existing fetch."
+      )
       return currentFetchPromise.value
     }
     if (!reload && user.value) {
@@ -37,10 +39,18 @@ export const useUserStore = defineStore("user", () => {
         console.log(`[UserStore] Logged in as @${user.value.name}`)
       } catch (e: unknown) {
         // Check for 401 Unauthorized error
-        const is401Error = (e instanceof FetchError && e.statusCode === 401) ||
-                          (e && typeof e === 'object' && 'status' in e && (e as { status: number }).status === 401) ||
-                          (e && typeof e === 'object' && 'statusCode' in e && (e as { statusCode: number }).statusCode === 401) ||
-                          (e instanceof Error && (e.message?.includes('401') || e.message?.includes('Unauthorized')))
+        const is401Error =
+          (e instanceof FetchError && e.statusCode === 401) ||
+          (e &&
+            typeof e === "object" &&
+            "status" in e &&
+            (e as { status: number }).status === 401) ||
+          (e &&
+            typeof e === "object" &&
+            "statusCode" in e &&
+            (e as { statusCode: number }).statusCode === 401) ||
+          (e instanceof Error &&
+            (e.message?.includes("401") || e.message?.includes("Unauthorized")))
 
         if (is401Error) {
           error.value = "Unauthorized"
@@ -50,6 +60,8 @@ export const useUserStore = defineStore("user", () => {
           user.value = null // Clear user data on error
           console.error("Failed to fetch user... ", e)
         }
+
+        console.log(`[UserStore] Logged as @${user.value!.name}`)
       } finally {
         isLoading.value = false
         currentFetchPromise.value = null

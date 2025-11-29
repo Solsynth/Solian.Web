@@ -36,6 +36,12 @@
   gap: 1rem;
 }
 
-.h-screen-no-header {
+.h-layout {
+  /* margin of the navbar + actual navbar */
   height: calc(100vh - 64px*2);
+}
+
+.min-h-layout {
+  /* margin of the navbar + actual navbar */
+  min-height: calc(100vh - 64px*2);
 }

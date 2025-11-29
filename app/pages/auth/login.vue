@@ -191,9 +191,9 @@ async function exchangeToken() {
 
     await userStore.fetchUser()
 
-    const redirectUri = route.query.redirect_uri as string
+    const redirectUri = route.query.redirect as string
     if (redirectUri) {
-      window.location.href = redirectUri
+      window.location.href = decodeURIComponent(redirectUri)
     } else {
       await router.push("/")
     }
@@ -258,7 +258,7 @@ function getFactorIcon(factorType: number) {
 </style>
 
 <template>
-  <div class="flex items-center justify-center h-screen-no-header px-4">
+  <div class="flex flex-col gap-3 items-center justify-center h-layout px-4">
     <n-card class="w-full max-w-[1000px]" size="large">
       <div class="p-4 md:p-8">
         <div class="mb-4">
@@ -450,5 +450,21 @@ function getFactorIcon(factorType: number) {
         </div>
       </div>
     </n-card>
+
+    <n-alert
+      v-if="route.query.redirect"
+      class="w-full max-w-[1000px]"
+      type="info"
+      title="Login before you continue"
+      size="large"
+    >
+      <div class="flex flex-col gap-1">
+        <p>
+          You're requesting a page that requires authorization to access, please
+          login with your Solarpass and then we will redirect you to:
+        </p>
+        <n-code class="text-xs">{{ route.query.redirect }}</n-code>
+      </div>
+    </n-alert>
   </div>
 </template>

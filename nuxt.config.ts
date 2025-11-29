@@ -58,7 +58,8 @@ export default defineNuxtConfig({
     public: {
       development: process.env.NODE_ENV == "development",
       apiBase: process.env.NUXT_PUBLIC_API_BASE || "https://api.solian.app",
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || "https://solian.app"
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || "https://solian.app",
+      devToken: process.env.NUXT_PUBLIC_DEV_TOKEN || ""
     }
   },
   vite: {
@@ -82,6 +83,8 @@ export default defineNuxtConfig({
     ]
   },
   naiveui: {
+    colorModePreference: "system",
+    colorModePreferenceCookieName: "fi-ColorMode",
     themeConfig: {
       ...generateTailwindColorThemes(),
       shared: {

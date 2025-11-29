@@ -3,6 +3,7 @@ import { keysToCamel, keysToSnake } from "~/utils/transformKeys"
 
 export const useSolarNetwork = () => {
   const apiBase = useSolarNetworkUrl()
+  const devToken = useRuntimeConfig().public.devToken
 
   // Forward cookies from the incoming request
   const headers: HeadersInit = import.meta.server
@@ -17,6 +18,11 @@ export const useSolarNetwork = () => {
     onRequest: ({ request, options }) => {
       const side = import.meta.server ? "SERVER" : "CLIENT"
       console.log(`[useSolarNetwork] onRequest for ${request} on ${side}`)
+
+      if (devToken) {
+        options.headers = new Headers(options.headers)
+        options.headers.set("Authorization", `Bearer ${devToken}`)
+      }
 
       // Transform request data from camelCase to snake_case
       if (options.body && typeof options.body === "object") {
