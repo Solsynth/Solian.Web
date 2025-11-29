@@ -13,10 +13,17 @@
               :item="activity.data"
               @click="router.push('/posts/' + activity.id)"
             />
+            <n-card v-else>
+              <n-alert type="info" title="Unknown Activity">
+                Sorry, the FloatingIsland do not support
+                {{ activity.type }} right now. You can check this over the
+                Solian.
+              </n-alert>
+            </n-card>
           </div>
 
           <div v-if="loading" class="flex justify-center py-4">
-            <n-spin size="large" />
+            <span class="loading loading-spinner loading-lg"></span>
           </div>
 
           <div
@@ -80,6 +87,7 @@ useHead({
 })
 
 defineOgImage({
+  // @ts-ignore
   title: "Explore",
   description: "The open social network. Friendly to everyone."
 })

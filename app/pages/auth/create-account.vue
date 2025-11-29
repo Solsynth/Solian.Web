@@ -1,146 +1,191 @@
 <template>
-  <v-container class="d-flex align-center justify-center fill-height">
-    <v-card max-width="1000" rounded="lg" width="100%">
-      <div v-if="isLoading" class="d-flex justify-center mb-4">
-        <v-progress-linear indeterminate color="primary" height="4" />
-      </div>
-      <div class="pa-8">
+  <div class="flex items-center justify-center h-screen-no-header px-4">
+    <n-card class="w-full max-w-[1000px]" size="large">
+      <div class="p-4 md:p-8">
         <div class="mb-4">
           <img :src="IconLight" alt="CloudyLamb" height="60" width="60" />
         </div>
-        <v-row>
-          <v-col cols="12" lg="6" class="d-flex align-start justify-start">
-            <div class="md:text-left h-auto">
-              <div v-if="stage === 'username-nick'">
-                <h2 class="text-2xl font-bold mb-1">Create your account</h2>
-                <p class="text-lg">Start with your username and nickname</p>
-              </div>
-              <div v-if="stage === 'email'">
-                <h2 class="text-2xl font-bold mb-1">Add your email</h2>
-                <p class="text-lg">We'll use this for account verification</p>
-              </div>
-              <div v-if="stage === 'password'">
-                <h2 class="text-2xl font-bold mb-1">Set your password</h2>
-                <p class="text-lg">Choose a strong password for your account</p>
-              </div>
-              <div v-if="stage === 'captcha'">
-                <h2 class="text-2xl font-bold mb-1">Verify you're human</h2>
-                <p class="text-lg">
-                  Complete the captcha to create your account
-                </p>
-              </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div class="flex flex-col items-start justify-between">
+            <div class="text-left h-auto">
+              <Transition mode="out-in" name="slide-fade">
+                <div v-if="stage === 'username-nick'" key="username-nick">
+                  <h2 class="text-2xl font-bold mb-1">Create your account</h2>
+                  <p class="text-lg">Start with your username and nickname</p>
+                </div>
+                <div v-else-if="stage === 'email'" key="email">
+                  <h2 class="text-2xl font-bold mb-1">Add your email</h2>
+                  <p class="text-lg">We'll use this for account verification</p>
+                </div>
+                <div v-else-if="stage === 'password'" key="password">
+                  <h2 class="text-2xl font-bold mb-1">Set your password</h2>
+                  <p class="text-lg">
+                    Choose a strong password for your account
+                  </p>
+                </div>
+                <div v-else-if="stage === 'captcha'" key="captcha">
+                  <h2 class="text-2xl font-bold mb-1">Verify you're human</h2>
+                  <p class="text-lg">
+                    Complete the captcha to create your account
+                  </p>
+                </div>
+                <div v-else-if="stage === 'terms'" key="terms">
+                  <h2 class="text-2xl font-bold mb-1">Review Terms</h2>
+                  <p class="text-lg">
+                    Please review our terms and conditions before creating your
+                    account.
+                  </p>
+                </div>
+              </Transition>
             </div>
-          </v-col>
-          <v-col cols="12" lg="6" class="d-flex align-center justify-stretch">
-            <div class="w-full d-flex flex-column md:text-right">
-              <v-window
-                v-model="activeStageIndex"
-                class="align-self-stretch pt-2"
+            <div v-if="isLoading" class="mb-4">
+              <span class="loading loading-spinner loading-xl"></span>
+            </div>
+          </div>
+          <div class="flex items-center justify-stretch">
+            <div class="w-full flex flex-col md:text-right">
+              <n-form
+                ref="formRef"
+                :model="formModel"
+                :rules="rules"
+                label-placement="top"
+                class="w-full"
               >
                 <!-- Stage 1: Username and Nickname -->
-                <v-window-item :value="0">
-                  <v-text-field
-                    v-model="formModel.name"
-                    label="Username"
-                    variant="outlined"
-                    :rules="nameRules"
-                    class="mb-2"
-                    @keydown.enter="handleNext"
-                  />
-                  <v-text-field
-                    v-model="formModel.nick"
-                    label="Nickname"
-                    variant="outlined"
-                    :rules="nickRules"
-                    class="mb-2"
-                    @keydown.enter="handleNext"
-                  />
-                  <div class="d-flex justify-space-between align-center mt-6">
-                    <v-btn
-                      variant="text"
-                      class="text-capitalize"
-                      to="/auth/login"
-                    >
-                      Login
-                    </v-btn>
-                    <v-btn color="primary" size="large" @click="handleNext">
-                      Next
-                    </v-btn>
+                <Transition mode="out-in" name="slide-fade">
+                  <div v-if="stage === 'username-nick'" key="username-nick">
+                    <n-form-item label="Username" path="name">
+                      <n-input
+                        size="large"
+                        v-model:value="formModel.name"
+                        placeholder="Username"
+                        class="text-left"
+                        @keydown.enter.prevent="handleNext"
+                      />
+                    </n-form-item>
+                    <n-form-item label="Nickname" path="nick">
+                      <n-input
+                        size="large"
+                        v-model:value="formModel.nick"
+                        placeholder="Nickname"
+                        class="text-left"
+                        @keydown.enter.prevent="handleNext"
+                      />
+                    </n-form-item>
+                    <div class="flex justify-between items-center mt-6">
+                      <n-button text to="/auth/login">Login</n-button>
+                      <n-button type="primary" size="large" @click="handleNext">
+                        Next
+                      </n-button>
+                    </div>
                   </div>
-                </v-window-item>
 
-                <!-- Stage 2: Email -->
-                <v-window-item :value="1">
-                  <v-text-field
-                    v-model="formModel.email"
-                    label="Email"
-                    placeholder="your@email.com"
-                    variant="outlined"
-                    :rules="emailRules"
-                    class="mb-2"
-                    @keydown.enter="handleNext"
-                  />
-                  <div class="d-flex justify-space-between align-center mt-6">
-                    <v-spacer />
-                    <v-btn color="primary" size="large" @click="handleNext">
-                      Next
-                    </v-btn>
+                  <!-- Stage 2: Email -->
+                  <div v-else-if="stage === 'email'" key="email">
+                    <n-form-item label="Email" path="email">
+                      <n-input
+                        v-model:value="formModel.email"
+                        placeholder="your@email.com"
+                        size="large"
+                        class="text-left"
+                        @keydown.enter.prevent="handleNext"
+                      />
+                    </n-form-item>
+                    <div class="flex justify-between items-center mt-6">
+                      <div />
+                      <n-button type="primary" size="large" @click="handleNext">
+                        Next
+                      </n-button>
+                    </div>
                   </div>
-                </v-window-item>
 
-                <!-- Stage 3: Password -->
-                <v-window-item :value="2">
-                  <v-text-field
-                    v-model="formModel.password"
-                    label="Password"
-                    type="password"
-                    placeholder="Enter your password"
-                    variant="outlined"
-                    :rules="passwordRules"
-                    class="mb-2"
-                    @keydown.enter="handleNext"
-                  />
-                  <div class="d-flex justify-space-between align-center mt-6">
-                    <v-spacer />
-                    <v-btn color="primary" size="large" @click="handleNext">
-                      Next
-                    </v-btn>
+                  <!-- Stage 3: Password -->
+                  <div v-else-if="stage === 'password'" key="password">
+                    <n-form-item label="Password" path="password">
+                      <n-input
+                        v-model:value="formModel.password"
+                        type="password"
+                        show-password-on="click"
+                        placeholder="Enter your password"
+                        class="text-left"
+                        size="large"
+                        @keydown.enter.prevent="handleNext"
+                      />
+                    </n-form-item>
+                    <div class="flex justify-between items-center mt-6">
+                      <div />
+                      <n-button type="primary" size="large" @click="handleNext">
+                        Next
+                      </n-button>
+                    </div>
                   </div>
-                </v-window-item>
 
-                <!-- Stage 4: Captcha -->
-                <v-window-item :value="3">
-                  <div class="d-flex justify-center mb-4">
-                    <client-only>
-                      <captcha-widget @verified="onCaptchaVerified" />
-                    </client-only>
+                  <!-- Stage 4: Captcha -->
+                  <div v-else-if="stage === 'captcha'" key="captcha">
+                    <div class="flex justify-center mb-4">
+                      <client-only>
+                        <captcha-widget @verified="onCaptchaVerified" />
+                      </client-only>
+                    </div>
                   </div>
-                </v-window-item>
-              </v-window>
 
-              <v-alert
-                v-if="error"
-                type="error"
-                closable
-                class="mt-2"
-                @update:model-value="error = null"
-              >
-                {{ error }}
-              </v-alert>
+                  <!-- Stage 5: Terms -->
+                  <div v-else-if="stage === 'terms'" key="terms">
+                    <n-alert type="info" title="Things you need to know">
+                      <ul class="list-decimal flex flex-col gap-1">
+                        <li>
+                          You can't have multiple accounts on the Solar Network,
+                          that violates our Terms of Service.
+                        </li>
+                        <li>
+                          You need go to your email to confirm your
+                          registeration before you have permissions to do
+                          something.
+                        </li>
+                        <li>
+                          Feel free to contact our customer service at
+                          <address>lily@solsynth.dev</address>
+                        </li>
+                        <li>
+                          Make sure you agreed to our Terms and Service,
+                          <nuxt-link
+                            class="underline font-bold"
+                            href="https://solsynth.dev/terms"
+                            target="_blank"
+                          >
+                            check it out
+                          </nuxt-link>
+                        </li>
+                      </ul>
+                    </n-alert>
+
+                    <div class="flex justify-between items-center mt-6">
+                      <n-button text @click="stage = 'captcha'">Back</n-button>
+                      <n-button
+                        type="primary"
+                        size="large"
+                        @click="handleCreateAccount"
+                      >
+                        Create Account
+                      </n-button>
+                    </div>
+                  </div>
+                </Transition>
+              </n-form>
             </div>
-          </v-col>
-        </v-row>
+          </div>
+        </div>
       </div>
-    </v-card>
-    <footer-compact />
-  </v-container>
+    </n-card>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from "vue"
+import { ref, reactive, onMounted } from "vue"
 import { useRouter } from "vue-router"
 import { useSolarNetwork } from "~/composables/useSolarNetwork"
 import CaptchaWidget from "~/components/CaptchaWidget.vue"
+import type { FormInst, FormRules } from "naive-ui"
 
 import IconLight from "~/assets/images/cloudy-lamb.png"
 
@@ -151,27 +196,11 @@ useHead({
   title: "Create Account"
 })
 
-const stage = ref<"username-nick" | "email" | "password" | "captcha">(
+const stage = ref<"username-nick" | "email" | "password" | "captcha" | "terms">(
   "username-nick"
 )
 const isLoading = ref(false)
-const error = ref<string | null>(null)
-
-// Computed for v-window active index
-const activeStageIndex = computed(() => {
-  switch (stage.value) {
-    case "username-nick":
-      return 0
-    case "email":
-      return 1
-    case "password":
-      return 2
-    case "captcha":
-      return 3
-    default:
-      return 0
-  }
-})
+const formRef = ref<FormInst | null>(null)
 
 const formModel = reactive({
   name: "",
@@ -186,105 +215,150 @@ onMounted(() => {
   formModel.language = navigator.language
 })
 
-const nameRules = [
-  (v: string) => !!v || "Name is required",
-  (v: string) => v.length >= 2 || "Name must be at least 2 characters long",
-  (v: string) => v.length <= 256 || "Name must be at most 256 characters long",
-  (v: string) =>
-    /^[A-Za-z0-9_-]+$/.test(v) ||
-    "Name can only contain letters, numbers, underscores, and hyphens."
-]
+const message = useMessage()
+const dialog = useDialog()
 
-const nickRules = [
-  (v: string) => !!v || "Nick is required",
-  (v: string) => v.length <= 256 || "Nick must be at most 256 characters long"
-]
-
-const emailRules = [
-  (v: string) => !!v || "Email is required",
-  (v: string) =>
-    v.length <= 1024 || "Email must be at most 1024 characters long",
-  (v: string) =>
-    /^[^+]+@[^@]+\.[^@]+$/.test(v) ||
-    "Email address cannot contain '+' symbol.",
-  (v: string) => /.+@.+\..+/.test(v) || "Please enter a valid email address"
-]
-
-const passwordRules = [
-  (v: string) => !!v || "Password is required",
-  (v: string) => v.length >= 4 || "Password must be at least 4 characters long",
-  (v: string) =>
-    v.length <= 128 || "Password must be at most 128 characters long"
-]
+const rules: FormRules = {
+  name: [
+    {
+      key: "name",
+      required: true,
+      message: "Name is required",
+      trigger: ["input", "blur"]
+    },
+    {
+      key: "name",
+      min: 2,
+      message: "Name must be at least 2 characters long",
+      trigger: ["input", "blur"]
+    },
+    {
+      key: "name",
+      max: 256,
+      message: "Name must be at most 256 characters long",
+      trigger: ["input", "blur"]
+    },
+    {
+      key: "name",
+      pattern: /^[A-Za-z0-9_-]+$/,
+      message:
+        "Name can only contain letters, numbers, underscores, and hyphens.",
+      trigger: ["input", "blur"]
+    }
+  ],
+  nick: [
+    {
+      key: "nick",
+      required: true,
+      message: "Nick is required",
+      trigger: ["input", "blur"]
+    },
+    {
+      key: "nick",
+      max: 256,
+      message: "Nick must be at most 256 characters long",
+      trigger: ["input", "blur"]
+    }
+  ],
+  email: [
+    {
+      key: "email",
+      required: true,
+      message: "Email is required",
+      trigger: ["input", "blur"]
+    },
+    {
+      key: "email",
+      max: 1024,
+      message: "Email must be at most 1024 characters long",
+      trigger: ["input", "blur"]
+    },
+    {
+      key: "email",
+      validator: (_rule, value: string) => {
+        if (value.includes("+")) {
+          return new Error("Email address cannot contain '+' symbol.")
+        }
+        if (!/.+@.+\..+/.test(value)) {
+          return new Error("Please enter a valid email address")
+        }
+        return true
+      },
+      trigger: ["input", "blur"]
+    }
+  ],
+  password: [
+    {
+      key: "password",
+      required: true,
+      message: "Password is required",
+      trigger: ["input", "blur"]
+    },
+    {
+      key: "password",
+      min: 4,
+      message: "Password must be at least 4 characters long",
+      trigger: ["input", "blur"]
+    },
+    {
+      key: "password",
+      max: 128,
+      message: "Password must be at most 128 characters long",
+      trigger: ["input", "blur"]
+    }
+  ]
+}
 
 const onCaptchaVerified = (token: string) => {
   formModel.captchaToken = token
-  handleCreateAccount()
+  stage.value = "terms"
 }
 
-function handleNext() {
-  error.value = null
-  if (stage.value === "username-nick") {
-    if (!formModel.name || !formModel.nick) {
-      error.value = "Please fill in username and nickname"
-      return
+async function handleNext() {
+  if (!formRef.value) return
+
+  try {
+    if (stage.value === "username-nick") {
+      await new Promise<void>((resolve, reject) => {
+        formRef.value?.validate(
+          (errors) => {
+            if (errors) reject(new Error("Validation failed"))
+            else resolve()
+          },
+          (rule) => rule.key === "name" || rule.key === "nick"
+        )
+      })
+      stage.value = "email"
+    } else if (stage.value === "email") {
+      await new Promise<void>((resolve, reject) => {
+        formRef.value?.validate(
+          (errors) => {
+            if (errors) reject(new Error("Validation failed"))
+            else resolve()
+          },
+          (rule) => rule.key === "email"
+        )
+      })
+      stage.value = "password"
+    } else if (stage.value === "password") {
+      await new Promise<void>((resolve, reject) => {
+        formRef.value?.validate(
+          (errors) => {
+            if (errors) reject(new Error("Validation failed"))
+            else resolve()
+          },
+          (rule) => rule.key === "password"
+        )
+      })
+      stage.value = "captcha"
     }
-    if (
-      !nameRules.every(
-        (rule) =>
-          typeof rule(formModel.name) === "boolean" && rule(formModel.name)
-      )
-    ) {
-      error.value = "Invalid username"
-      return
-    }
-    if (
-      !nickRules.every(
-        (rule) =>
-          typeof rule(formModel.nick) === "boolean" && rule(formModel.nick)
-      )
-    ) {
-      error.value = "Invalid nickname"
-      return
-    }
-    stage.value = "email"
-  } else if (stage.value === "email") {
-    if (!formModel.email) {
-      error.value = "Please enter your email"
-      return
-    }
-    if (
-      !emailRules.every(
-        (rule) =>
-          typeof rule(formModel.email) === "boolean" && rule(formModel.email)
-      )
-    ) {
-      error.value = "Invalid email"
-      return
-    }
-    stage.value = "password"
-  } else if (stage.value === "password") {
-    if (!formModel.password) {
-      error.value = "Please enter your password"
-      return
-    }
-    if (
-      !passwordRules.every(
-        (rule) =>
-          typeof rule(formModel.password) === "boolean" &&
-          rule(formModel.password)
-      )
-    ) {
-      error.value = "Invalid password"
-      return
-    }
-    stage.value = "captcha"
+  } catch {
+    // Validation error, do nothing
   }
 }
 
 async function handleCreateAccount() {
   isLoading.value = true
-  error.value = null
 
   try {
     await api("/id/accounts", {
@@ -300,14 +374,35 @@ async function handleCreateAccount() {
     })
 
     // On success, redirect to login page
-    alert(
-      "Welcome to Solar Network! Your account has been created successfully. Don't forget to check your email for activation instructions."
-    )
-    router.push("/auth/login")
+    dialog.success({
+      title: "Registration Completed",
+      content:
+        "Welcome to Solar Network! Your account has been created successfully. Don't forget to check your email for activation instructions.",
+      onPositiveClick: () => {
+        router.push("/auth/login")
+      }
+    })
   } catch (e: unknown) {
-    error.value = e instanceof Error ? e.message : "An error occurred"
+    message.error(e instanceof Error ? e.message : "An error occurred")
   } finally {
     isLoading.value = false
   }
 }
 </script>
+
+<style scoped>
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.2s ease-out;
+}
+
+.slide-fade-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.slide-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+</style>

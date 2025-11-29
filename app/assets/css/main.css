@@ -35,3 +35,7 @@
 .n-image-preview-toolbar {
   gap: 1rem;
 }
+
+.h-screen-no-header {
+  height: calc(100vh - 64px*2);
+}

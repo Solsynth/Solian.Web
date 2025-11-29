@@ -1,5 +1,5 @@
 <template>
-  <n-card :size="compact ? 'small' : 'medium'">
+  <n-card>
     <div :class="['flex flex-col', compact ? 'gap-1' : 'gap-3']">
       <post-header :item="props.item" :compact="compact" />
 
@@ -22,21 +22,17 @@
       <template v-if="showReferenced">
         <div
           v-if="props.item.repliedPost || props.item.repliedGone"
-          class="border rounded-xl"
+          class="border rounded-xl mt-2"
         >
           <div class="p-2 flex items-center gap-2">
             <n-icon :component="ReplyIcon" class="ms-2" />
             <span class="font-bold">Replying to</span>
           </div>
-          <div
-            v-if="props.item.repliedGone"
-            class="px-4 pb-3 text-sm opacity-60"
-          >
+          <div v-if="props.item.repliedGone" class="text-sm opacity-60">
             Post unavailable
           </div>
           <post-item
             v-else-if="props.item.repliedPost"
-            class="px-4 pb-3"
             :item="props.item.repliedPost"
             slim
             compact
@@ -47,21 +43,17 @@
 
         <div
           v-if="props.item.forwardedPost || props.item.forwardedGone"
-          class="border rounded-xl"
+          class="border rounded-xl mt-2"
         >
           <div class="p-2 flex items-center gap-2">
             <n-icon :component="ForwardIcon" class="ms-2" />
             <span class="font-bold">Forwarded</span>
           </div>
-          <div
-            v-if="props.item.forwardedGone"
-            class="px-4 pb-3 text-sm opacity-60"
-          >
+          <div v-if="props.item.forwardedGone" class="text-sm opacity-60">
             Post unavailable
           </div>
           <post-item
             v-else-if="props.item.forwardedPost"
-            class="px-4 pb-3"
             :item="props.item.forwardedPost"
             slim
             compact

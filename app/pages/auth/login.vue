@@ -4,11 +4,11 @@ import { useRoute, useRouter } from "vue-router"
 import { useUserStore } from "~/stores/user"
 import { useSolarNetwork } from "~/composables/useSolarNetwork"
 import type { SnAuthChallenge, SnAuthFactor } from "~/types/api"
+import { useMessage } from "naive-ui"
 
 import FingerprintJS from "@fingerprintjs/fingerprintjs"
 
 import IconLight from "~/assets/images/cloudy-lamb.png"
-import IconDark from "~/assets/images/cloudy-lamb@dark.png"
 
 // State management
 useHead({
@@ -19,23 +19,7 @@ const stage = ref<
   "find-account" | "select-factor" | "enter-code" | "token-exchange"
 >("find-account")
 const isLoading = ref(false)
-const error = ref<string | null>(null)
-
-// Computed for v-window active index
-const activeStageIndex = computed(() => {
-  switch (stage.value) {
-    case "find-account":
-      return 0
-    case "select-factor":
-      return 1
-    case "enter-code":
-      return 2
-    case "token-exchange":
-      return 3
-    default:
-      return 0
-  }
-})
+const message = useMessage()
 
 // Stage 1: Find Account
 const accountIdentifier = ref("")
@@ -64,11 +48,10 @@ const selectedFactor = computed(() => {
 
 async function handleFindAccount() {
   if (!accountIdentifier.value) {
-    error.value = "Please enter your email or username."
+    message.error("Please enter your email or username.")
     return
   }
   isLoading.value = true
-  error.value = null
 
   try {
     challenge.value = await api("/id/auth/challenge", {
@@ -83,7 +66,7 @@ async function handleFindAccount() {
     await getFactors()
     stage.value = "select-factor"
   } catch (e: unknown) {
-    error.value = e instanceof Error ? e.message : "An error occurred"
+    message.error(e instanceof Error ? e.message : "An error occurred")
   } finally {
     isLoading.value = false
   }
@@ -93,7 +76,6 @@ async function getFactors() {
   if (!challenge.value) return
 
   isLoading.value = true
-  error.value = null
   try {
     const availableFactors = await api<SnAuthFactor[]>(
       `/id/auth/challenge/${challenge.value.id}/factors`
@@ -104,11 +86,12 @@ async function getFactors() {
     if (factors.value.length > 0) {
       selectedFactorId.value = null // Let user choose
     } else if (challenge.value.stepRemain > 0) {
-      error.value =
+      message.error(
         "No more available authentication factors, but authentication is not complete. Please contact support."
+      )
     }
   } catch (e: unknown) {
-    error.value = e instanceof Error ? e.message : "An error occurred"
+    message.error(e instanceof Error ? e.message : "An error occurred")
   } finally {
     isLoading.value = false
   }
@@ -119,7 +102,6 @@ async function requestVerificationCode() {
 
   const isResend = stage.value === "enter-code"
   if (isResend) isLoading.value = true
-  error.value = null
 
   try {
     await api(
@@ -127,7 +109,7 @@ async function requestVerificationCode() {
       { method: "POST" }
     )
   } catch (e: unknown) {
-    error.value = e instanceof Error ? e.message : "An error occurred"
+    message.error(e instanceof Error ? e.message : "An error occurred")
     throw e // Rethrow to be handled by caller
   } finally {
     if (isResend) isLoading.value = false
@@ -136,7 +118,7 @@ async function requestVerificationCode() {
 
 async function handleFactorSelected() {
   if (!selectedFactor.value) {
-    error.value = "Please select an authentication method."
+    message.error("Please select an authentication method.")
     return
   }
 
@@ -149,7 +131,6 @@ async function handleFactorSelected() {
   // For code-based factors (1, 2, 3, 4), send the code first
   if ([1, 2, 3, 4].includes(selectedFactor.value.type)) {
     isLoading.value = true
-    error.value = null
     try {
       await requestVerificationCode()
       stage.value = "enter-code"
@@ -163,11 +144,10 @@ async function handleFactorSelected() {
 
 async function handleVerifyFactor() {
   if (!selectedFactorId.value || !password.value || !challenge.value) {
-    error.value = "Please enter your password/code."
+    message.error("Please enter your password/code.")
     return
   }
   isLoading.value = true
-  error.value = null
 
   try {
     challenge.value = await api(`/id/auth/challenge/${challenge.value.id}`, {
@@ -188,7 +168,7 @@ async function handleVerifyFactor() {
       stage.value = "select-factor" // MFA step
     }
   } catch (e: unknown) {
-    error.value = e instanceof Error ? e.message : "An error occurred"
+    message.error(e instanceof Error ? e.message : "An error occurred")
   } finally {
     isLoading.value = false
   }
@@ -199,7 +179,6 @@ const route = useRoute()
 
 async function exchangeToken() {
   isLoading.value = true
-  error.value = null
   try {
     // The token endpoint gives the Set-Cookie header
     await api<{ token: string }>("/id/auth/token", {
@@ -219,7 +198,7 @@ async function exchangeToken() {
       await router.push("/")
     }
   } catch (e: unknown) {
-    error.value = e instanceof Error ? e.message : "An error occurred"
+    message.error(e instanceof Error ? e.message : "An error occurred")
     stage.value = "select-factor" // Go back if token exchange fails
   } finally {
     isLoading.value = false
@@ -242,209 +221,234 @@ function getFactorName(factorType: number) {
       return "Unknown Factor"
   }
 }
+
+function getFactorIcon(factorType: number) {
+  switch (factorType) {
+    case 0:
+      return "mdi mdi-lock"
+    case 1:
+      return "mdi mdi-email"
+    case 2:
+      return "mdi mdi-cellphone"
+    case 3:
+      return "mdi mdi-clock"
+    case 4:
+      return "mdi mdi-numeric"
+    default:
+      return "mdi mdi-shield-key"
+  }
+}
 </script>
 
+<style scoped>
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.2s ease-out;
+}
+
+.slide-fade-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.slide-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+</style>
+
 <template>
-  <v-container class="d-flex align-center justify-center fill-height">
-    <v-card max-width="1000" rounded="lg" width="100%">
-      <div v-if="isLoading" class="d-flex justify-center mb-4">
-        <v-progress-linear indeterminate color="primary" height="4" />
-      </div>
-      <div class="pa-8">
+  <div class="flex items-center justify-center h-screen-no-header px-4">
+    <n-card class="w-full max-w-[1000px]" size="large">
+      <div class="p-4 md:p-8">
         <div class="mb-4">
           <img :src="IconLight" alt="CloudyLamb" height="60" width="60" />
         </div>
-        <v-row>
-          <v-col cols="12" lg="6" class="d-flex align-start justify-start">
-            <div class="md:text-left h-auto">
-              <div v-if="stage === 'find-account'">
-                <h2 class="text-2xl font-bold mb-1">Sign in</h2>
-                <p class="text-lg">Use your Solarpass</p>
-              </div>
-              <div v-if="stage === 'select-factor'">
-                <h2 class="text-2xl font-bold mb-1">Choose how to sign in</h2>
-                <p class="text-lg">
-                  Select your preferred authentication method
-                </p>
-              </div>
-              <div v-if="stage === 'enter-code' && selectedFactor">
-                <h2 class="text-2xl font-bold mb-1">
-                  Enter your
-                  {{
-                    selectedFactor.type === 0 ? "password" : "verification code"
-                  }}
-                </h2>
-                <p v-if="selectedFactor.type === 1" class="text-lg">
-                  A code has been sent to
-                  {{ selectedFactor.contact || "your email" }}.
-                </p>
-                <p v-if="selectedFactor.type === 2" class="text-lg">
-                  Enter the code from your in-app authenticator.
-                </p>
-                <p v-if="selectedFactor.type === 3" class="text-lg">
-                  Enter the timed verification code.
-                </p>
-                <p v-if="selectedFactor.type === 4" class="text-lg">
-                  Enter your PIN code.
-                </p>
-                <p v-if="selectedFactor.type === 0" class="text-lg">
-                  Enter your password to continue.
-                </p>
-              </div>
-              <div v-if="stage === 'token-exchange'">
-                <h2 class="text-2xl font-bold mb-1">Finalizing Login</h2>
-                <p class="text-lg">
-                  Please wait while we complete your sign in.
-                </p>
-              </div>
-            </div>
-          </v-col>
-          <v-col cols="12" lg="6" class="d-flex align-center justify-stretch">
-            <div class="w-full d-flex flex-column md:text-right">
-              <v-window
-                v-model="activeStageIndex"
-                class="align-self-stretch pt-2"
-              >
-                <!-- Stage 1: Find Account -->
-                <v-window-item :value="0">
-                  <v-text-field
-                    v-model="accountIdentifier"
-                    label="Email or username"
-                    variant="outlined"
-                    class="mb-2"
-                    @keydown.enter="handleFindAccount"
-                  />
-                  <v-btn
-                    slim
-                    variant="text"
-                    class="text-capitalize"
-                    color="primary"
-                    >Forgot password?</v-btn
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div class="flex flex-col items-start justify-between">
+            <div class="text-left h-auto">
+              <div class="text-left h-auto">
+                <Transition mode="out-in" name="slide-fade">
+                  <div v-if="stage === 'find-account'" key="find-account">
+                    <h2 class="text-2xl font-bold mb-1">Sign in</h2>
+                    <p class="text-lg">Use your Solarpass</p>
+                  </div>
+                  <div
+                    v-else-if="stage === 'select-factor'"
+                    key="select-factor"
                   >
-
-                  <div class="d-flex justify-end">
-                    <p class="mt-4 mb-6 text-sm max-w-96">
-                      Not your computer? Remember to use Private Browsing
-                      windows to sign in.
+                    <h2 class="text-2xl font-bold mb-1">
+                      Choose how to sign in
+                    </h2>
+                    <p class="text-lg">
+                      Select your preferred authentication method
                     </p>
                   </div>
+                  <div
+                    v-else-if="stage === 'enter-code' && selectedFactor"
+                    key="enter-code"
+                  >
+                    <h2 class="text-2xl font-bold mb-1">
+                      Enter your
+                      {{
+                        selectedFactor.type === 0
+                          ? "password"
+                          : "verification code"
+                      }}
+                    </h2>
+                    <p v-if="selectedFactor.type === 1" class="text-lg">
+                      A code has been sent to
+                      {{ selectedFactor.contact || "your email" }}.
+                    </p>
+                    <p v-if="selectedFactor.type === 2" class="text-lg">
+                      Enter the code from your in-app authenticator.
+                    </p>
+                    <p v-if="selectedFactor.type === 3" class="text-lg">
+                      Enter the timed verification code.
+                    </p>
+                    <p v-if="selectedFactor.type === 4" class="text-lg">
+                      Enter your PIN code.
+                    </p>
+                    <p v-if="selectedFactor.type === 0" class="text-lg">
+                      Enter your password to continue.
+                    </p>
+                  </div>
+                  <div
+                    v-else-if="stage === 'token-exchange'"
+                    key="token-exchange"
+                  >
+                    <h2 class="text-2xl font-bold mb-1">Finalizing Login</h2>
+                    <p class="text-lg">
+                      Please wait while we complete your sign in.
+                    </p>
+                  </div>
+                </Transition>
+              </div>
+            </div>
+            <div v-if="isLoading" class="mb-4">
+              <span class="loading loading-spinner loading-xl"></span>
+            </div>
+          </div>
+          <div class="flex items-center justify-stretch">
+            <div class="w-full flex flex-col md:text-right">
+              <Transition mode="out-in" name="slide-fade">
+                <!-- Stage 1: Find Account -->
+                <div v-if="stage === 'find-account'" key="find-account">
+                  <n-input
+                    size="large"
+                    v-model:value="accountIdentifier"
+                    placeholder="Email or username"
+                    class="text-left"
+                    @keydown.enter.prevent="handleFindAccount"
+                  />
+                  <div class="mr-3 mt-4">
+                    <n-button text type="primary" size="small">
+                      Forgot Password?
+                    </n-button>
 
-                  <div class="d-flex justify-space-between align-center mt-8">
-                    <v-btn
-                      variant="text"
-                      class="text-capitalize"
-                      to="/auth/create-account"
-                    >
+                    <div class="flex justify-end">
+                      <p class="mt-4 mb-6 text-sm max-w-96">
+                        Not your computer? Remember to use Private Browsing
+                        windows to sign in.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="flex justify-between items-center mt-8">
+                    <n-button text tag="a" href="/auth/create-account">
                       Create account
-                    </v-btn>
-                    <v-btn
-                      color="primary"
+                    </n-button>
+                    <n-button
+                      type="primary"
                       size="large"
                       @click="handleFindAccount"
                     >
                       Next
-                    </v-btn>
+                    </n-button>
                   </div>
-                </v-window-item>
+                </div>
 
                 <!-- Stage 2: Select Factor -->
-                <v-window-item :value="1">
-                  <v-radio-group v-model="selectedFactorId">
-                    <v-list>
-                      <v-list-item v-for="factor in factors" :key="factor.id">
-                        <v-list-item-action>
-                          <v-radio
-                            :value="factor.id"
-                            :label="getFactorName(factor.type)"
-                          />
-                        </v-list-item-action>
-                        <template #append>
-                          <v-icon>{{
-                            factor.type === 0
-                              ? "mdi-lock"
-                              : factor.type === 1
-                              ? "mdi-email"
-                              : factor.type === 2
-                              ? "mdi-cellphone"
-                              : factor.type === 3
-                              ? "mdi-clock"
-                              : factor.type === 4
-                              ? "mdi-numeric"
-                              : "mdi-shield-key"
-                          }}</v-icon>
-                        </template>
-                      </v-list-item>
-                    </v-list>
-                  </v-radio-group>
-                  <div class="d-flex justify-end mt-6">
-                    <v-btn
-                      color="primary"
+                <div v-else-if="stage === 'select-factor'" key="select-factor">
+                  <n-radio-group
+                    v-model:value="selectedFactorId"
+                    class="w-full"
+                  >
+                    <div class="flex flex-col gap-2">
+                      <div
+                        v-for="factor in factors"
+                        :key="factor.id"
+                        class="flex items-center justify-between p-3 border rounded cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
+                        @click="selectedFactorId = factor.id"
+                      >
+                        <n-radio
+                          :value="factor.id"
+                          :label="getFactorName(factor.type)"
+                        />
+                        <n-icon size="24">
+                          <span :class="getFactorIcon(factor.type)" />
+                        </n-icon>
+                      </div>
+                    </div>
+                  </n-radio-group>
+                  <div class="flex justify-end mt-6">
+                    <n-button
+                      type="primary"
                       size="large"
                       :disabled="!selectedFactorId"
                       @click="handleFactorSelected"
                     >
                       Next
-                    </v-btn>
+                    </n-button>
                   </div>
-                </v-window-item>
+                </div>
 
                 <!-- Stage 3: Enter Code -->
-                <v-window-item :value="2">
-                  <v-text-field
-                    v-model="password"
+                <div v-else-if="stage === 'enter-code'" key="enter-code">
+                  <n-input
+                    v-model:value="password"
                     :type="selectedFactor?.type === 0 ? 'password' : 'text'"
-                    :label="selectedFactor?.type === 0 ? 'Password' : 'Code'"
-                    variant="outlined"
-                    class="mb-2"
-                    @keydown.enter="handleVerifyFactor"
+                    :placeholder="
+                      selectedFactor?.type === 0 ? 'Password' : 'Code'
+                    "
+                    show-password-on="click"
+                    class="mb-2 text-left"
+                    @keydown.enter.prevent="handleVerifyFactor"
                   />
-                  <div class="d-flex justify-space-between align-center mt-6">
-                    <v-btn
+                  <div class="flex justify-between items-center mt-6">
+                    <n-button
                       v-if="selectedFactor?.type === 1"
-                      variant="text"
-                      class="text-capitalize pl-0"
-                      color="primary"
+                      text
+                      type="primary"
                       @click="requestVerificationCode"
                     >
                       Resend Code
-                    </v-btn>
-                    <v-spacer v-else />
-                    <v-btn
-                      color="primary"
+                    </n-button>
+                    <div v-else />
+                    <n-button
+                      type="primary"
                       size="large"
                       @click="handleVerifyFactor"
                     >
                       Verify
-                    </v-btn>
+                    </n-button>
                   </div>
-                </v-window-item>
+                </div>
 
                 <!-- Stage 4: Token Exchange -->
-                <v-window-item :value="3">
-                  <div class="d-flex justify-center">
-                    <v-progress-circular
-                      indeterminate
-                      size="64"
-                      color="primary"
-                    />
+                <div
+                  v-else-if="stage === 'token-exchange'"
+                  key="token-exchange"
+                >
+                  <div class="flex justify-center">
+                    <n-spin size="large" />
                   </div>
-                </v-window-item>
-              </v-window>
-
-              <v-alert
-                v-if="error"
-                type="error"
-                closable
-                class="mt-2"
-                @update:model-value="error = null"
-              >
-                {{ error }}
-              </v-alert>
+                </div>
+              </Transition>
             </div>
-          </v-col>
-        </v-row>
+          </div>
+        </div>
       </div>
-    </v-card>
-    <footer-compact />
-  </v-container>
+    </n-card>
+  </div>
 </template>

@@ -11,7 +11,7 @@
       <!-- All images: use carousel -->
       <div
         v-if="isAllImages"
-        class="carousel-container rounded-lg overflow-hidden"
+        class="carousel-container rounded-xl border bg-base-300 overflow-hidden"
         :style="carouselStyle"
       >
         <n-carousel height="100%" show-arrow>
