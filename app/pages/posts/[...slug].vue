@@ -1,5 +1,5 @@
 <template>
-  <div class="py-6">
+  <div class="py-6 px-5">
     <div v-if="pending" class="text-center py-12">
       <n-spin size="large" />
       <p class="mt-4">Loading post...</p>

@@ -94,6 +94,16 @@ export default defineNuxtConfig({
           primaryColorSuppl: "#4C5EC5FF",
           borderRadius: "16px",
           borderRadiusSmall: "8px"
+        },
+        Input: {
+          borderRadius: "8px",
+          borderRadiusMedium: "8px",
+          borderRadiusSmall: "4px"
+        },
+        Button: {
+          borderRadius: "8px",
+          borderRadiusMedium: "8px",
+          borderRadiusSmall: "4px"
         }
       },
       light: {},

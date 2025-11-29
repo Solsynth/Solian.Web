@@ -7,8 +7,17 @@
       :rows="5"
       auto-grow
     ></n-input>
-    <div class="flex justify-end mt-4">
-      <n-button append-icon="mdi-send" size="small">Send</n-button>
+    <div class="flex justify-end mt-3">
+      <n-button type="primary">
+        <template #icon>
+          <n-icon :component="SendIcon" />
+        </template>
+        Send
+      </n-button>
     </div>
   </n-card>
 </template>
+
+<script setup lang="ts">
+import { SendIcon } from "lucide-vue-next"
+</script>
