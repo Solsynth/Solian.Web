@@ -30,6 +30,15 @@
                 v-html="htmlBio"
               ></article>
             </n-card>
+
+            <n-card
+              v-if="user.verification"
+              :class="cardClass"
+              :style="cardStyle"
+              :content-style="cardContentStyle"
+            >
+              <verification-status-card :mark="user.verification" />
+            </n-card>
           </div>
           <div class="main">
             <!-- Filter Section -->

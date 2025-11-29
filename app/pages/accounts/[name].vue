@@ -166,6 +166,16 @@
                 :show-indicator="false"
               />
             </n-card>
+
+            <n-card
+              v-if="user?.profile?.verification"
+              size="small"
+              :class="cardClass"
+              :style="cardStyle"
+              :content-style="cardContentStyle"
+            >
+              <verification-status-card :mark="user.profile.verification" />
+            </n-card>
           </div>
           <div>
             <n-card
@@ -252,7 +262,7 @@ try {
     console.error("Failed to fetch user:", error.value)
     notFound.value = true
   } else if (data.value) {
-    user.value = data.value
+    user.value = keysToCamel(data.value)
   }
 } catch (err) {
   console.error("Failed to fetch user:", err)
