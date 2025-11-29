@@ -1,12 +1,14 @@
 <template>
-  <div class="d-flex align-center justify-center fill-height">
-    <v-card class="pa-6 text-center" max-width="400">
-      <v-card-text>
-        <v-progress-circular indeterminate color="primary" class="mb-4" />
-        <h2 class="text-xl font-bold">Redirecting...</h2>
-        <p class="opacity-80">Please wait while we redirect you.</p>
-      </v-card-text>
-    </v-card>
+  <div class="flex items-center justify-center h-compact-layout">
+    <n-result
+      status="info"
+      title="Almost There"
+      description="Please wait while we redirect you, it won't take too long..."
+    >
+      <template #icon>
+        <span class="loading loading-spinner loading-xl"></span>
+      </template>
+    </n-result>
   </div>
 </template>
 
@@ -26,6 +28,6 @@ definePageMeta({
 
 onMounted(() => {
   const redirectUrl = `${apiBase}/id/auth/callback/${provider}${window.location.search}`
-  window.location.href = redirectUrl
+  // window.location.href = redirectUrl
 })
 </script>
