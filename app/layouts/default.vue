@@ -31,7 +31,7 @@
       </div>
     </header>
 
-    <main class="grow container mx-auto py-4 mt-[64px]">
+    <main class="grow mt-[64px]">
       <slot />
     </main>
   </div>
