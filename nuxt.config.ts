@@ -99,12 +99,17 @@ export default defineNuxtConfig({
           borderRadiusSmall: "8px"
         },
         Input: {
-          borderRadius: "8px",
-          borderRadiusMedium: "8px",
-          borderRadiusSmall: "4px"
+          borderRadius: "8px"
+        },
+        Select: {
+          borderRadius: "8px"
+        },
+        Dropdown: {
+          borderRadius: "8px"
         },
         Button: {
           borderRadius: "8px",
+          borderRadiusLarge: "12px",
           borderRadiusMedium: "8px",
           borderRadiusSmall: "4px"
         }
