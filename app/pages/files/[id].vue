@@ -68,13 +68,21 @@
           @touchstart="handleTouchStart"
           @touchmove="handleTouchMove"
           @touchend="handleTouchEnd"
+          @mousedown="handleMouseDown"
+          @mousemove="handleMouseMove"
+          @mouseup="handleMouseUp"
+          @mouseleave="handleMouseUp"
           @dblclick="handleDoubleClick"
         >
           <img
             v-if="fileType === 'image'"
             :src="fileSource"
             class="preview-image"
-            :style="{ transform: `scale(${zoomLevel})` }"
+            :style="{
+              transform: `translate(${translateX}px, ${translateY}px) scale(${zoomLevel})`,
+              cursor:
+                zoomLevel > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default'
+            }"
             alt="Image preview"
           />
           <video
@@ -251,6 +259,13 @@ const zoomLevel = ref<number>(1)
 const initialDistance = ref<number>(0)
 const isPinching = ref<boolean>(false)
 
+// Drag functionality
+const translateX = ref(0)
+const translateY = ref(0)
+const isDragging = ref(false)
+const startX = ref(0)
+const startY = ref(0)
+
 // View transition state
 const isTransitioning = ref<boolean>(false)
 const transitionImage = ref<string>("")
@@ -397,52 +412,101 @@ function handleZoom(event: WheelEvent) {
 
   event.preventDefault()
   const delta = event.deltaY > 0 ? -0.1 : 0.1
-  zoomLevel.value = Math.max(0.1, Math.min(5, zoomLevel.value + delta))
+  const newZoom = Math.max(0.1, Math.min(5, zoomLevel.value + delta))
+
+  if (newZoom <= 1) {
+    translateX.value = 0
+    translateY.value = 0
+  }
+
+  zoomLevel.value = newZoom
 }
 
 function handleTouchStart(event: TouchEvent) {
-  if (fileType.value !== "image" || event.touches.length !== 2) return
+  if (fileType.value !== "image") return
 
-  event.preventDefault()
-  isPinching.value = true
-  const touch1 = event.touches[0]!
-  const touch2 = event.touches[1]!
-  initialDistance.value = Math.sqrt(
-    Math.pow(touch2.clientX - touch1.clientX, 2) +
-      Math.pow(touch2.clientY - touch1.clientY, 2)
-  )
+  if (event.touches.length === 2) {
+    event.preventDefault()
+    isPinching.value = true
+    const touch1 = event.touches[0]!
+    const touch2 = event.touches[1]!
+    initialDistance.value = Math.sqrt(
+      Math.pow(touch2.clientX - touch1.clientX, 2) +
+        Math.pow(touch2.clientY - touch1.clientY, 2)
+    )
+  } else if (event.touches.length === 1 && zoomLevel.value > 1) {
+    isDragging.value = true
+    startX.value = event.touches[0]!.clientX - translateX.value
+    startY.value = event.touches[0]!.clientY - translateY.value
+  }
 }
 
 function handleTouchMove(event: TouchEvent) {
-  if (
-    fileType.value !== "image" ||
-    !isPinching.value ||
-    event.touches.length !== 2
-  )
-    return
+  if (fileType.value !== "image") return
 
-  event.preventDefault()
-  const touch1 = event.touches[0]!
-  const touch2 = event.touches[1]!
-  const currentDistance = Math.sqrt(
-    Math.pow(touch2.clientX - touch1.clientX, 2) +
-      Math.pow(touch2.clientY - touch1.clientY, 2)
-  )
+  if (isPinching.value && event.touches.length === 2) {
+    event.preventDefault()
+    const touch1 = event.touches[0]!
+    const touch2 = event.touches[1]!
+    const currentDistance = Math.sqrt(
+      Math.pow(touch2.clientX - touch1.clientX, 2) +
+        Math.pow(touch2.clientY - touch1.clientY, 2)
+    )
 
-  const scale = currentDistance / initialDistance.value
-  zoomLevel.value = Math.max(0.1, Math.min(5, zoomLevel.value * scale))
+    const scale = currentDistance / initialDistance.value
+    const newZoom = Math.max(0.1, Math.min(5, zoomLevel.value * scale))
+
+    if (newZoom <= 1) {
+      translateX.value = 0
+      translateY.value = 0
+    }
+
+    zoomLevel.value = newZoom
+  } else if (isDragging.value && event.touches.length === 1) {
+    event.preventDefault()
+    translateX.value = event.touches[0]!.clientX - startX.value
+    translateY.value = event.touches[0]!.clientY - startY.value
+  }
 }
 
 function handleTouchEnd(_event: TouchEvent) {
   if (fileType.value !== "image") return
 
   isPinching.value = false
+  isDragging.value = false
+}
+
+function handleMouseDown(event: MouseEvent) {
+  if (fileType.value !== "image" || zoomLevel.value <= 1) return
+
+  event.preventDefault()
+  isDragging.value = true
+  startX.value = event.clientX - translateX.value
+  startY.value = event.clientY - translateY.value
+}
+
+function handleMouseMove(event: MouseEvent) {
+  if (!isDragging.value) return
+
+  event.preventDefault()
+  translateX.value = event.clientX - startX.value
+  translateY.value = event.clientY - startY.value
+}
+
+function handleMouseUp() {
+  isDragging.value = false
 }
 
 function handleDoubleClick() {
   if (fileType.value !== "image") return
 
-  zoomLevel.value = zoomLevel.value > 1 ? 1 : 2
+  if (zoomLevel.value > 1) {
+    zoomLevel.value = 1
+    translateX.value = 0
+    translateY.value = 0
+  } else {
+    zoomLevel.value = 2
+  }
 }
 
 const breakpoints = useBreakpoints(breakpointsTailwind)
