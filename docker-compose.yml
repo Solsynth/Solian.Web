@@ -1,0 +1,15 @@
+services:
+  app:
+    # This will build the Dockerfile in the current directory.
+    # Alternatively, you can specify the image from a registry.
+    # Replace 'your-github-username' with your actual GitHub username or organization.
+    image: ghcr.io/solsynth/floating-island:latest
+    build: .
+    # This maps the .env file from your project root into the container.
+    env_file:
+      - .env
+    # This maps port 3000 on your host to port 3000 in the container.
+    ports:
+      - "3000:3000"
+    # This ensures the container restarts automatically unless it's stopped manually.
+    restart: unless-stopped

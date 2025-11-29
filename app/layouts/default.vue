@@ -41,6 +41,7 @@
 import IconLight from "~/assets/images/cloudy-lamb.png"
 
 import type { MenuOption } from "naive-ui"
+import { NIcon } from "naive-ui"
 import { computed, h } from "vue"
 import { useRouter, useRoute, RouterLink } from "vue-router"
 import {

@@ -61,7 +61,7 @@ export const useUserStore = defineStore("user", () => {
           console.error("Failed to fetch user... ", e)
         }
 
-        console.log(`[UserStore] Logged as @${user.value!.name}`)
+        // console.log(`[UserStore] Logged as @${user.value!.name}`)
       } finally {
         isLoading.value = false
         currentFetchPromise.value = null

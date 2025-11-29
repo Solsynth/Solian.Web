@@ -1,5 +1,6 @@
 <template>
   <naive-config>
+    <n-global-style />
     <n-dialog-provider>
       <n-notification-provider>
         <naive-notification />
