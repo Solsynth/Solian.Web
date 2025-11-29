@@ -7,7 +7,9 @@
         :style="pageStyle"
       />
 
-      <div class="relative flex items-center justify-center min-h-layout px-4">
+      <div
+        class="relative flex items-center justify-center min-h-layout overflow-auto p-4"
+      >
         <n-card
           :class="[
             'w-full',
@@ -74,6 +76,7 @@
                 block
                 size="large"
                 :loading="isJoining"
+                :disabled="isMember"
                 @click="handleJoin"
               >
                 <template #icon>
@@ -81,6 +84,21 @@
                 </template>
                 Join Realm
               </n-button>
+
+              <n-alert
+                v-if="isMember"
+                type="info"
+                title="Already Joined"
+                class="mt-4"
+              >
+                You already joined this realm,
+                <nuxt-link
+                  :to="`/realms/${route.params.slug}`"
+                  class="underline font-bold"
+                >
+                  go to the realm page instead.
+                </nuxt-link>
+              </n-alert>
             </div>
           </div>
           <div v-else-if="notFound" class="flex justify-center p-8">
@@ -160,6 +178,21 @@
               >
                 <verification-status-card :mark="realm.verification" />
               </n-card>
+
+              <div v-if="realm.isPublic && !isMember">
+                <n-button
+                  type="primary"
+                  block
+                  size="large"
+                  :loading="isJoining"
+                  @click="handleJoin"
+                >
+                  <template #icon>
+                    <n-icon :component="UserPlus" />
+                  </template>
+                  Join Realm
+                </n-button>
+              </div>
             </div>
             <div class="main">
               <!-- Filter Section -->
@@ -309,6 +342,8 @@ const api = useSolarNetwork()
 const notFound = ref<boolean>(false)
 const realm = ref<SnRealm | null>(null)
 const isJoining = ref(false)
+const isMember = ref(false)
+const checkingMembership = ref(false)
 
 // Check if we're in invite mode
 const isInviteMode = computed(() => {
@@ -433,6 +468,24 @@ const cycleIncludeReplies = () => {
   }
 }
 
+// Check membership status
+async function checkMembership() {
+  if (!realm.value) return
+
+  checkingMembership.value = true
+  try {
+    await api(`/id/realms/${realm.value.slug}/members/me`, {
+      method: "GET"
+    })
+    isMember.value = true
+  } catch (err) {
+    // 404 means not a member
+    isMember.value = false
+  } finally {
+    checkingMembership.value = false
+  }
+}
+
 // Handle join realm
 async function handleJoin() {
   if (!realm.value) return
@@ -443,14 +496,24 @@ async function handleJoin() {
       method: "POST"
     })
     message.success(`Successfully joined ${realm.value.name}!`)
-    // Redirect to the realm page without invite query
-    await navigateTo(`/realms/${realm.value.slug}`)
+    isMember.value = true
+    // Redirect to the realm page without invite query if in invite mode
+    if (isInviteMode.value) {
+      await navigateTo(`/realms/${realm.value.slug}`)
+    }
   } catch (err) {
     message.error(err instanceof Error ? err.message : String(err))
   } finally {
     isJoining.value = false
   }
 }
+
+// Check membership on mount
+onMounted(() => {
+  if (realm.value) {
+    checkMembership()
+  }
+})
 
 definePageMeta({
   title: "Realms",
