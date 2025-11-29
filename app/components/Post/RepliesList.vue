@@ -1,6 +1,11 @@
 <template>
   <div class="replies-list">
-    <post-quick-reply v-if="!props.hideQuickReply" class="mb-4" />
+    <post-quick-reply
+      v-if="!props.hideQuickReply"
+      :replied-post-id="props.params.postId"
+      @posted="refresh"
+      class="mb-4"
+    />
 
     <!-- Error State -->
     <n-alert
