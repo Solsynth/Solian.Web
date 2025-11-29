@@ -40,7 +40,7 @@ export const usePostList = (params: PostListParams = {}) => {
     total: 0
   })
 
-  const isLoading = computed(() => state.value.loading)
+  const loading = computed(() => state.value.loading)
   const hasError = computed(() => state.value.error !== null)
   const posts = computed(() => state.value.posts)
   const hasMore = computed(() => state.value.hasMore)
@@ -153,7 +153,7 @@ export const usePostList = (params: PostListParams = {}) => {
 
   return {
     posts,
-    isLoading,
+    loading,
     hasError,
     hasMore,
     error: computed(() => state.value.error),

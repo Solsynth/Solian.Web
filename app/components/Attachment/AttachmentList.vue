@@ -19,9 +19,14 @@
             v-for="attachment in attachments"
             :key="attachment.id"
             height="100%"
+            width="100%"
             cover
           >
-            <attachment-item original class="h-full" :item="attachment" />
+            <attachment-item
+              original
+              class="h-full w-full"
+              :item="attachment"
+            />
           </n-carousel-item>
         </n-carousel>
       </div>

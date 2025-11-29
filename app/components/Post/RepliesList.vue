@@ -33,15 +33,13 @@
       </template>
 
       <!-- Empty State -->
-      <div
+      <n-empty
         v-if="!replies || replies.length === 0"
         class="text-center py-8 text-muted-foreground"
+        size="small"
       >
-        <n-icon size="48" class="mb-2 opacity-50">
-          <i class="mdi mdi-comment-outline"></i>
-        </n-icon>
-        <p>No replies yet</p>
-      </div>
+        No Replies
+      </n-empty>
     </n-infinite-scroll>
   </div>
 </template>

@@ -1,6 +1,9 @@
 <template>
   <div class="relative rounded-md overflow-hidden" :style="containerStyle">
-    <template v-if="itemType == 'image'">
+    <div
+      v-if="itemType == 'image'"
+      class="flex flex-col items-center justify-center"
+    >
       <!-- Blurhash placeholder -->
       <div
         v-if="blurhash"
@@ -22,7 +25,7 @@
         @load="imageLoaded = true"
         @error="imageLoaded = true"
       />
-    </template>
+    </div>
 
     <audio
       v-else-if="itemType == 'audio'"
@@ -105,8 +108,8 @@ const blurhashContainerStyle = computed(() => {
 
 const containerStyle = computed(() => {
   return {
-    "max-height": props.maxHeight ?? "720px",
-    "aspect-ratio": aspectRatio.value
+    maxHeight: props.maxHeight ?? "720px",
+    aspectRatio: aspectRatio.value?.toString()
   }
 })
 

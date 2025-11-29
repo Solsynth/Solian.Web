@@ -28,13 +28,13 @@
       </template>
 
       <!-- Empty State -->
-      <div
+      <n-empty
         v-if="!replies || replies.length === 0"
         class="text-center py-8 text-muted-foreground"
+        size="small"
       >
-        <v-icon icon="mdi-comment-outline" size="48" class="mb-2 opacity-50" />
-        <p>No replies yet</p>
-      </div>
+        No Replies
+      </n-empty>
     </div>
   </n-card>
 </template>

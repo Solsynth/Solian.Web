@@ -1,13 +1,13 @@
 <template>
   <div>
-    <div class="fixed inset-0" :style="pageStyle" />
+    <div class="fixed inset-0 blur-md" :style="pageStyle" />
     <img
       :src="userBackground"
       class="w-full max-h-48 object-cover object-top"
       :style="{ aspectRatio: '16/7', opacity: headerOpacity }"
     />
 
-    <div v-if="user" class="relative min-h-layout backdrop-blur-md">
+    <div v-if="user" class="relative min-h-layout">
       <div class="container mx-auto p-8 pt-12">
         <div class="flex items-center gap-6 mb-8">
           <n-avatar :size="80" round :src="userPicture" />
