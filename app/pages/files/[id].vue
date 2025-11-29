@@ -1,91 +1,65 @@
 <template>
-  <div class="lightbox-container">
+  <div class="lightbox-container h-compact-layout">
     <!-- Top Toolbar -->
-    <v-app-bar v-if="fileInfo" class="top-toolbar" flat height="56">
-      <v-container fluid>
-        <v-row align="center" class="pa-2">
-          <v-col cols="12" md="4">
-            <div class="d-flex align-center gap-2">
-              <v-tooltip location="bottom" :text="fileInfo.mimeType">
-                <template #activator="{ props }">
-                  <v-icon v-bind="props" :icon="fileIcon"></v-icon>
-                </template>
-              </v-tooltip>
-              <v-tooltip location="bottom" :text="fileInfo.name || 'File'">
-                <template #activator="{ props }">
-                  <span class="line-clamp-1" v-bind="props">
-                    {{ fileInfo.name || "File" }}
-                  </span>
-                </template>
-              </v-tooltip>
-              <!-- Action buttons on mobile -->
-              <div class="d-flex d-md-none gap-2 ml-auto">
-                <v-btn
-                  icon
-                  size="small"
-                  density="compact"
-                  @click="handleDownload"
-                >
-                  <v-icon>mdi-download</v-icon>
-                </v-btn>
-                <v-btn
-                  icon
-                  size="small"
-                  density="compact"
-                  @click="infoDialog = true"
-                >
-                  <v-icon>mdi-information</v-icon>
-                </v-btn>
-              </div>
+    <header v-if="fileInfo" class="top-toolbar bg-neutral-900/50 text-white">
+      <div class="container mx-auto px-4 h-full">
+        <div class="flex items-center h-full">
+          <div class="flex items-center gap-2 w-full md:w-1/3">
+            <n-tooltip trigger="hover">
+              <template #trigger>
+                <n-icon :component="fileIcon" />
+              </template>
+              {{ fileInfo.mimeType }}
+            </n-tooltip>
+            <n-tooltip trigger="hover">
+              <template #trigger>
+                <span class="line-clamp-1">
+                  {{ fileInfo.name || "File" }}
+                </span>
+              </template>
+              {{ fileInfo.name || "File" }}
+            </n-tooltip>
+            <!-- Action buttons on mobile -->
+            <div class="flex md:hidden gap-2 ml-auto">
+              <n-button text style="font-size: 20px" @click="handleDownload">
+                <n-icon :component="Download" />
+              </n-button>
+              <n-button text style="font-size: 20px" @click="infoDialog = true">
+                <n-icon :component="Info" />
+              </n-button>
             </div>
-          </v-col>
-          <v-col cols="12" md="8" class="d-none d-md-block">
-            <div class="d-flex align-center justify-end gap-4">
-              <span>{{ formatBytes(fileInfo.size) }}</span>
-              <span>{{ new Date(fileInfo.createdAt).toLocaleString() }}</span>
-              <v-btn
-                icon
-                size="small"
-                density="compact"
-                @click="handleDownload"
-              >
-                <v-icon>mdi-download</v-icon>
-              </v-btn>
-              <v-btn
-                icon
-                size="small"
-                density="compact"
-                @click="infoDialog = true"
-              >
-                <v-icon>mdi-information</v-icon>
-              </v-btn>
-            </div>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-app-bar>
+          </div>
+          <div class="hidden md:flex items-center justify-end gap-4 w-2/3">
+            <span>{{ formatBytes(fileInfo.size) }}</span>
+            <span>{{ new Date(fileInfo.createdAt).toLocaleString() }}</span>
+            <n-button text style="font-size: 20px" @click="handleDownload">
+              <n-icon :component="Download" />
+            </n-button>
+            <n-button text style="font-size: 20px" @click="infoDialog = true">
+              <n-icon :component="Info" />
+            </n-button>
+          </div>
+        </div>
+      </div>
+    </header>
 
     <!-- Main Content - File Preview -->
     <div class="preview-container">
-      <v-progress-circular
-        v-if="!fileInfo && !error"
-        indeterminate
-        size="64"
-        class="loading-spinner"
-      ></v-progress-circular>
-      <v-alert
+      <n-spin v-if="!fileInfo && !error" size="large" />
+      <n-alert
         v-else-if="error"
         type="error"
         title="No file was found"
-        :text="error"
-        class="error-alert"
-      ></v-alert>
+        class="max-w-md"
+      >
+        {{ error }}
+      </n-alert>
       <div v-else class="preview-content">
-        <div v-if="fileInfo?.isEncrypted" class="encrypted-notice">
-          <v-alert type="info" title="Encrypted file" class="mb-4">
+        <div v-if="fileInfo?.isEncrypted" class="max-w-md">
+          <n-alert type="info" title="Encrypted file" class="mb-4">
             The file has been encrypted. Preview not available. Please enter the
             password to download it.
-          </v-alert>
+          </n-alert>
         </div>
         <div
           v-else
@@ -96,11 +70,12 @@
           @touchend="handleTouchEnd"
           @dblclick="handleDoubleClick"
         >
-          <v-img
+          <img
             v-if="fileType === 'image'"
             :src="fileSource"
             class="preview-image"
             :style="{ transform: `scale(${zoomLevel})` }"
+            alt="Image preview"
           />
           <video
             v-else-if="fileType === 'video'"
@@ -114,102 +89,113 @@
             controls
             class="preview-audio"
           />
-          <v-alert
+          <n-alert
             v-else
             type="warning"
             title="Preview Unavailable"
-            text="How can you preview this file?"
-            class="preview-unavailable"
-          />
+            class="max-w-md"
+          >
+            A preview for this file type is not available.
+          </n-alert>
         </div>
       </div>
     </div>
 
     <!-- Password Dialog -->
-    <v-dialog v-model="secretDialog" max-width="400">
-      <v-card>
-        <v-card-title>
-          <v-icon left>mdi-lock</v-icon>
-          Enter Password
-        </v-card-title>
-        <v-card-text>
-          <v-text-field
-            v-model="dialogPassword"
-            label="Password"
-            type="password"
-            variant="outlined"
-            autofocus
-            @keyup.enter="confirmDownload"
-          />
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn @click="secretDialog = false">Cancel</v-btn>
-          <v-btn color="primary" @click="confirmDownload">Download</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <n-modal v-model:show="secretDialog">
+      <n-card
+        style="width: 400px"
+        title="Enter Password"
+        :bordered="false"
+        size="huge"
+        role="dialog"
+        aria-modal="true"
+      >
+        <n-input
+          v-model:value="dialogPassword"
+          type="password"
+          show-password-on="click"
+          placeholder="Password"
+          autofocus
+          @keyup.enter="confirmDownload"
+        />
+        <template #footer>
+          <div class="flex justify-end gap-2">
+            <n-button @click="secretDialog = false">Cancel</n-button>
+            <n-button type="primary" @click="confirmDownload"
+              >Download</n-button
+            >
+          </div>
+        </template>
+      </n-card>
+    </n-modal>
 
     <!-- Technical Details Dialog -->
-    <v-dialog v-model="infoDialog" max-width="640">
-      <v-card title="File Information" prepend-icon="mdi-information">
-        <v-card-text>
-          <v-row>
-            <v-col cols="12" md="6">
-              <div class="mb-4">
-                <strong>File ID</strong>
-                <div class="text-xs">#{{ fileInfo?.id }}</div>
-              </div>
-              <div class="mb-4">
-                <strong>File Name</strong>
-                <div class="text-xs">{{ fileInfo?.name || "N/A" }}</div>
-              </div>
-              <div class="mb-4">
-                <strong>MIME Type</strong>
-                <div class="text-xs">{{ fileInfo?.mimeType || "N/A" }}</div>
-              </div>
-              <div class="mb-4">
-                <strong>File Size</strong>
-                <div class="text-xs">
-                  {{ fileInfo?.size ? formatBytes(fileInfo.size) : "N/A" }}
-                </div>
-              </div>
-            </v-col>
-            <v-col cols="12" md="6">
-              <div class="mb-4">
-                <strong>Created At</strong>
-                <div class="text-xs">
-                  {{
-                    fileInfo?.createdAt
-                      ? new Date(fileInfo.createdAt).toLocaleString()
-                      : "N/A"
-                  }}
-                </div>
-              </div>
-              <div class="mb-4">
-                <strong>Encrypted</strong>
-                <div class="text-xs">
-                  {{ fileInfo?.isEncrypted ? "Yes" : "No" }}
-                </div>
-              </div>
-            </v-col>
-          </v-row>
-          <div class="mb-4">
-            <strong>Metadata:</strong>
+    <n-drawer
+      v-model:show="infoDialog"
+      :width="breakpoints.isGreaterOrEqual('md') ? '40vw' : '100vw'"
+    >
+      <n-drawer-content>
+        <template #header>
+          <div class="flex items-center justify-between gap-2">
+            <div>File Information</div>
+            <n-button text size="small" @click="infoDialog = false">
+              <template #icon>
+                <n-icon :component="XIcon" />
+              </template>
+            </n-button>
           </div>
-          <v-card variant="outlined" class="pa-2">
-            <pre
-              class="overflow-x-auto"
-              style="font-size: 14px"
-            ><code>{{ JSON.stringify(fileInfo?.fileMeta, null, 2) }}</code></pre>
-          </v-card>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn @click="infoDialog = false">Close</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+        </template>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div class="flex flex-col gap-4">
+            <div>
+              <strong class="font-semibold">File ID</strong>
+              <div class="opacity-80">#{{ fileInfo?.id }}</div>
+            </div>
+            <div>
+              <strong class="font-semibold">File Name</strong>
+              <div class="opacity-80">{{ fileInfo?.name || "N/A" }}</div>
+            </div>
+            <div>
+              <strong class="font-semibold">MIME Type</strong>
+              <div class="opacity-80">{{ fileInfo?.mimeType || "N/A" }}</div>
+            </div>
+            <div>
+              <strong class="font-semibold">File Size</strong>
+              <div class="opacity-80">
+                {{ fileInfo?.size ? formatBytes(fileInfo.size) : "N/A" }}
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-col gap-4">
+            <div>
+              <strong class="font-semibold">Created At</strong>
+              <div class="opacity-80">
+                {{
+                  fileInfo?.createdAt
+                    ? new Date(fileInfo.createdAt).toLocaleString()
+                    : "N/A"
+                }}
+              </div>
+            </div>
+            <div>
+              <strong class="font-semibold">Encrypted</strong>
+              <div class="opacity-80">
+                {{ fileInfo?.isEncrypted ? "Yes" : "No" }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4">
+          <strong class="font-semibold">Metadata:</strong>
+        </div>
+        <n-card :bordered="true" class="mt-2">
+          <pre
+            class="overflow-x-auto text-xs"
+          ><code>{{ JSON.stringify(fileInfo?.fileMeta, null, 2) }}</code></pre>
+        </n-card>
+      </n-drawer-content>
+    </n-drawer>
 
     <!-- View Transition Overlay -->
     <div
@@ -228,11 +214,24 @@
 
 <script setup lang="ts">
 import { useRoute } from "vue-router"
-import { computed, onMounted, ref } from "vue"
-
+import { computed, onMounted, ref, type Component } from "vue"
+import {
+  Download,
+  Info,
+  Lock,
+  File,
+  FileImage,
+  FileVideo,
+  FileMusic,
+  FileText,
+  FileCode,
+  FileArchive,
+  XIcon
+} from "lucide-vue-next"
 import { downloadAndDecryptFile } from "./secure"
 import { formatBytes } from "./format"
 import type { SnCloudFile } from "~/types/api/post"
+import { breakpointsTailwind, useBreakpoints } from "@vueuse/core"
 
 const route = useRoute()
 
@@ -289,7 +288,6 @@ function checkForTransition() {
       isTransitioning.value = true
       transitionImage.value = data.src
 
-      // Calculate final position (centered in viewport)
       const viewportWidth = window.innerWidth
       const viewportHeight = window.innerHeight
       const finalWidth = Math.min(
@@ -300,7 +298,6 @@ function checkForTransition() {
       const finalX = (viewportWidth - finalWidth) / 2
       const finalY = (viewportHeight - finalHeight) / 2
 
-      // Set initial position (from original image location)
       transitionStyle.value = {
         position: "fixed",
         top: `${data.y}px`,
@@ -311,7 +308,6 @@ function checkForTransition() {
         transition: "all 0.3s ease-out"
       }
 
-      // Animate to final position
       requestAnimationFrame(() => {
         transitionStyle.value = {
           ...transitionStyle.value,
@@ -320,8 +316,6 @@ function checkForTransition() {
           width: `${finalWidth}px`,
           height: `${finalHeight}px`
         }
-
-        // Hide transition after animation
         setTimeout(() => {
           isTransitioning.value = false
           sessionStorage.removeItem("imageTransition")
@@ -345,38 +339,38 @@ const fileType = computed(() => {
   if (!fileInfo.value) return "unknown"
   return fileInfo.value.mimeType?.split("/")[0] || "unknown"
 })
-const fileIcon = computed(() => {
-  if (!fileInfo.value?.mimeType) return "mdi-file"
+const fileIcon = computed<Component>(() => {
+  if (!fileInfo.value?.mimeType) return File
 
   const mime = fileInfo.value.mimeType.toLowerCase()
 
-  if (mime.startsWith("image/")) return "mdi-file-image"
-  if (mime.startsWith("video/")) return "mdi-file-video"
-  if (mime.startsWith("audio/")) return "mdi-file-music"
-  if (mime === "application/pdf") return "mdi-file-pdf"
+  if (mime.startsWith("image/")) return FileImage
+  if (mime.startsWith("video/")) return FileVideo
+  if (mime.startsWith("audio/")) return FileMusic
+  if (mime === "application/pdf") return FileText
   if (
     mime.startsWith("text/") ||
     mime.includes("javascript") ||
     mime.includes("json") ||
     mime.includes("xml")
   )
-    return "mdi-file-code"
+    return FileCode
   if (mime.includes("zip") || mime.includes("rar") || mime.includes("tar"))
-    return "mdi-zip-box"
+    return FileArchive
   if (
     mime.includes("document") ||
     mime.includes("word") ||
     mime.includes("excel") ||
     mime.includes("powerpoint")
   )
-    return "mdi-file-document"
+    return FileText
 
-  return "mdi-file"
+  return File
 })
 const fileSource = computed(() => {
   let url = `${apiBase}/drive/files/${fileId}?original=true`
   if (passcode) {
-    url += `?passcode=${passcode}`
+    url += `&passcode=${passcode}`
   }
   return url
 })
@@ -436,7 +430,7 @@ function handleTouchMove(event: TouchEvent) {
   )
 
   const scale = currentDistance / initialDistance.value
-  zoomLevel.value = Math.max(0.1, Math.min(5, scale))
+  zoomLevel.value = Math.max(0.1, Math.min(5, zoomLevel.value * scale))
 }
 
 function handleTouchEnd(_event: TouchEvent) {
@@ -451,7 +445,14 @@ function handleDoubleClick() {
   zoomLevel.value = zoomLevel.value > 1 ? 1 : 2
 }
 
+const breakpoints = useBreakpoints(breakpointsTailwind)
+const message = useMessage()
+
 async function performDownload(password: string) {
+  const progressMessage = message.loading("Downloading file...", {
+    duration: 0
+  })
+
   if (fileInfo.value!.isEncrypted) {
     downloadAndDecryptFile(
       fileSource.value,
@@ -503,6 +504,9 @@ async function performDownload(password: string) {
     a.click()
     a.remove()
     window.URL.revokeObjectURL(blobUrl)
+
+    progressMessage.destroy()
+    message.success("File has been downloaded successfully.")
   }
 }
 
@@ -513,11 +517,7 @@ definePageMeta({
 
 <style scoped>
 .lightbox-container {
-  position: fixed;
-  top: 0;
-  left: 0;
   width: 100vw;
-  height: 100vh;
   background: rgba(0, 0, 0, 0.9);
   display: flex;
   flex-direction: column;
@@ -525,6 +525,7 @@ definePageMeta({
 }
 
 .top-toolbar {
+  height: 56px;
   position: relative;
   z-index: 1001;
 }
@@ -536,6 +537,7 @@ definePageMeta({
   justify-content: center;
   padding: 20px;
   overflow: auto;
+  min-height: 0;
 }
 
 .preview-content {
@@ -549,48 +551,23 @@ definePageMeta({
 .file-preview {
   width: 100%;
   height: 100%;
-  max-width: calc(100vw - 40px);
-  max-height: calc(
-    100vh - 88px
-  ); /* Account for top toolbar (48px) + padding (40px) */
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .preview-image {
-  width: 100%;
-  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
-  transition: all 0.3s ease-in-out;
-  will-change: contents;
+  transition: transform 0.2s ease-out;
+  will-change: transform;
 }
 
 .preview-video,
 .preview-audio {
   max-width: 100%;
   max-height: 100%;
-}
-
-.preview-unavailable {
-  max-width: 500px;
-}
-
-.loading-spinner {
-  color: white;
-}
-
-.error-alert {
-  max-width: 500px;
-}
-
-.encrypted-notice {
-  max-width: 500px;
-}
-
-/* Ensure toolbar doesn't interfere with content */
-.top-toolbar :deep(.v-app-bar__content) {
-  padding: 0;
 }
 
 /* View transition styles */

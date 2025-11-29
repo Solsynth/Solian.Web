@@ -1,68 +1,63 @@
 <template>
-  <div class="d-flex align-center justify-center fill-height">
-    <v-card
-      max-width="400"
-      title="Order Payment"
-      prepend-icon="mdi-cash"
-      class="pa-2"
-    >
-      <v-card-text>
-        <v-alert v-if="done" type="success" class="mb-4">
-          The order has been paid successfully. Now you can close this tab and
-          back to the Solar Network!
-        </v-alert>
-        <v-alert
-          v-else-if="!!error"
-          type="error"
-          title="Something went wrong"
-          class="mb-4"
-          >{{ error }}</v-alert
-        >
-        <div v-else-if="!!order">
-          <p class="mb-2">
-            Order for {{ order.productIdentifier ?? "unknown" }}
-          </p>
-          <div class="d-flex align-center gap-2 mb-2">
-            <v-icon size="18">mdi-tag</v-icon>
-            <strong>{{ order.remarks }}</strong>
-          </div>
-          <div class="d-flex align-center gap-2 mb-2">
-            <v-icon size="18">mdi-cash</v-icon>
-            <span>Amount</span>
-            <strong>{{ order.amount }} {{ order.currency }}</strong>
-          </div>
-          <div v-if="order.expiredAt" class="d-flex align-center gap-2 mb-4">
-            <v-icon size="18">mdi-calendar</v-icon>
-            <span>Until</span>
-            <strong>{{ new Date(order.expiredAt).toLocaleString() }}</strong>
-          </div>
-          <div class="mt-4">
-            <v-otp-input
-              v-model="pinCode"
-              label="Pin Code"
-              length="6"
-              type="password"
-              density="comfortable"
-            ></v-otp-input>
-            <v-btn
-              color="primary"
-              :loading="submitting"
-              class="mt-4"
-              @click="pay"
-            >
-              <v-icon left>mdi-check</v-icon>
-              Pay
-            </v-btn>
-          </div>
+  <div class="flex items-center justify-center min-h-screen">
+    <n-card title="Order Payment" class="max-w-sm">
+      <template #header-icon>
+        <n-icon :component="Wallet" />
+      </template>
+      <n-alert v-if="done" type="success" class="mb-4">
+        The order has been paid successfully. You can now close this tab and
+        return to Solar Network!
+      </n-alert>
+      <n-alert
+        v-else-if="!!error"
+        type="error"
+        title="Something went wrong"
+        class="mb-4"
+      >
+        {{ error }}
+      </n-alert>
+      <div v-else-if="!!order" class="flex flex-col gap-2">
+        <p>Order for {{ order.productIdentifier ?? "unknown" }}</p>
+        <div class="flex items-center gap-2">
+          <n-icon :component="Tag" />
+          <strong>{{ order.remarks }}</strong>
         </div>
-        <v-progress-circular
-          v-else
-          indeterminate
-          size="32"
-          class="mt-4"
-        ></v-progress-circular>
-      </v-card-text>
-    </v-card>
+        <div class="flex items-center gap-2">
+          <n-icon :component="CircleDollarSign" />
+          <span>Amount</span>
+          <strong>{{ order.amount }} {{ order.currency }}</strong>
+        </div>
+        <div v-if="order.expiredAt" class="flex items-center gap-2">
+          <n-icon :component="Calendar" />
+          <span>Until</span>
+          <strong>{{ new Date(order.expiredAt).toLocaleString() }}</strong>
+        </div>
+        <div class="mt-4">
+          <n-input
+            v-model:value="pinCode"
+            type="password"
+            show-password-on="click"
+            placeholder="6-digit PIN"
+            maxlength="6"
+            :input-props="{ autocomplete: 'one-time-code' }"
+          />
+          <n-button
+            type="primary"
+            :loading="submitting"
+            class="mt-4 w-full"
+            @click="pay"
+          >
+            <template #icon>
+              <n-icon :component="Check" />
+            </template>
+            Pay
+          </n-button>
+        </div>
+      </div>
+      <div v-else class="flex justify-center p-8">
+        <n-spin size="medium" />
+      </div>
+    </n-card>
   </div>
 </template>
 
@@ -70,6 +65,13 @@
 import { onMounted, ref } from "vue"
 import { useRoute } from "vue-router"
 import type { SnWalletOrder } from "~/types/api/order"
+import {
+  Wallet,
+  Tag,
+  CircleDollarSign,
+  Calendar,
+  Check
+} from "lucide-vue-next"
 
 const route = useRoute()
 
@@ -99,6 +101,7 @@ async function fetchOrder() {
 }
 
 async function pay() {
+  if (submitting.value) return
   submitting.value = true
   try {
     await api(`/id/orders/${encodeURIComponent(orderId)}/pay`, {
@@ -109,6 +112,8 @@ async function pay() {
     done.value = true
   } catch (err: unknown) {
     error.value = err instanceof Error ? err.message : String(err)
+  } finally {
+    submitting.value = false
   }
 }
 
@@ -119,4 +124,3 @@ definePageMeta({
   title: "Solarpay"
 })
 </script>
-
