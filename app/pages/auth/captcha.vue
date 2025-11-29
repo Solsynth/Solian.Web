@@ -1,32 +1,27 @@
 <template>
-  <div class="d-flex align-center justify-center fill-height">
-    <v-card
-      class="pa-6 text-center"
-      max-width="600"
-      title="Captcha Verification"
-    >
-      <v-card-text>
-        <div class="mb-8 mt-4">
-          <client-only>
-            <captcha-widget @verified="onCaptchaVerified" />
-          </client-only>
-        </div>
-        <div>
-          <div class="text-sm font-bold mb-1">Solar Network Anti-Robot</div>
-          <div class="opacity-80 text-xs">
-            Hosted by
-            <a
-              href="https://github.com/Solsynth/DysonNetwork"
-              class="text-primary"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              DysonNetwork.Sphere
-            </a>
-          </div>
-        </div>
-      </v-card-text>
-    </v-card>
+  <div class="flex flex-col items-center justify-center h-compact-layout">
+    <div class="mb-4">
+      <client-only>
+        <captcha-widget @verified="onCaptchaVerified" />
+      </client-only>
+    </div>
+    <div class="text-center">
+      <div class="text-sm font-bold">Solar Network Anti-Robot</div>
+      <p class="opacity-80 text-sm mb-2">
+        You might need to wait a while before the puzzle fully loaded.
+      </p>
+      <div class="opacity-80 text-xs">
+        Hosted by
+        <a
+          href="https://github.com/Solsynth/DysonNetwork"
+          class="text-primary"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          DysonNetwork.Sphere
+        </a>
+      </div>
+    </div>
   </div>
 </template>
 

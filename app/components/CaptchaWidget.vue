@@ -3,7 +3,7 @@
     <div v-if="provider === 'cloudflare'">
       <turnstile v-if="!!apiKey" :sitekey="apiKey" @callback="handleSuccess" />
       <div v-else class="mx-auto">
-        <n-spin />
+        <span class="loading loading-spinner loading-md"></span>
       </div>
     </div>
     <div v-else-if="provider === 'hcaptcha'">
@@ -11,9 +11,10 @@
         v-if="!!apiKey"
         :sitekey="apiKey"
         @verify="(tk: string) => handleSuccess(tk)"
-      />
+      >
+      </hcaptcha>
       <div v-else class="mx-auto">
-        <n-spin />
+        <span class="loading loading-spinner loading-md"></span>
       </div>
     </div>
     <div
@@ -22,7 +23,7 @@
       :data-sitekey="apiKey"
     />
     <div v-else class="flex flex-col items-center justify-center gap-1">
-      <span class="mdi mdi-alert-circle-outline text-3xl"></span>
+      <n-icon :component="AlertTriangleIcon" />
       <span>Captcha provider not configured correctly.</span>
     </div>
   </div>
@@ -32,6 +33,7 @@
 import { ref, onMounted } from "vue"
 import Turnstile from "cfturnstile-vue3"
 import Hcaptcha from "@hcaptcha/vue3-hcaptcha"
+import { AlertTriangleIcon } from "lucide-vue-next"
 
 const props = defineProps({
   provider: {
