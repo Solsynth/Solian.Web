@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from "vue"
 import { useRoute } from "vue-router"
 import { useSolarNetwork } from "~/composables/useSolarNetwork"
-import { CheckIcon } from "lucide-vue-next"
+import { CheckIcon, PlugIcon } from "lucide-vue-next"
 
 import IconLight from "~/assets/images/cloudy-lamb.png"
 import type { SnCloudFile } from "~/types/api/post"
@@ -148,7 +148,9 @@ const pageStyle = computed(() => {
           <div class="flex flex-col items-end justify-stretch">
             <div class="w-full flex flex-col md:text-right">
               <div class="mb-3 h-[60px] px-[4px] pt-[8px]">
-                <n-avatar :src="clientAvatar" :size="52" />
+                <n-avatar :src="clientAvatar" :size="52">
+                  <n-icon :component="PlugIcon" :size="28" />
+                </n-avatar>
               </div>
               <!-- App Info Section -->
               <div v-if="clientInfo" class="mb-6">
@@ -159,8 +161,8 @@ const pageStyle = computed(() => {
                   <p class="text-base">
                     {{
                       isNewApp
-                        ? "Wants to access your Solar Network account"
-                        : "Wants to access your account"
+                        ? "wants to access your Solar Network account"
+                        : "wants to access your account"
                     }}
                   </p>
                 </div>
