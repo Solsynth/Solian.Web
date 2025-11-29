@@ -1,7 +1,7 @@
 <template>
   <div class="container mx-auto px-5">
     <div class="layout">
-      <div class="main">
+      <div class="main pt-4">
         <n-infinite-scroll
           style="overflow: auto"
           :distance="0"
@@ -37,7 +37,7 @@
           </div>
         </n-infinite-scroll>
       </div>
-      <div class="sidebar flex flex-col gap-3">
+      <div class="sidebar flex flex-col gap-3 pt-4">
         <div v-if="!userStore.isAuthenticated">
           <n-card>
             <h2 class="card-title">About</h2>
@@ -54,11 +54,9 @@
             </p>
           </n-card>
         </div>
-        <div v-else class="card w-full bg-base-100 shadow-xl">
-          <div class="card-body">
-            <post-editor @posted="refreshActivities" />
-          </div>
-        </div>
+        <n-card v-else class="w-full">
+          <post-editor @posted="refreshActivities" />
+        </n-card>
         <sidebar-footer class="max-lg:hidden" />
       </div>
     </div>
@@ -180,7 +178,7 @@ async function refreshActivities() {
 @media (min-width: 1280px) {
   .sidebar {
     position: sticky;
-    top: calc(68px + 8px);
+    top: calc(64px);
   }
 }
 </style>

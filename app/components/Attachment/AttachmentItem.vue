@@ -29,7 +29,7 @@
 
     <audio
       v-else-if="itemType == 'audio'"
-      class="w-full h-auto"
+      class="w-full"
       :src="remoteSource"
       controls
     />

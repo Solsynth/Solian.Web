@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-2">
+  <div class="flex flex-col gap-3">
     <pub-select v-model:value="publisher" />
     <n-input
       v-model:value="content"
@@ -8,11 +8,11 @@
       @keydown.meta.enter.exact="submit"
       @keydown.ctrl.enter.exact="submit"
     />
-    <div class="flex justify-between">
+    <div class="flex justify-end">
       <n-button type="primary" :loading="submitting" @click="submit">
         Post
         <template #icon>
-          <span class="mdi mdi-send"></span>
+          <n-icon :component="SendIcon" />
         </template>
       </n-button>
     </div>
@@ -20,8 +20,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useSolarNetwork } from '~/composables/useSolarNetwork'
+import { SendIcon } from "lucide-vue-next"
+import { ref } from "vue"
+import { useSolarNetwork } from "~/composables/useSolarNetwork"
 
 // Interface for uploaded files in the editor
 interface UploadedFile {
@@ -30,10 +31,10 @@ interface UploadedFile {
   type: string
 }
 
-const emits = defineEmits(['posted'])
+const emits = defineEmits(["posted"])
 
 const publisher = ref<string | undefined>()
-const content = ref('')
+const content = ref("")
 
 const fileList = ref<UploadedFile[]>([])
 
@@ -43,21 +44,21 @@ async function submit() {
   submitting.value = true
   const api = useSolarNetwork()
   await api(`/sphere/posts?pub=${publisher.value}`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'content-type': 'application/json',
+      "content-type": "application/json"
     },
     body: JSON.stringify({
       content: content.value,
       attachments: fileList.value
         .filter((e) => e.url != null)
-        .map((e) => e.url!.split('/').reverse()[0]),
-    }),
+        .map((e) => e.url!.split("/").reverse()[0])
+    })
   })
 
   submitting.value = false
-  content.value = ''
+  content.value = ""
   fileList.value = []
-  emits('posted')
+  emits("posted")
 }
 </script>

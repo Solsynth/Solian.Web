@@ -20,7 +20,8 @@ export const useSolarNetwork = () => {
       console.log(`[useSolarNetwork] onRequest for ${request} on ${side}`)
 
       if (devToken) {
-        options.headers = new Headers(options.headers)
+        console.log("[useSolarNetwork] Using dev token...")
+        options.headers.delete("Cookie")
         options.headers.set("Authorization", `Bearer ${devToken}`)
       }
 

@@ -31,8 +31,7 @@
         </n-carousel>
       </div>
 
-      <!-- Mixed content: vertical scrollable -->
-      <div v-else class="space-y-4 max-h-96 overflow-y-auto">
+      <div v-else class="space-y-4 flex flex-col">
         <attachment-item
           v-for="attachment in attachments"
           :key="attachment.id"
