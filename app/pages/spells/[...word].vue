@@ -1,73 +1,21 @@
-<template>
-  <div class="d-flex align-center justify-center fill-height">
-    <v-card max-width="400" title="Magic Spell" prepend-icon="mdi-magic-staff" class="pa-2">
-      <v-card-text>
-        <v-alert v-if="done" type="success" class="mb-4">
-          The magic spell has been applied successfully. Now you can close this
-          tab and back to the Solar Network!
-        </v-alert>
-        <v-alert
-          v-else-if="!!error"
-          type="error"
-          title="Something went wrong"
-          class="mb-4"
-          >{{ error }}</v-alert
-        >
-        <div v-else-if="!!spell">
-          <p class="mb-2">
-            Magic spell for {{ spellTypes[spell.type] ?? "unknown" }}
-          </p>
-          <div class="d-flex align-center gap-2 mb-2">
-            <v-icon size="18">mdi-account-circle</v-icon>
-            <strong>@{{ spell.account.name }}</strong>
-          </div>
-          <div class="d-flex align-center gap-2 mb-2">
-            <v-icon size="18">mdi-play</v-icon>
-            <span>Available at</span>
-            <strong>{{
-              new Date(spell.createdAt ?? spell.affectedAt).toLocaleString()
-            }}</strong>
-          </div>
-          <div v-if="spell.expiredAt" class="d-flex align-center gap-2 mb-4">
-            <v-icon size="18">mdi-calendar</v-icon>
-            <span>Until</span>
-            <strong>{{ spell.expiredAt.toString() }}</strong>
-          </div>
-          <div class="mt-4">
-            <v-text-field
-              v-if="spell.type == 3"
-              v-model="newPassword"
-              label="New password"
-              type="password"
-              density="comfortable"
-            ></v-text-field>
-            <v-btn color="primary" :loading="submitting" @click="applySpell">
-              <v-icon left>mdi-check</v-icon>
-              Apply
-            </v-btn>
-          </div>
-        </div>
-        <v-progress-circular
-          v-else
-          indeterminate
-          size="32"
-          class="mt-4"
-        ></v-progress-circular>
-      </v-card-text>
-    </v-card>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { onMounted, ref } from "vue"
 import { useRoute } from "vue-router"
+import { Wand2, User, Clock, Calendar, Check } from "lucide-vue-next"
+import { useSolarNetwork } from "~/composables/useSolarNetwork"
 
 const route = useRoute()
+const api = useSolarNetwork()
+
+useHead({
+  title: "Magic Spell"
+})
 
 const spellWord: string =
   typeof route.params.word === "string"
     ? route.params.word
     : route.params.word?.join("/") || ""
+
 interface SnSpell {
   type: number
   account: {
@@ -77,13 +25,13 @@ interface SnSpell {
   affectedAt: string
   expiredAt?: string
 }
+
 const spell = ref<SnSpell | null>(null)
 const error = ref<string | null>(null)
-
 const newPassword = ref<string>()
-
 const submitting = ref(false)
 const done = ref(false)
+const loading = ref(true)
 
 const spellTypes = [
   "Account Activation",
@@ -93,14 +41,17 @@ const spellTypes = [
   "Contact Method Verification"
 ]
 
-const api = useSolarNetwork()
-
 async function fetchSpell() {
+  loading.value = true
   try {
-    const resp = await api(`/id/spells/${encodeURIComponent(spellWord)}`)
+    const resp = await api<SnSpell>(
+      `/id/spells/${encodeURIComponent(spellWord)}`
+    )
     spell.value = resp
   } catch (err: unknown) {
     error.value = err instanceof Error ? err.message : String(err)
+  } finally {
+    loading.value = false
   }
 }
 
@@ -117,8 +68,114 @@ async function applySpell() {
     done.value = true
   } catch (err: unknown) {
     error.value = err instanceof Error ? err.message : String(err)
+  } finally {
+    submitting.value = false
   }
 }
 
 onMounted(() => fetchSpell())
 </script>
+
+<template>
+  <div class="relative flex items-center justify-center min-h-layout px-4">
+    <n-card class="w-full max-w-md shadow-lg" size="large">
+      <div v-if="done" class="py-4">
+        <n-result
+          status="success"
+          title="Spell Applied"
+          description="The magic spell has been applied successfully. Now you can close this tab and return to the Solar Network!"
+        >
+        </n-result>
+      </div>
+
+      <div v-else-if="error">
+        <n-alert title="Something went wrong" type="error" class="mb-4">
+          {{ error }}
+        </n-alert>
+      </div>
+
+      <div v-else-if="loading" class="flex justify-center py-12">
+        <n-spin size="large" />
+      </div>
+
+      <div v-else-if="spell" class="flex flex-col gap-6">
+        <!-- Header -->
+        <div
+          class="flex items-center gap-3 pb-4 border-b border-gray-100 dark:border-gray-800"
+        >
+          <div class="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
+            <n-icon :component="Wand2" class="text-amber-500" :size="24" />
+          </div>
+          <div>
+            <h2 class="text-xl font-bold">Magic Spell</h2>
+            <p class="text-sm text-gray-500">
+              {{ spellTypes[spell.type] ?? "Unknown Spell" }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Details -->
+        <div class="space-y-4">
+          <div class="flex items-center gap-3">
+            <n-icon :component="User" class="text-gray-400" :size="20" />
+            <div class="flex flex-col">
+              <span class="text-xs text-gray-500 uppercase tracking-wider"
+                >Account</span
+              >
+              <span class="font-medium">@{{ spell.account.name }}</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <n-icon :component="Clock" class="text-gray-400" :size="20" />
+            <div class="flex flex-col">
+              <span class="text-xs text-gray-500 uppercase tracking-wider"
+                >Available at</span
+              >
+              <span class="font-medium">{{
+                new Date(spell.createdAt ?? spell.affectedAt).toLocaleString()
+              }}</span>
+            </div>
+          </div>
+
+          <div v-if="spell.expiredAt" class="flex items-center gap-3">
+            <n-icon :component="Calendar" class="text-gray-400" :size="20" />
+            <div class="flex flex-col">
+              <span class="text-xs text-gray-500 uppercase tracking-wider"
+                >Expires</span
+              >
+              <span class="font-medium">{{
+                new Date(spell.expiredAt).toLocaleString()
+              }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action -->
+        <div class="mt-2 space-y-4">
+          <n-input
+            v-if="spell.type == 3"
+            v-model:value="newPassword"
+            type="password"
+            show-password-on="click"
+            placeholder="New password"
+            size="large"
+          />
+
+          <n-button
+            type="primary"
+            class="w-full"
+            size="large"
+            :loading="submitting"
+            @click="applySpell"
+          >
+            <template #icon>
+              <n-icon :component="Check" />
+            </template>
+            Apply Spell
+          </n-button>
+        </div>
+      </div>
+    </n-card>
+  </div>
+</template>
