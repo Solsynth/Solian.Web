@@ -45,7 +45,7 @@ async function fetchSpell() {
   loading.value = true
   try {
     const resp = await api<SnSpell>(
-      `/id/spells/${encodeURIComponent(spellWord)}`
+      `/pass/spells/${encodeURIComponent(spellWord)}`
     )
     spell.value = resp
   } catch (err: unknown) {
@@ -58,7 +58,7 @@ async function fetchSpell() {
 async function applySpell() {
   submitting.value = true
   try {
-    await api(`/id/spells/${encodeURIComponent(spellWord)}/apply`, {
+    await api(`/pass/spells/${encodeURIComponent(spellWord)}/apply`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: newPassword.value

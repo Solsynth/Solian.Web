@@ -361,7 +361,7 @@ async function handleCreateAccount() {
   isLoading.value = true
 
   try {
-    await api("/id/accounts", {
+    await api("/pass/accounts", {
       method: "POST",
       body: {
         name: formModel.name,

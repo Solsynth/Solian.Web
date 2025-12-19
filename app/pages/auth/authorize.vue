@@ -37,7 +37,7 @@ const requestedScopes = computed(() => {
 async function fetchClientInfo() {
   try {
     const queryString = window.location.search.slice(1)
-    clientInfo.value = await api(`/id/auth/open/authorize?${queryString}`)
+    clientInfo.value = await api(`/pass/auth/open/authorize?${queryString}`)
     checkIfNewApp()
   } catch (err) {
     message.error(err instanceof Error ? err.message : String(err))
@@ -56,7 +56,7 @@ async function handleAuthorize(authorize = true) {
   isAuthorizing.value = true
   try {
     const data = await api<{ redirectUri?: string }>(
-      "/id/auth/open/authorize",
+      "/pass/auth/open/authorize",
       {
         method: "POST",
         body: new URLSearchParams({

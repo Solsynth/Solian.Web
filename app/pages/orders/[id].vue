@@ -92,7 +92,7 @@ const api = useSolarNetwork()
 async function fetchOrder() {
   try {
     const resp = await api<SnWalletOrder>(
-      `/id/orders/${encodeURIComponent(orderId)}`
+      `/pass/orders/${encodeURIComponent(orderId)}`
     )
     order.value = resp
   } catch (err: unknown) {
@@ -104,7 +104,7 @@ async function pay() {
   if (submitting.value) return
   submitting.value = true
   try {
-    await api(`/id/orders/${encodeURIComponent(orderId)}/pay`, {
+    await api(`/pass/orders/${encodeURIComponent(orderId)}/pay`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ pin_code: pinCode.value })

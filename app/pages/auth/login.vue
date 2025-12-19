@@ -54,7 +54,7 @@ async function handleFindAccount() {
   isLoading.value = true
 
   try {
-    challenge.value = await api("/id/auth/challenge", {
+    challenge.value = await api("/pass/auth/challenge", {
       method: "POST",
       body: {
         platform: 1,
@@ -78,7 +78,7 @@ async function getFactors() {
   isLoading.value = true
   try {
     const availableFactors = await api<SnAuthFactor[]>(
-      `/id/auth/challenge/${challenge.value.id}/factors`
+      `/pass/auth/challenge/${challenge.value.id}/factors`
     )
     factors.value = availableFactors.filter(
       (f: SnAuthFactor) => !challenge.value!.blacklistFactors.includes(f.id)
@@ -105,7 +105,7 @@ async function requestVerificationCode() {
 
   try {
     await api(
-      `/id/auth/challenge/${challenge.value.id}/factors/${selectedFactorId.value}`,
+      `/pass/auth/challenge/${challenge.value.id}/factors/${selectedFactorId.value}`,
       { method: "POST" }
     )
   } catch (e: unknown) {
@@ -150,7 +150,7 @@ async function handleVerifyFactor() {
   isLoading.value = true
 
   try {
-    challenge.value = await api(`/id/auth/challenge/${challenge.value.id}`, {
+    challenge.value = await api(`/pass/auth/challenge/${challenge.value.id}`, {
       method: "PATCH",
       body: {
         factor_id: selectedFactorId.value,
@@ -181,7 +181,7 @@ async function exchangeToken() {
   isLoading.value = true
   try {
     // The token endpoint gives the Set-Cookie header
-    await api<{ token: string }>("/id/auth/token", {
+    await api<{ token: string }>("/pass/auth/token", {
       method: "POST",
       body: {
         grant_type: "authorization_code",

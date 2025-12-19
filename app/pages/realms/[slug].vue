@@ -356,7 +356,7 @@ const apiBaseServer = useSolarNetworkUrl()
 
 try {
   const { data, error } = await useFetch<SnRealm>(
-    `${apiBaseServer}/id/realms/${route.params.slug}`,
+    `${apiBaseServer}/pass/realms/${route.params.slug}`,
     { server: true }
   )
 
@@ -474,7 +474,7 @@ async function checkMembership() {
 
   checkingMembership.value = true
   try {
-    await api(`/id/realms/${realm.value.slug}/members/me`, {
+    await api(`/pass/realms/${realm.value.slug}/members/me`, {
       method: "GET"
     })
     isMember.value = true
@@ -492,7 +492,7 @@ async function handleJoin() {
 
   isJoining.value = true
   try {
-    await api(`/id/realms/${realm.value.slug}/members/me`, {
+    await api(`/pass/realms/${realm.value.slug}/members/me`, {
       method: "POST"
     })
     message.success(`Successfully joined ${realm.value.name}!`)

@@ -61,7 +61,7 @@ function handleSuccess(token: string) {
 // This function will be used to fetch configuration if needed,
 // Like the backend didn't embed the configuration properly.
 async function fetchConfiguration() {
-  const resp = await api<{ provider: string; apiKey: string }>("/id/captcha")
+  const resp = await api<{ provider: string; apiKey: string }>("/pass/captcha")
   provider.value = resp.provider
   apiKey.value = resp.apiKey
 }
