@@ -47,7 +47,6 @@
     "@tailwindcss/typography": "^0.5.19",
     "@types/luxon": "^3.7.1",
     "@types/node": "^24.10.1",
-    "daisyui": "^5.5.5",
     "naive-ui": "^2.43.2",
     "tailwindcss": "^4.1.17",
     "unplugin-auto-import": "^20.3.0",
