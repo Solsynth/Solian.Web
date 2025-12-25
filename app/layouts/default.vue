@@ -1,11 +1,11 @@
 <template>
   <div class="flex flex-col min-h-screen">
     <header
-      class="navbar bg-transparent shadow-lg fixed top-0 left-0 right-0 backdrop-blur-2xl z-1000 h-[64px]"
+      class="navbar bg-transparent shadow-lg fixed top-0 left-0 right-0 backdrop-blur-2xl z-1000 h-16"
     >
-      <div class="container mx-auto flex items-center justify-between px-5">
+      <div class="container mx-auto flex items-center justify-between px-12">
         <div class="flex gap-2">
-          <div class="flex items-center justify-center w-[40px]">
+          <div class="flex items-center justify-center w-10">
             <img :src="IconLight" alt="The Solar Network" class="fit-cover" />
           </div>
 
@@ -31,7 +31,7 @@
       </div>
     </header>
 
-    <main class="grow mt-[64px]">
+    <main class="grow mt-16">
       <slot />
     </main>
   </div>
@@ -64,6 +64,7 @@ const activeKey = computed(() => {
   return null
 })
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function renderIcon(icon: any) {
   return () => h(NIcon, null, { default: () => h(icon) })
 }
@@ -109,3 +110,11 @@ function handleDropdownSelect(key: string) {
   router.push(key)
 }
 </script>
+
+<style scoped>
+.navbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+</style>

@@ -228,7 +228,17 @@ const userBackground = computed(() => {
     : undefined
 })
 
-// defineOgImage block removed due to type incompatibility
+defineOgImage({
+  component: "ImageCard",
+  // @ts-ignore
+  title: computed(() => post.value?.title || "Post"),
+  description: computed(
+    () =>
+      post.value?.description || post.value?.content?.substring(0, 150) || ""
+  ),
+  avatarUrl: computed(() => userPicture.value),
+  backgroundImage: computed(() => userBackground.value)
+})
 
 function formatDate(dateString: string): string {
   return new Date(dateString).toLocaleDateString("en-US", {

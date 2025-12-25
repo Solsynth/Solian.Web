@@ -84,13 +84,18 @@ useHead({
   ]
 })
 
-defineOgImage({
-  // @ts-ignore
-  title: "Explore",
-  description: "The open social network. Friendly to everyone."
-})
-
 const userStore = useUserStore()
+
+// Define OG Image during SSR phase
+if (import.meta.server) {
+  defineOgImage({
+    component: 'NuxtSeo',
+    props: {
+      title: "Explore",
+      description: "The open social network. Friendly to everyone."
+    }
+  })
+}
 
 const version = ref<SnVersion | null>(null)
 async function fetchVersion() {
