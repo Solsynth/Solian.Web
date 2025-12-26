@@ -1,5 +1,5 @@
 <template>
-  <div class="py-6 px-5 min-h-screen">
+  <div class="px-5">
     <!-- Loading State -->
     <div
       v-if="pending"
@@ -49,9 +49,7 @@
       <div class="space-y-0">
         <!-- Section 1: Pass Data -->
         <div
-          ref="section1"
           class="scroll-section min-h-screen flex items-center justify-center"
-          :class="{ 'animate-in': inView1 }"
         >
           <n-card class="w-full max-w-4xl">
             <template #header>
@@ -101,7 +99,7 @@
                 <div class="text-2xl font-bold mb-1">
                   {{ getStreakMessage(rewindData.data.pass.maxCheckInStreak) }}
                 </div>
-                <div class="text-lg opacity-80">
+                <div class="text-md opacity-80">
                   {{
                     getStreakDescription(rewindData.data.pass.maxCheckInStreak)
                   }}
@@ -111,11 +109,130 @@
           </n-card>
         </div>
 
-        <!-- Section 2: Creator Career Overview -->
+        <!-- Section 2: Lotteries -->
         <div
-          ref="section2"
           class="scroll-section min-h-screen flex items-center justify-center"
-          :class="{ 'animate-in': inView2 }"
+        >
+          <n-card
+            class="w-full max-w-4xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-lg"
+          >
+            <template #header>
+              <div class="flex items-center gap-3">
+                <n-icon
+                  size="28"
+                  :component="PartyPopperIcon"
+                  class="text-purple-600"
+                />
+                <h2 class="text-2xl font-bold">彩票游戏</h2>
+              </div>
+            </template>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="flex flex-col gap-6">
+                <div class="grid grid-cols-1 gap-4">
+                  <n-statistic label="获胜次数" tabular-nums>
+                    <n-number-animation
+                      :to="rewindData.data.pass.lotteriesWins"
+                    />
+                    <template #suffix>次</template>
+                  </n-statistic>
+                  <n-statistic label="失败次数" tabular-nums>
+                    <n-number-animation
+                      :to="rewindData.data.pass.lotteriesLosses"
+                    />
+                    <template #suffix>次</template>
+                  </n-statistic>
+                  <n-statistic label="胜率" tabular-nums>
+                    <n-number-animation
+                      :to="rewindData.data.pass.lotteriesWinRate * 100"
+                      :precision="1"
+                    />
+                    <template #suffix>%</template>
+                  </n-statistic>
+                </div>
+              </div>
+
+              <div class="md:text-right pr-4 max-md:order-first">
+                <div class="text-5xl mb-3">
+                  {{
+                    rewindData.data.pass.lotteriesWinRate >= 0.5 ? "🎉" : "😅"
+                  }}
+                </div>
+                <div class="text-2xl font-bold mb-1">
+                  {{ getLotteryMessage(rewindData.data.pass.lotteriesWinRate) }}
+                </div>
+                <div class="text-md opacity-80">
+                  {{
+                    getLotteryDescription(rewindData.data.pass.lotteriesWinRate)
+                  }}
+                </div>
+              </div>
+            </div>
+          </n-card>
+        </div>
+
+        <!-- Section 3: Social Connections -->
+        <div
+          class="scroll-section min-h-screen flex items-center justify-center"
+        >
+          <n-card
+            class="w-full max-w-4xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-lg"
+          >
+            <template #header>
+              <div class="flex items-center gap-3">
+                <n-icon
+                  size="28"
+                  :component="HeartIcon"
+                  class="text-pink-600"
+                />
+                <h2 class="text-2xl font-bold">社交连接</h2>
+              </div>
+            </template>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="flex flex-col gap-6">
+                <div class="grid grid-cols-1 gap-4">
+                  <n-statistic label="新增好友" tabular-nums>
+                    <n-number-animation
+                      :to="rewindData.data.pass.newFriendsCount"
+                    />
+                    <template #suffix>人</template>
+                  </n-statistic>
+                  <n-statistic label="新增屏蔽" tabular-nums>
+                    <n-number-animation
+                      :to="rewindData.data.pass.newBlockedCount"
+                    />
+                    <template #suffix>人</template>
+                  </n-statistic>
+                </div>
+              </div>
+
+              <div class="md:text-right pr-4 max-md:order-first">
+                <div class="text-5xl mb-3">🤝</div>
+                <div class="text-2xl font-bold mb-1">
+                  {{
+                    getConnectionMessage(
+                      rewindData.data.pass.newFriendsCount,
+                      rewindData.data.pass.newBlockedCount
+                    )
+                  }}
+                </div>
+                <div class="text-md opacity-80">
+                  {{
+                    getConnectionDescription(
+                      rewindData.data.pass.newFriendsCount,
+                      rewindData.data.pass.newBlockedCount
+                    )
+                  }}
+                </div>
+              </div>
+            </div>
+          </n-card>
+        </div>
+
+        <!-- Section 4: Creator Career Overview -->
+        <div
+          class="scroll-section min-h-screen flex items-center justify-center"
         >
           <n-card
             class="w-full max-w-4xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-lg"
@@ -210,11 +327,60 @@
           </n-card>
         </div>
 
+        <!-- Section 5: Word Cloud -->
+        <div
+          class="scroll-section min-h-screen flex items-center justify-center"
+        >
+          <n-card
+            class="w-full max-w-4xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-lg"
+          >
+            <template #header>
+              <div class="flex items-center gap-3">
+                <n-icon
+                  size="28"
+                  :component="MessageCircleIcon"
+                  class="text-blue-600"
+                />
+                <h2 class="text-2xl font-bold">词汇云</h2>
+              </div>
+            </template>
+
+            <div class="text-center">
+              <div class="text-5xl mb-6">☁️</div>
+              <div class="text-2xl font-bold mb-4">你的年度词汇</div>
+              <div class="text-md opacity-80 mb-8">
+                这些是你最常使用的词汇，反映了你的表达方式和兴趣
+              </div>
+
+              <div
+                class="flex flex-wrap justify-center items-center gap-4 max-w-3xl mx-auto"
+              >
+                <span
+                  v-for="word in rewindData.data.sphere.topWords"
+                  :key="word.word"
+                  :class="getWordCloudClass(word.count)"
+                  class="inline-block transition-all duration-300 hover:scale-110 cursor-default"
+                  :title="`${word.word}: ${word.count} 次`"
+                >
+                  <n-tooltip>
+                    <template #trigger>
+                      {{ word.word }}
+                    </template>
+                    {{ word.count }} 次使用
+                  </n-tooltip>
+                </span>
+              </div>
+
+              <div class="mt-8 text-sm opacity-60">
+                词汇使用频率越高，字体越大
+              </div>
+            </div>
+          </n-card>
+        </div>
+
         <!-- Section 3: Explore History -->
         <div
-          ref="section3"
           class="scroll-section min-h-screen flex items-center justify-center"
-          :class="{ 'animate-in': inView3 }"
         >
           <n-card
             class="w-full max-w-4xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-lg"
@@ -267,9 +433,9 @@
                 </nuxt-link>
               </div>
               <div class="text-right flex flex-col justify-center px-5 gap-2">
-                <div class="text-4xl">🤔</div>
+                <div class="text-4xl">❤️</div>
                 <p class="text-lg">
-                  看起来你真的喜欢他/她呢 (´▽｀) <br />
+                  看起来你真的喜欢他/她呢<br />
                   新的一年不妨试试探索更多优秀创作者吧！
                 </p>
                 <p class="text-xs opacity-80">
@@ -282,9 +448,7 @@
 
         <!-- Section 4: Chat Summary -->
         <div
-          ref="section4"
           class="scroll-section min-h-screen flex items-center justify-center"
-          :class="{ 'animate-in': inView4 }"
         >
           <n-card
             class="w-full max-w-4xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-lg"
@@ -312,7 +476,7 @@
                       <n-avatar
                         :src="
                           getChatRoomAvatar(
-                            rewindData.data.sphere.mostCalledChat.chat
+                            rewindData.data.sphere.mostMessagedChat.chat
                           )
                         "
                         >{{
@@ -372,13 +536,111 @@
                     </div>
                   </n-card>
                 </div>
+                <div>
+                  <h3 class="font-bold mb-2 flex items-center gap-2">
+                    <n-icon :component="PhoneCallIcon" size="16" />
+                    通话时间最长的聊天室
+                  </h3>
+                  <n-card size="small">
+                    <div class="flex items-center gap-4">
+                      <n-avatar
+                        :src="
+                          getChatRoomAvatar(
+                            rewindData.data.sphere.mostCalledChat.chat
+                          )
+                        "
+                        >{{
+                          rewindData.data.sphere.mostCalledChat.chat.name?.substring(
+                            0,
+                            1
+                          )
+                        }}</n-avatar
+                      >
+                      <div class="grow flex flex-col">
+                        <div class="text-md font-bold">
+                          {{ rewindData.data.sphere.mostCalledChat.chat.name }}
+                        </div>
+                        <p>
+                          <n-number-animation
+                            :to="rewindData.data.sphere.mostCalledChat.duration"
+                          />
+                          分钟
+                        </p>
+                      </div>
+                    </div>
+                    <p class="mt-2 text-opacity-80">
+                      与这些人一起达成这样的成就
+                    </p>
+                    <div
+                      v-if="
+                        rewindData.data.sphere.mostCalledAccounts.length > 0
+                      "
+                      class="flex justify-start gap-4 mt-2"
+                    >
+                      <div
+                        v-for="item in rewindData.data.sphere
+                          .mostCalledChatTopMembers"
+                        :key="item.id"
+                      >
+                        <n-tooltip>
+                          <template #trigger>
+                            <n-avatar
+                              object-fit="cover"
+                              :src="getAccountAvatar(item)"
+                            />
+                          </template>
+                          {{ item.nick }}
+                        </n-tooltip>
+                      </div>
+                    </div>
+                  </n-card>
+                </div>
+                <div>
+                  <h3 class="font-bold mb-2 flex items-center gap-2">
+                    <n-icon :component="WebhookIcon" size="16" />
+                    通话时间前三名
+                  </h3>
+                  <n-card
+                    v-if="rewindData.data.sphere.mostCalledAccounts.length > 0"
+                    size="small"
+                  >
+                    <div class="flex justify-start gap-4 mt-2">
+                      <div
+                        v-for="item in rewindData.data.sphere
+                          .mostCalledAccounts"
+                        :key="item.account.id"
+                      >
+                        <div
+                          class="flex flex-col justify-center items-center text-center gap-2"
+                        >
+                          <n-avatar
+                            object-fit="cover"
+                            :src="getAccountAvatar(item.account)"
+                          />
+                          <div>
+                            <div class="text-md font-bold">
+                              {{ item.account.nick }}
+                            </div>
+                            <p class="text-sm opacity-80">
+                              {{ item.duration }} 分钟
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </n-card>
+                </div>
               </div>
               <div class="text-right flex flex-col justify-center px-5 gap-2">
-                <div class="text-4xl">💬</div>
-                <p class="text-lg">
-                  一眼丁真，鉴定为 <br/>
-                  <b>纯纯的话唠</b>
-                </p>
+                <div class="text-5xl mb-3">💬</div>
+                <div class="text-2xl font-bold">
+                  {{ getChatMessage(getTotalMessages(rewindData.data.sphere)) }}
+                </div>
+                <div class="text-md opacity-80">
+                  {{
+                    getChatDescription(getTotalMessages(rewindData.data.sphere))
+                  }}
+                </div>
               </div>
             </div>
           </n-card>
@@ -386,9 +648,7 @@
 
         <!-- Section 6: Summary -->
         <div
-          ref="section6"
           class="scroll-section min-h-screen flex items-center justify-center"
-          :class="{ 'animate-in': inView6 }"
         >
           <n-card
             class="w-full max-w-4xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-lg"
@@ -447,12 +707,11 @@
                     <p class="text-sm">
                       <span class="font-medium opacity-80">Favorite Chat:</span>
                     </p>
-                    <p class="text-sm">
+                    <div class="text-sm">
                       <span class="font-medium opacity-80"
-                        >Top Connection:</span
+                        >Top Connections:</span
                       >
-                      {{ rewindData.data.sphere.mostCalledAccounts[0]?.nick }}
-                    </p>
+                    </div>
                     <p class="text-sm">
                       <span class="font-medium opacity-80"
                         >Loved Publisher:</span
@@ -522,13 +781,14 @@ import {
   PencilLineIcon,
   DownloadIcon,
   ShareIcon,
-  PartyPopperIcon
+  PartyPopperIcon,
+  PhoneCallIcon,
+  WebhookIcon
 } from "lucide-vue-next"
-import { ref, onMounted, onUnmounted } from "vue"
-import { DateTime } from "luxon"
+import { ref } from "vue"
 import type {
+  SnAccount,
   SnRewind,
-  SnRewindMostCalledChat,
   SnRewindChat,
   SnRewindChatMember
 } from "~/types/api"
@@ -541,23 +801,7 @@ const pending = ref(true)
 const error = ref<unknown>(null)
 const rewindData = ref<SnRewind | null>(null)
 
-// Scroll animation refs
-const section1 = ref<HTMLElement>()
-const section2 = ref<HTMLElement>()
-const section3 = ref<HTMLElement>()
-const section4 = ref<HTMLElement>()
-const section5 = ref<HTMLElement>()
-const section6 = ref<HTMLElement>()
-
-// Intersection Observer state
-const inView1 = ref(false)
-const inView2 = ref(false)
-const inView3 = ref(false)
-const inView4 = ref(false)
-const inView5 = ref(false)
-const inView6 = ref(false)
-
-const observers: IntersectionObserver[] = []
+// No animation refs needed for CSS-only animations
 
 // Fetch rewind data
 const fetchRewindData = async () => {
@@ -573,57 +817,9 @@ const fetchRewindData = async () => {
   }
 }
 
-// Setup scroll animations
-const setupScrollAnimations = () => {
-  const options = {
-    threshold: 0.1,
-    rootMargin: "0px 0px -50px 0px"
-  }
-
-  const createObserver = (
-    element: HTMLElement,
-    inViewRef: { value: boolean }
-  ) => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        inViewRef.value = entry.isIntersecting
-      })
-    }, options)
-
-    if (element) {
-      observer.observe(element)
-      observers.push(observer)
-    }
-  }
-
-  createObserver(section1.value!, inView1)
-  createObserver(section2.value!, inView2)
-  createObserver(section3.value!, inView3)
-  createObserver(section4.value!, inView4)
-  createObserver(section5.value!, inView5)
-  createObserver(section6.value!, inView6)
-}
-
-onMounted(() => {
-  fetchRewindData()
-  // Delay setup to ensure DOM is ready
-  setTimeout(setupScrollAnimations, 100)
-})
-
-onUnmounted(() => {
-  observers.forEach((observer) => observer.disconnect())
-})
+onMounted(() => fetchRewindData())
 
 // Helper methods
-const formatDate = (dateString: string): string => {
-  return DateTime.fromISO(dateString).toFormat("MMM dd, yyyy")
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const getChatAvatar = (chat: SnRewindMostCalledChat) => {
-  // Return default avatar for chat rooms
-  return "/api/placeholder/48/48"
-}
 
 const getChatRoomAvatar = (item: SnRewindChat) => {
   const apiBase = useSolarNetworkUrl()
@@ -637,6 +833,13 @@ const getChatMemberAvatar = (member: SnRewindChatMember) => {
   return member.account?.profile?.picture
     ? `${apiBase}/drive/files/${member.account.profile.picture.id}`
     : "/api/placeholder/64/64"
+}
+
+const getAccountAvatar = (account: SnAccount) => {
+  const apiBase = useSolarNetworkUrl()
+  return account?.profile?.picture
+    ? `${apiBase}/drive/files/${account.profile.picture.id}`
+    : "/api/placeholder/32/32"
 }
 
 // Download functionality
@@ -711,6 +914,123 @@ const getStreakDescription = (streak: number): string => {
   }
 }
 
+// Helper methods for chat messages
+const getTotalMessages = (data: SnRewind["data"]["sphere"]): number => {
+  return (
+    (data.mostMessagedDirectChat?.messageCounts || 0) +
+    (data.mostMessagedChat?.messageCounts || 0)
+  )
+}
+
+const getChatMessage = (totalMessages: number): string => {
+  if (totalMessages >= 10000) {
+    return "社交达人"
+  } else if (totalMessages >= 5000) {
+    return "聊天狂人"
+  } else if (totalMessages >= 2000) {
+    return "活跃分子"
+  } else if (totalMessages >= 1000) {
+    return "话痨本痨"
+  } else if (totalMessages >= 500) {
+    return "健谈人士"
+  } else if (totalMessages >= 100) {
+    return "社交新人"
+  } else {
+    return "继续聊天"
+  }
+}
+
+const getChatDescription = (totalMessages: number): string => {
+  if (totalMessages >= 10000) {
+    return `发送了 ${totalMessages} 条消息，你就是 Solar Network 的社交传奇`
+  } else if (totalMessages >= 5000) {
+    return `发送了 ${totalMessages} 条消息，你的聊天热情无人能及`
+  } else if (totalMessages >= 2000) {
+    return `发送了 ${totalMessages} 条消息，聊天已经成为你的日常`
+  } else if (totalMessages >= 1000) {
+    return `发送了 ${totalMessages} 条消息，你真的很爱在 Solar Network 上聊天`
+  } else if (totalMessages >= 500) {
+    return `发送了 ${totalMessages} 条消息，继续保持这个交流习惯`
+  } else if (totalMessages >= 100) {
+    return `发送了 ${totalMessages} 条消息，开始享受 Solar Network 的社交功能`
+  } else {
+    return `发送了 ${totalMessages} 条消息，多多交流让社区更精彩`
+  }
+}
+
+// Helper methods for lottery messages
+const getLotteryMessage = (winRate: number): string => {
+  if (winRate >= 0.8) {
+    return "彩票之神"
+  } else if (winRate >= 0.6) {
+    return "幸运儿"
+  } else if (winRate >= 0.4) {
+    return "运气不错"
+  } else if (winRate >= 0.2) {
+    return "继续加油"
+  } else {
+    return "试试手气"
+  }
+}
+
+const getLotteryDescription = (winRate: number): string => {
+  if (winRate >= 0.8) {
+    return `胜率 ${(winRate * 100).toFixed(1)}%，看来你就是传说中的欧皇`
+  } else if (winRate >= 0.6) {
+    return `胜率 ${(winRate * 100).toFixed(1)}%，你的运气真的很不错`
+  } else if (winRate >= 0.4) {
+    return `胜率 ${(winRate * 100).toFixed(1)}%，运气还可以，继续保持`
+  } else if (winRate >= 0.2) {
+    return `胜率 ${(winRate * 100).toFixed(1)}%，有时候运气就是这样`
+  } else {
+    return `胜率 ${(winRate * 100).toFixed(1)}%，新的一年希望你能转运`
+  }
+}
+
+// Helper methods for connection messages
+const getConnectionMessage = (friends: number, blocked: number): string => {
+  if (friends > blocked * 2) {
+    return "社交之星"
+  } else if (friends > blocked) {
+    return "友好使者"
+  } else if (blocked > friends) {
+    return "谨慎选择"
+  } else {
+    return "平衡发展"
+  }
+}
+
+const getConnectionDescription = (friends: number, blocked: number): string => {
+  if (friends > blocked * 2) {
+    return `新增了 ${friends} 位好友，只有 ${blocked} 位屏蔽，你的社交圈在不断扩大`
+  } else if (friends > blocked) {
+    return `新增了 ${friends} 位好友，${blocked} 位屏蔽，你善于结识新朋友`
+  } else if (blocked > friends) {
+    return `新增了 ${friends} 位好友，但屏蔽了 ${blocked} 位，你对社交比较谨慎`
+  } else {
+    return `新增了 ${friends} 位好友，屏蔽了 ${blocked} 位，你的社交选择很平衡`
+  }
+}
+
+// Helper method for word cloud styling
+const getWordCloudClass = (count: number): string => {
+  if (count >= 1000) {
+    return "text-4xl font-bold text-blue-600"
+  } else if (count >= 500) {
+    return "text-3xl font-semibold text-green-600"
+  } else if (count >= 200) {
+    return "text-2xl font-medium text-purple-600"
+  } else if (count >= 100) {
+    return "text-xl font-medium text-pink-600"
+  } else if (count >= 50) {
+    return "text-lg font-normal text-indigo-600"
+  } else if (count >= 20) {
+    return "text-base font-normal text-teal-600"
+  } else {
+    return "text-sm font-normal text-gray-600"
+  }
+}
+
 useHead({
   title: "Solar Network Rewind 2025",
   meta: [
@@ -723,34 +1043,43 @@ useHead({
 </script>
 
 <style scoped>
-.scroll-section {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.scroll-section.animate-in {
-  opacity: 1;
-  transform: translateY(0);
+.scroll-section {
+  animation: fadeInUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  opacity: 0;
+  transform: translateY(30px);
 }
 
 /* Staggered animation delays */
-.scroll-section:nth-child(1).animate-in {
-  transition-delay: 0.1s;
+.scroll-section:nth-child(1) {
+  animation-delay: 0.1s;
 }
-.scroll-section:nth-child(2).animate-in {
-  transition-delay: 0.2s;
+.scroll-section:nth-child(2) {
+  animation-delay: 0.2s;
 }
-.scroll-section:nth-child(3).animate-in {
-  transition-delay: 0.3s;
+.scroll-section:nth-child(3) {
+  animation-delay: 0.3s;
 }
-.scroll-section:nth-child(4).animate-in {
-  transition-delay: 0.4s;
+.scroll-section:nth-child(4) {
+  animation-delay: 0.4s;
 }
-.scroll-section:nth-child(5).animate-in {
-  transition-delay: 0.5s;
+.scroll-section:nth-child(5) {
+  animation-delay: 0.5s;
 }
-.scroll-section:nth-child(6).animate-in {
-  transition-delay: 0.6s;
+.scroll-section:nth-child(6) {
+  animation-delay: 0.6s;
+}
+.scroll-section:nth-child(7) {
+  animation-delay: 0.7s;
 }
 </style>

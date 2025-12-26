@@ -9,6 +9,11 @@ export interface SnRewindActiveData {
   mostActiveWeekday: string
   latestActiveTime: string
   checkInCompleteness: number
+  lotteriesWins: number
+  lotteriesLosses: number
+  lotteriesWinRate: number
+  newBlockedCount: number
+  newFriendsCount: number
 }
 
 export interface SnRewindMostCalledChat {
@@ -94,6 +99,11 @@ export interface SnRewindMostLovedAudience {
   upvoteCounts: number
 }
 
+export interface SnAccountCallRewind {
+  account: SnAccount
+  duration: number
+}
+
 export interface SnRewindSocialData {
   totalPostCount: number
   totalUpvoteCount: number
@@ -101,10 +111,12 @@ export interface SnRewindSocialData {
   mostMessagedDirectChat: SnRewindChatSummary
   mostPopularPost: SnRewindMostPopularPost
   mostProductiveDay: SnRewindMostProductiveDay
-  mostCalledAccounts: SnAccount[]
+  mostCalledAccounts: SnAccountCallRewind[]
+  mostCalledChatTopMembers: SnAccount[]
   mostLovedPublisher: SnRewindMostLovedPublisher
   mostLovedAudience: SnRewindMostLovedAudience
   mostMessagedChat: SnRewindChatSummary
+  topWords: { word: string; count: number }[]
 }
 
 export interface SnRewind {
