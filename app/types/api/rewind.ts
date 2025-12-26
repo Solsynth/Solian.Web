@@ -1,125 +1,122 @@
 // Rewind data interfaces
-import type { SnCloudFile } from './post'
+import type { SnCloudFile } from "./post"
+import type { SnPublisher } from "./publisher"
+import type { SnAccount } from "./user"
 
-export interface SnRewindPassData {
-  maxCheckInStrike: number;
+export interface SnRewindActiveData {
+  maxCheckInStreak: number
+  mostActiveDay: string
+  mostActiveWeekday: string
+  latestActiveTime: string
+  checkInCompleteness: number
 }
 
 export interface SnRewindMostCalledChat {
-  id: string;
-  name: string;
-  type: number;
-  description: string;
-  picture: SnCloudFile | null;
-  realmId: string | null;
-  accountId: string;
-  isPublic: boolean;
-  isCommunity: boolean;
-  background: SnCloudFile | null;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
+  id: string
+  name: string
+  type: number
+  description: string
+  picture: SnCloudFile | null
+  realmId: string | null
+  accountId: string
+  isPublic: boolean
+  isCommunity: boolean
+  background: SnCloudFile | null
+  createdAt: string
+  updatedAt: string
+  deletedAt: string | null
 }
 
 export interface SnRewindMostPopularPost {
-  id: string;
-  title: string;
-  upvotes: number;
-  viewsTotal: number;
-  viewsUnique: number;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
+  id: string
+  title: string
+  upvotes: number
+  viewsTotal: number
+  viewsUnique: number
+  createdAt: string
+  updatedAt: string
+  publishedAt: string
 }
 
 export interface SnRewindMostProductiveDay {
-  date: string;
-  postCount: number;
-}
-
-export interface SnRewindMostCalledAccount {
-  id: string;
-  name: string;
-  nick: string;
-  profile: {
-    id: string;
-    bio: string;
-    level: number;
-    picture: SnCloudFile | null;
-    background: SnCloudFile | null;
-    createdAt: string;
-    updatedAt: string;
-  };
-  createdAt: string;
-  updatedAt: string;
+  date: string
+  postCount: number
 }
 
 export interface SnRewindMostLovedPublisher {
-  publisher: {
-    id: string;
-    name: string;
-    nick: string;
-    bio: string;
-    level: number;
-    picture: SnCloudFile | null;
-    background: SnCloudFile | null;
-    createdAt: string;
-    updatedAt: string;
-  };
-  upvoteCounts: number;
+  publisher: SnPublisher
+  upvoteCounts: number
 }
 
-export interface SnRewindMostMessagedChat {
-  id: string;
-  name: string | null;
-  type: number;
-  members: SnRewindChatMember[];
-  createdAt: string;
-  updatedAt: string;
+export interface SnRewindChat {
+  id: string
+  name: string | null
+  type: number
+  members: SnRewindChatMember[]
+  picture: SnCloudFile | null
+  background: SnCloudFile | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface SnRewindCallSummary {
+  chat: SnRewindChat
+  duration: number
+}
+
+export interface SnRewindChatSummary {
+  chat: SnRewindChat
+  messageCounts: number
 }
 
 export interface SnRewindChatMember {
-  id: string;
-  nick: string | null;
-  role: number;
-  isBot: boolean;
+  id: string
+  nick: string | null
+  role: number
   account: {
-    id: string;
-    name: string;
-    nick: string;
+    id: string
+    name: string
+    nick: string
     profile: {
-      id: string;
-      bio: string;
-      level: number;
-      picture: SnCloudFile | null;
-      background: SnCloudFile | null;
-      createdAt: string;
-      updatedAt: string;
-    };
-  };
+      id: string
+      bio: string
+      level: number
+      picture: SnCloudFile | null
+      background: SnCloudFile | null
+      createdAt: string
+      updatedAt: string
+    }
+  }
 }
 
-export interface SnRewindSphereData {
-  totalCount: number;
-  upvoteCounts: number;
-  mostCalledChat: SnRewindMostCalledChat;
-  mostPopularPost: SnRewindMostPopularPost;
-  mostProductiveDay: SnRewindMostProductiveDay;
-  mostCalledAccounts: SnRewindMostCalledAccount[];
-  mostLovedPublisher: SnRewindMostLovedPublisher;
-  mostMessagedChat: SnRewindMostMessagedChat;
+export interface SnRewindMostLovedAudience {
+  account: SnAccount
+  upvoteCounts: number
+}
+
+export interface SnRewindSocialData {
+  totalPostCount: number
+  totalUpvoteCount: number
+  mostCalledChat: SnRewindCallSummary
+  mostMessagedDirectChat: SnRewindChatSummary
+  mostPopularPost: SnRewindMostPopularPost
+  mostProductiveDay: SnRewindMostProductiveDay
+  mostCalledAccounts: SnAccount[]
+  mostLovedPublisher: SnRewindMostLovedPublisher
+  mostLovedAudience: SnRewindMostLovedAudience
+  mostMessagedChat: SnRewindChatSummary
 }
 
 export interface SnRewind {
-  id: string;
-  year: number;
-  schemaVersion: number;
+  id: string
+  year: number
+  schemaVersion: number
   data: {
-    pass: SnRewindPassData;
-    sphere: SnRewindSphereData;
-  };
-  accountId: string;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
+    pass: SnRewindActiveData
+    sphere: SnRewindSocialData
+  }
+  accountId: string
+  createdAt: string
+  updatedAt: string
+  deletedAt: string | null
 }
