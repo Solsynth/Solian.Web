@@ -32,7 +32,7 @@
     <!-- Main Content -->
     <div v-else-if="rewindData" id="intro" class="mx-auto">
       <!-- Header Section -->
-      <div class="text-center mb-8 min-h-compact-layout flex flex-col justify-center">
+      <div class="header text-center mb-8 min-h-compact-layout flex flex-col justify-center">
         <img :src="CloudyRewind" class="w-36 h-36 mx-auto" />
         <h1 class="text-4xl font-bold mb-1">Solar Network 年度回顾</h1>
         <n-tooltip placement="bottom">
@@ -46,7 +46,7 @@
       </div>
 
       <!-- Scroll-based Sections -->
-      <div class="space-y-0">
+      <div class="space-y-48">
         <!-- Section 1: Activity Data -->
         <div
           id="activity"
@@ -867,6 +867,8 @@ import type {
   SnRewindChat,
   SnRewindChatMember
 } from "~/types/api"
+import { gsap } from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
 
 import CloudyRewind from "~/assets/images/cloudy-lamb-rewind.png"
 import CloudyLamb from "~/assets/images/cloudy-lamb.png"
@@ -878,7 +880,7 @@ const pending = ref(true)
 const error = ref<unknown>(null)
 const rewindData = ref<SnRewind | null>(null)
 
-// No animation refs needed for CSS-only animations
+gsap.registerPlugin(ScrollTrigger)
 
 // Fetch rewind data
 const fetchRewindData = async () => {
@@ -894,7 +896,45 @@ const fetchRewindData = async () => {
   }
 }
 
-onMounted(() => fetchRewindData())
+onMounted(async () => {
+  await fetchRewindData()
+
+  // Ensure DOM is updated before running GSAP
+  await nextTick()
+
+  if (rewindData.value) {
+    // Animate the header
+    gsap.from(".header", {
+      opacity: 0,
+      y: 30,
+      duration: 0.8,
+      ease: "power3.out"
+    })
+
+    // Animate sections on scroll
+    const sections = gsap.utils.toArray<HTMLElement>(".scroll-section")
+    sections.forEach((section) => {
+      gsap.from(section, {
+        opacity: 0,
+        y: 50,
+        duration: 0.8,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: section,
+          start: "top 80%", // Animation starts when the top of the section is 80% from the top of the viewport
+          end: "bottom 20%",
+          toggleActions: "play none none none"
+        }
+      })
+    })
+  }
+})
+
+onBeforeUnmount(() => {
+  // Kill all ScrollTriggers to prevent memory leaks
+  ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
+})
+
 
 // Helper methods
 
@@ -1154,49 +1194,5 @@ definePageMeta({
 </script>
 
 <style scoped>
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.scroll-section {
-  animation: fadeInUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-  opacity: 0;
-  transform: translateY(30px);
-}
-
-/* Staggered animation delays */
-.scroll-section:nth-child(1) {
-  animation-delay: 0.1s;
-}
-
-.scroll-section:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.scroll-section:nth-child(3) {
-  animation-delay: 0.3s;
-}
-
-.scroll-section:nth-child(4) {
-  animation-delay: 0.4s;
-}
-
-.scroll-section:nth-child(5) {
-  animation-delay: 0.5s;
-}
-
-.scroll-section:nth-child(6) {
-  animation-delay: 0.6s;
-}
-
-.scroll-section:nth-child(7) {
-  animation-delay: 0.7s;
-}
+/* Scoped styles can remain for other elements if needed */
 </style>
