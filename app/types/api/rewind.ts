@@ -129,6 +129,7 @@ export interface SnRewind {
     sphere: SnRewindSocialData
   }
   accountId: string
+  account: SnAccount
   createdAt: string
   updatedAt: string
   deletedAt: string | null

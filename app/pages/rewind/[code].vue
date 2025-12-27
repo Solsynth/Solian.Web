@@ -921,10 +921,10 @@
 
                 <div class="flex justify-between gap-4 w-full md:col-span-2">
                   <div class="flex gap-4 items-center">
-                    <n-avatar :src="getAccountAvatar(userInfo.user!)" />
+                    <n-avatar :src="getAccountAvatar(rewindData.account)" />
                     <div class="flex flex-col">
-                      <p class="text-md font-bold">{{ userInfo.user!.nick }} 的 {{ rewindData.year }} 年</p>
-                      <p>@{{ userInfo.user!.name }}</p>
+                      <p class="text-md font-bold">{{ rewindData.account.nick }} 的 {{ rewindData.year }} 年</p>
+                      <p>@{{ rewindData.account.name }}</p>
                     </div>
                   </div>
                   <div class="flex gap-4 items-center text-right">
@@ -961,6 +961,52 @@
               与朋友分享你在 Solar Network 的精彩旅程！
             </p>
 
+            <n-alert
+              v-if="rewindData?.sharableCode"
+              type="success"
+              :bordered="false"
+              :show-icon="false"
+              class="mb-4 px-2"
+            >
+              <template #header>
+                <div class="flex items-center gap-2">
+                  <n-icon :component="ShareIcon" size="16" />
+                  <span>公开链接</span>
+                </div>
+              </template>
+              <div class="flex items-center gap-2">
+                <input
+                  type="text"
+                  :value="sharableUrl"
+                  readonly
+                  class="flex-1 bg-transparent border-none outline-none text-sm"
+                />
+                <n-button
+                  size="small"
+                  quaternary
+                  @click="copySharableUrl"
+                >
+                  复制
+                </n-button>
+              </div>
+            </n-alert>
+
+            <n-alert
+              v-else
+              type="info"
+              :bordered="false"
+              :show-icon="false"
+              class="mb-4 px-2"
+            >
+              <template #header>
+                <div class="flex items-center gap-2">
+                  <n-icon :component="LockIcon" size="16" />
+                  <span>私密模式</span>
+                </div>
+              </template>
+              <span class="text-sm">您的年度回顾目前仅自己可见</span>
+            </n-alert>
+
             <div class="flex gap-3 justify-center">
               <n-button
                 type="primary"
@@ -972,11 +1018,20 @@
                 </template>
                 下载总结
               </n-button>
-              <n-button size="large" @click="shareOnSocial">
+              <n-button v-if="rewindData?.sharableCode" size="large" @click="shareOnSocial">
                 <template #icon>
                   <n-icon :component="ShareIcon" />
                 </template>
                 分享到社交媒体
+              </n-button>
+              <n-button
+                size="large"
+                @click="toggleVisibility(!rewindData?.sharableCode)"
+              >
+                <template #icon>
+                  <n-icon :component="rewindData?.sharableCode ? LockIcon : ShareIcon" />
+                </template>
+                {{ rewindData?.sharableCode ? "设为私密" : "设为公开" }}
               </n-button>
             </div>
           </n-card>
@@ -999,7 +1054,8 @@ import {
   PartyPopperIcon,
   PhoneCallIcon,
   WebhookIcon,
-  ArrowDown
+  ArrowDown,
+  LockIcon
 } from "lucide-vue-next"
 import { ref } from "vue"
 import type {
@@ -1015,20 +1071,19 @@ import CloudyRewind from "~/assets/images/cloudy-lamb-rewind.png"
 import CloudyLamb from "~/assets/images/cloudy-lamb.png"
 
 const api = useSolarNetwork()
-const userInfo = useUserStore()
 
 const pending = ref(true)
 const error = ref<unknown>(null)
 const rewindData = ref<SnRewind | null>(null)
 
-gsap.registerPlugin(ScrollTrigger)
+const route = useRoute()
 
 // Fetch rewind data
 const fetchRewindData = async () => {
   pending.value = true
   error.value = null
   try {
-    const data = await api<SnRewind>("/pass/rewind/me")
+    const data = await api<SnRewind>(`/pass/rewind/${route.params.code || 'me'}`)
     rewindData.value = data
   } catch (e) {
     error.value = e
@@ -1038,6 +1093,8 @@ const fetchRewindData = async () => {
 }
 
 onMounted(async () => {
+  gsap.registerPlugin(ScrollTrigger)
+
   await fetchRewindData()
 
   // Ensure DOM is updated before running GSAP
@@ -1136,6 +1193,13 @@ const getAccountAvatar = (account: SnAccount) => {
     : "/api/placeholder/32/32"
 }
 
+const sharableUrl = computed(() => `${window.location.origin}/rewind/${rewindData.value!.sharableCode}`)
+
+function copySharableUrl() {
+  navigator.clipboard.writeText(sharableUrl.value)
+  message.success("链接已复制")
+}
+
 const message = useMessage()
 
 // Download functionality
@@ -1181,6 +1245,26 @@ const downloadSummary = async () => {
 
   } catch (error: unknown) {
     message.error(`导出失败…… ${error}`)
+  }
+}
+
+// Toggle public/private visibility
+const toggleVisibility = async (makePublic: boolean) => {
+  if (!rewindData.value) return
+
+  try {
+    const endpoint = makePublic
+      ? `/pass/rewind/me/${rewindData.value.year}/public`
+      : `/pass/rewind/me/${rewindData.value.year}/private`
+
+    const result = await api<SnRewind>(endpoint, {
+      method: "POST"
+    })
+
+    rewindData.value = result
+    message.success(makePublic ? "已设置为公开" : "已设置为私密")
+  } catch (error: unknown) {
+    message.error(`操作失败: ${error}`)
   }
 }
 
@@ -1523,7 +1607,7 @@ useHead({
 
 definePageMeta({
   layout: "minimal",
-  middleware: ["auth"]
+  middleware: ["auth"],
 })
 </script>
 
