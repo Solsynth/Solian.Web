@@ -3,7 +3,7 @@
     <!-- Loading State -->
     <div
       v-if="pending"
-      class="text-center py-12 min-h-compact-layout flex flex-col justify-center"
+      class="text-center min-h-compact-layout flex flex-col justify-center"
     >
       <n-spin size="large" />
       <p class="mt-4 text-lg">正在整理你的回顾数据……</p>
@@ -12,7 +12,7 @@
     <!-- Error State -->
     <div
       v-else-if="error"
-      class="text-center py-12 min-h-compact-layout flex flex-col justify-center max-w-2xl mx-auto"
+      class="text-center min-h-compact-layout flex flex-col justify-center max-w-2xl mx-auto"
     >
       <n-alert
         type="error"
@@ -43,6 +43,15 @@
           </template>
           数据范围 2024/12/26 - 2025/12/25
         </n-tooltip>
+        <n-alert v-if="notMyRewind" type="info" class="max-w-lg mx-auto mt-4">
+          <template #header>
+            这不是你的年度总结
+          </template>
+          你正在通过公开分享连接查看 {{ rewindData.account.nick }} 的年度总结。
+          <nuxt-link to="/rewind/me">
+            <n-a>前往此处查看你的年度总结。</n-a>
+          </nuxt-link>
+        </n-alert>
         <div class="scroll-hint absolute bottom-10 left-1/2 -translate-x-1/2">
           <p class="text-sm opacity-60 mb-2">向下滚动以开始</p>
           <n-icon :component="ArrowDown" class="animate-bounce w-6 h-6 text-gray-500 mx-auto" />
@@ -1025,6 +1034,7 @@
                 分享到社交媒体
               </n-button>
               <n-button
+                v-if="!notMyRewind"
                 size="large"
                 @click="toggleVisibility(!rewindData?.sharableCode)"
               >
@@ -1076,14 +1086,22 @@ const pending = ref(true)
 const error = ref<unknown>(null)
 const rewindData = ref<SnRewind | null>(null)
 
+const notMyRewind = computed(() => userInfo.user?.id != rewindData.value?.account.id)
+
 const route = useRoute()
+const router = useRouter()
+const userInfo = useUserStore()
 
 // Fetch rewind data
 const fetchRewindData = async () => {
   pending.value = true
   error.value = null
   try {
-    const data = await api<SnRewind>(`/pass/rewind/${route.params.code || 'me'}`)
+    if (!route.params.code && !userInfo.user) {
+      await router.push(`/auth/login?redirect=${route.fullPath}`)
+      return
+    }
+    const data = await api<SnRewind>(`/pass/rewind/${route.params.code || "me"}`)
     rewindData.value = data
   } catch (e) {
     error.value = e
@@ -1204,6 +1222,7 @@ const message = useMessage()
 
 // Download functionality
 const downloadSummary = async () => {
+  const progress = message.loading("正在创建总结，请稍后……", { duration: 0 })
   try {
     // Import html2canvas dynamically
     const html2canvas = (await import("html2canvas")).default
@@ -1245,12 +1264,20 @@ const downloadSummary = async () => {
 
   } catch (error: unknown) {
     message.error(`导出失败…… ${error}`)
+  } finally {
+    progress.destroy()
   }
 }
 
+let isWorking = false
+
 // Toggle public/private visibility
 const toggleVisibility = async (makePublic: boolean) => {
+  if (isWorking) return
   if (!rewindData.value) return
+
+  isWorking = true
+  const progress = message.loading("正在切换年度回顾可见度……", { duration: 0 })
 
   try {
     const endpoint = makePublic
@@ -1265,6 +1292,9 @@ const toggleVisibility = async (makePublic: boolean) => {
     message.success(makePublic ? "已设置为公开" : "已设置为私密")
   } catch (error: unknown) {
     message.error(`操作失败: ${error}`)
+  } finally {
+    progress.destroy()
+    isWorking = false
   }
 }
 
@@ -1280,7 +1310,7 @@ const shareOnSocial = () => {
   } else {
     // Fallback: copy to clipboard
     navigator.clipboard.writeText(text)
-    window.alert("Text copied to clipboard!")
+    message.success("链接已复制到剪贴板")
   }
 }
 
@@ -1606,8 +1636,7 @@ useHead({
 })
 
 definePageMeta({
-  layout: "minimal",
-  middleware: ["auth"],
+  layout: "minimal"
 })
 </script>
 
