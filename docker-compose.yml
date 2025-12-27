@@ -1,10 +1,7 @@
 services:
   app:
-    # This will build the Dockerfile in the current directory.
-    # Alternatively, you can specify the image from a registry.
-    # Replace 'your-github-username' with your actual GitHub username or organization.
-    image: ghcr.io/solsynth/floating-island:latest
-    build: .
+    # This will use the image from the registry.
+    image: ghcr.io/solsynth/floating-island:master
     # This maps the .env file from your project root into the container.
     env_file:
       - .env

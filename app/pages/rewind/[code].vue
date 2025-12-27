@@ -32,7 +32,9 @@
     <!-- Main Content -->
     <div v-else-if="rewindData" id="intro" class="mx-auto">
       <!-- Header Section -->
-      <div class="header text-center mb-8 min-h-compact-layout flex flex-col justify-center relative">
+      <div
+        class="header text-center mb-8 min-h-compact-layout flex flex-col justify-center relative"
+      >
         <img :src="CloudyRewind" class="w-36 h-36 mx-auto" />
         <h1 class="text-4xl font-bold mb-1">Solar Network 年度回顾</h1>
         <n-tooltip placement="bottom">
@@ -44,9 +46,7 @@
           数据范围 2024/12/26 - 2025/12/25
         </n-tooltip>
         <n-alert v-if="notMyRewind" type="info" class="max-w-lg mx-auto mt-4">
-          <template #header>
-            这不是你的年度总结
-          </template>
+          <template #header> 这不是你的年度总结</template>
           你正在通过公开分享连接查看 {{ rewindData.account.nick }} 的年度总结。
           <nuxt-link to="/rewind/me">
             <n-a>前往此处查看你的年度总结。</n-a>
@@ -54,7 +54,10 @@
         </n-alert>
         <div class="scroll-hint absolute bottom-10 left-1/2 -translate-x-1/2">
           <p class="text-sm opacity-60 mb-2">向下滚动以开始</p>
-          <n-icon :component="ArrowDown" class="animate-bounce w-6 h-6 text-gray-500 mx-auto" />
+          <n-icon
+            :component="ArrowDown"
+            class="animate-bounce w-6 h-6 text-gray-500 mx-auto"
+          />
         </div>
       </div>
 
@@ -74,18 +77,29 @@
                   class="text-blue-600"
                 />
                 <h2 class="text-2xl font-bold">你的数字足迹</h2>
-                <p class="text-sm opacity-60 -mt-2">看看过去一年里你在 Solar Network 的点点滴滴</p>
+                <p class="text-sm opacity-60 -mt-2">
+                  看看过去一年里你在 Solar Network 的点点滴滴
+                </p>
               </div>
             </template>
 
-            <div class="floating-emoji absolute -top-4 -left-4 text-5xl z-10"
-                 style="animation: float-delayed 8s ease-in-out infinite;">📅
+            <div
+              class="floating-emoji absolute -top-4 -left-4 text-5xl z-10"
+              style="animation: float-delayed 8s ease-in-out infinite"
+            >
+              📅
             </div>
-            <div class="floating-emoji absolute bottom-4 right-8 text-4xl z-10"
-                 style="animation: drift 10s ease-in-out infinite;">⭐
+            <div
+              class="floating-emoji absolute bottom-4 right-8 text-4xl z-10"
+              style="animation: drift 10s ease-in-out infinite"
+            >
+              ⭐
             </div>
-            <div class="floating-emoji absolute top-1/2 -left-8 text-5xl z-10"
-                 style="animation: float 7s ease-in-out infinite 1s;">✨
+            <div
+              class="floating-emoji absolute top-1/2 -left-8 text-5xl z-10"
+              style="animation: float 7s ease-in-out infinite 1s"
+            >
+              ✨
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="flex flex-col gap-6">
@@ -143,18 +157,32 @@
           id="lotteries-and-friends"
           class="scroll-section min-h-compact-layout flex items-center justify-center"
         >
-          <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 w-full max-w-4xl relative">
-            <div class="floating-emoji absolute -top-8 -left-4 text-5xl z-10"
-                 style="animation: float 5s ease-in-out infinite;">🎉
+          <div
+            class="grid grid-cols-1 xl:grid-cols-2 gap-8 w-full max-w-4xl relative"
+          >
+            <div
+              class="floating-emoji absolute -top-8 -left-4 text-5xl z-10"
+              style="animation: float 5s ease-in-out infinite"
+            >
+              🎉
             </div>
-            <div class="floating-emoji absolute top-1/3 -right-8 text-4xl z-10"
-                 style="animation: float-delayed 6s ease-in-out infinite 0.5s;">🎲
+            <div
+              class="floating-emoji absolute top-1/3 -right-8 text-4xl z-10"
+              style="animation: float-delayed 6s ease-in-out infinite 0.5s"
+            >
+              🎲
             </div>
-            <div class="floating-emoji absolute -bottom-4 left-1/4 text-5xl z-10"
-                 style="animation: drift 9s ease-in-out infinite;">🤝
+            <div
+              class="floating-emoji absolute -bottom-4 left-1/4 text-5xl z-10"
+              style="animation: drift 9s ease-in-out infinite"
+            >
+              🤝
             </div>
-            <div class="floating-emoji absolute top-2/3 -left-6 text-4xl z-10"
-                 style="animation: float 8s ease-in-out infinite 1.5s;">💖
+            <div
+              class="floating-emoji absolute top-2/3 -left-6 text-4xl z-10"
+              style="animation: float 8s ease-in-out infinite 1.5s"
+            >
+              💖
             </div>
             <n-card
               class="w-full bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-lg border-l-4 border-purple-600"
@@ -202,11 +230,15 @@
                     }}
                   </div>
                   <div class="text-2xl font-bold mb-1">
-                    {{ getLotteryMessage(rewindData.data.pass.lotteriesWinRate) }}
+                    {{
+                      getLotteryMessage(rewindData.data.pass.lotteriesWinRate)
+                    }}
                   </div>
                   <div class="text-md opacity-80">
                     {{
-                      getLotteryDescription(rewindData.data.pass.lotteriesWinRate)
+                      getLotteryDescription(
+                        rewindData.data.pass.lotteriesWinRate
+                      )
                     }}
                   </div>
                 </div>
@@ -280,14 +312,23 @@
           class="scroll-section min-h-compact-layout flex items-center justify-center"
         >
           <div class="relative">
-            <div class="floating-emoji absolute -top-6 right-1/4 text-5xl z-10"
-                 style="animation: float 6s ease-in-out infinite;">✏️
+            <div
+              class="floating-emoji absolute -top-6 right-1/4 text-5xl z-10"
+              style="animation: float 6s ease-in-out infinite"
+            >
+              ✏️
             </div>
-            <div class="floating-emoji absolute top-1/4 -left-6 text-4xl z-10"
-                 style="animation: float-delayed 7s ease-in-out infinite 0.3s;">🎨
+            <div
+              class="floating-emoji absolute top-1/4 -left-6 text-4xl z-10"
+              style="animation: float-delayed 7s ease-in-out infinite 0.3s"
+            >
+              🎨
             </div>
-            <div class="floating-emoji absolute bottom-1/3 -right-4 text-5xl z-10"
-                 style="animation: drift 8s ease-in-out infinite;">💡
+            <div
+              class="floating-emoji absolute bottom-1/3 -right-4 text-5xl z-10"
+              style="animation: drift 8s ease-in-out infinite"
+            >
+              💡
             </div>
             <n-card
               class="w-full max-w-4xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-lg border-l-4 border-green-600"
@@ -336,11 +377,14 @@
               <n-card embedded class="text-center mb-6">
                 <div class="text-4xl mb-3">✨</div>
                 <div class="text-2xl font-bold mb-1">
-                  {{ getCreatorMessage(rewindData.data.sphere.totalPostCount)
-                  }}
+                  {{ getCreatorMessage(rewindData.data.sphere.totalPostCount) }}
                 </div>
                 <div class="text-md opacity-80">
-                  {{ getCreatorDescription(rewindData.data.sphere.totalPostCount, rewindData.data.sphere.totalUpvoteCount)
+                  {{
+                    getCreatorDescription(
+                      rewindData.data.sphere.totalPostCount,
+                      rewindData.data.sphere.totalUpvoteCount
+                    )
                   }}
                 </div>
               </n-card>
@@ -371,18 +415,18 @@
                     <template #suffix>
                       <n-config-provider
                         :theme-overrides="{
-                        Statistic: {
-                          valueFontSize: '1.3rem',
-                          labelFontSize: '0.8rem'
-                        }
-                      }"
+                          Statistic: {
+                            valueFontSize: '1.3rem',
+                            labelFontSize: '0.8rem'
+                          }
+                        }"
                       >
                         <n-statistic label="贡献的顶数量" tabular-nums>
                           <n-number-animation
                             :to="
-                            rewindData.data.sphere.mostLovedAudience
-                              .upvoteCounts
-                          "
+                              rewindData.data.sphere.mostLovedAudience
+                                .upvoteCounts
+                            "
                           />
                           <template #suffix>个</template>
                         </n-statistic>
@@ -406,14 +450,23 @@
           class="scroll-section min-h-compact-layout flex items-center justify-center"
         >
           <div class="relative">
-            <div class="floating-emoji absolute -top-8 left-1/3 text-5xl z-10"
-                 style="animation: float 5s ease-in-out infinite;">✍️
+            <div
+              class="floating-emoji absolute -top-8 left-1/3 text-5xl z-10"
+              style="animation: float 5s ease-in-out infinite"
+            >
+              ✍️
             </div>
-            <div class="floating-emoji absolute top-1/4 -right-6 text-4xl z-10"
-                 style="animation: float-delayed 7s ease-in-out infinite 0.5s;">💬
+            <div
+              class="floating-emoji absolute top-1/4 -right-6 text-4xl z-10"
+              style="animation: float-delayed 7s ease-in-out infinite 0.5s"
+            >
+              💬
             </div>
-            <div class="floating-emoji absolute bottom-1/4 -left-4 text-5xl z-10"
-                 style="animation: drift 9s ease-in-out infinite;">💭
+            <div
+              class="floating-emoji absolute bottom-1/4 -left-4 text-5xl z-10"
+              style="animation: drift 9s ease-in-out infinite"
+            >
+              💭
             </div>
             <n-card
               class="w-full max-w-4xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-lg border-l-4 border-blue-600"
@@ -439,20 +492,20 @@
                 <div
                   class="flex flex-wrap justify-center items-center gap-4 max-w-3xl mx-auto"
                 >
-                <span
-                  v-for="word in rewindData.data.sphere.topWords"
-                  :key="word.word"
-                  :class="getWordCloudClass(word.count)"
-                  class="inline-block transition-all duration-300 hover:scale-110 cursor-default"
-                  :title="`${word.word}: ${word.count} 次`"
-                >
-                  <n-tooltip>
-                    <template #trigger>
-                      {{ word.word }}
-                    </template>
-                    {{ word.count }} 次使用
-                  </n-tooltip>
-                </span>
+                  <span
+                    v-for="word in rewindData.data.sphere.topWords"
+                    :key="word.word"
+                    :class="getWordCloudClass(word.count)"
+                    class="inline-block transition-all duration-300 hover:scale-110 cursor-default"
+                    :title="`${word.word}: ${word.count} 次`"
+                  >
+                    <n-tooltip>
+                      <template #trigger>
+                        {{ word.word }}
+                      </template>
+                      {{ word.count }} 次使用
+                    </n-tooltip>
+                  </span>
                 </div>
 
                 <div class="mt-8 text-sm opacity-60">
@@ -474,14 +527,23 @@
           class="scroll-section min-h-compact-layout flex items-center justify-center"
         >
           <div class="relative">
-            <div class="floating-emoji absolute -top-6 -right-4 text-5xl z-10"
-                 style="animation: float 6s ease-in-out infinite;">🌍
+            <div
+              class="floating-emoji absolute -top-6 -right-4 text-5xl z-10"
+              style="animation: float 6s ease-in-out infinite"
+            >
+              🌍
             </div>
-            <div class="floating-emoji absolute -top-4 -left-6 text-4xl z-10"
-                 style="animation: float-delayed 8s ease-in-out infinite 0.4s;">🔍
+            <div
+              class="floating-emoji absolute -top-4 -left-6 text-4xl z-10"
+              style="animation: float-delayed 8s ease-in-out infinite 0.4s"
+            >
+              🔍
             </div>
-            <div class="floating-emoji absolute -bottom-4 right-4 text-5xl z-10"
-                 style="animation: drift 10s ease-in-out infinite;">🎯
+            <div
+              class="floating-emoji absolute -bottom-4 right-4 text-5xl z-10"
+              style="animation: drift 10s ease-in-out infinite"
+            >
+              🎯
             </div>
             <n-card
               class="w-full max-w-4xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-lg border-l-4 border-indigo-600"
@@ -508,23 +570,25 @@
                     target="_blank"
                   >
                     <publisher-nameplate
-                      :data="rewindData.data.sphere.mostLovedPublisher.publisher"
+                      :data="
+                        rewindData.data.sphere.mostLovedPublisher.publisher
+                      "
                     >
                       <template #suffix>
                         <n-config-provider
                           :theme-overrides="{
-                          Statistic: {
-                            valueFontSize: '1.3rem',
-                            labelFontSize: '0.8rem'
-                          }
-                        }"
+                            Statistic: {
+                              valueFontSize: '1.3rem',
+                              labelFontSize: '0.8rem'
+                            }
+                          }"
                         >
                           <n-statistic label="给予的顶数" tabular-nums>
                             <n-number-animation
                               :to="
-                              rewindData.data.sphere.mostLovedPublisher
-                                .upvoteCounts
-                            "
+                                rewindData.data.sphere.mostLovedPublisher
+                                  .upvoteCounts
+                              "
                             />
                             <template #suffix>个</template>
                           </n-statistic>
@@ -559,14 +623,23 @@
           class="scroll-section min-h-compact-layout flex items-center justify-center"
         >
           <div class="relative">
-            <div class="floating-emoji absolute -top-8 left-1/4 text-5xl z-10"
-                 style="animation: float 5s ease-in-out infinite;">💬
+            <div
+              class="floating-emoji absolute -top-8 left-1/4 text-5xl z-10"
+              style="animation: float 5s ease-in-out infinite"
+            >
+              💬
             </div>
-            <div class="floating-emoji absolute top-1/4 -right-4 text-4xl z-10"
-                 style="animation: float-delayed 6s ease-in-out infinite 0.6s;">💕
+            <div
+              class="floating-emoji absolute top-1/4 -right-4 text-4xl z-10"
+              style="animation: float-delayed 6s ease-in-out infinite 0.6s"
+            >
+              💕
             </div>
-            <div class="floating-emoji absolute bottom-1/3 -left-6 text-5xl z-10"
-                 style="animation: drift 8s ease-in-out infinite;">📞
+            <div
+              class="floating-emoji absolute bottom-1/3 -left-6 text-5xl z-10"
+              style="animation: drift 8s ease-in-out infinite"
+            >
+              📞
             </div>
             <n-card
               class="w-full max-w-4xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-lg border-l-4 border-teal-600"
@@ -593,18 +666,17 @@
                       <div class="flex items-center gap-4">
                         <n-avatar
                           :src="
-                          getChatRoomAvatar(
-                            rewindData.data.sphere.mostMessagedChat.chat
-                          )
-                        "
+                            getChatRoomAvatar(
+                              rewindData.data.sphere.mostMessagedChat.chat
+                            )
+                          "
                         >{{
                             rewindData.data.sphere.mostMessagedChat.chat.name?.substring(
                               0,
                               1
                             )
                           }}
-                        </n-avatar
-                        >
+                        </n-avatar>
                         <div class="grow flex flex-col">
                           <div class="text-md font-bold">
                             {{
@@ -614,9 +686,9 @@
                           <p>
                             <n-number-animation
                               :to="
-                              rewindData.data.sphere.mostMessagedChat
-                                .messageCounts
-                            "
+                                rewindData.data.sphere.mostMessagedChat
+                                  .messageCounts
+                              "
                             />
                             条消息
                           </p>
@@ -633,7 +705,12 @@
                       <div class="flex items-center gap-4">
                         <n-avatar
                           object-fit="cover"
-                          :src="getChatMemberAvatar(rewindData.data.sphere.mostMessagedDirectChat.chat.members[0]!)"
+                          :src="
+                            getChatMemberAvatar(
+                              rewindData.data.sphere.mostMessagedDirectChat.chat
+                                .members[0]!
+                            )
+                          "
                         />
                         <div class="grow flex flex-col">
                           <div class="text-md font-bold">
@@ -645,9 +722,9 @@
                           <p>
                             <n-number-animation
                               :to="
-                              rewindData.data.sphere.mostMessagedDirectChat
-                                .messageCounts
-                            "
+                                rewindData.data.sphere.mostMessagedDirectChat
+                                  .messageCounts
+                              "
                             />
                             条消息
                           </p>
@@ -664,25 +741,28 @@
                       <div class="flex items-center gap-4">
                         <n-avatar
                           :src="
-                          getChatRoomAvatar(
-                            rewindData.data.sphere.mostCalledChat.chat
-                          )
-                        "
+                            getChatRoomAvatar(
+                              rewindData.data.sphere.mostCalledChat.chat
+                            )
+                          "
                         >{{
                             rewindData.data.sphere.mostCalledChat.chat.name?.substring(
                               0,
                               1
                             )
                           }}
-                        </n-avatar
-                        >
+                        </n-avatar>
                         <div class="grow flex flex-col">
                           <div class="text-md font-bold">
-                            {{ rewindData.data.sphere.mostCalledChat.chat.name }}
+                            {{
+                              rewindData.data.sphere.mostCalledChat.chat.name
+                            }}
                           </div>
                           <p>
                             <n-number-animation
-                              :to="rewindData.data.sphere.mostCalledChat.duration"
+                              :to="
+                                rewindData.data.sphere.mostCalledChat.duration
+                              "
                             />
                             分钟
                           </p>
@@ -693,13 +773,13 @@
                       </p>
                       <div
                         v-if="
-                        rewindData.data.sphere.mostCalledAccounts.length > 0
-                      "
+                          rewindData.data.sphere.mostCalledAccounts.length > 0
+                        "
                         class="flex justify-start gap-4 mt-2"
                       >
                         <div
                           v-for="item in rewindData.data.sphere
-                          .mostCalledChatTopMembers"
+                            .mostCalledChatTopMembers"
                           :key="item.id"
                         >
                           <n-tooltip>
@@ -721,13 +801,15 @@
                       通话时间前三名
                     </h3>
                     <n-card
-                      v-if="rewindData.data.sphere.mostCalledAccounts.length > 0"
+                      v-if="
+                        rewindData.data.sphere.mostCalledAccounts.length > 0
+                      "
                       size="small"
                     >
                       <div class="flex justify-start gap-4 mt-2">
                         <div
                           v-for="item in rewindData.data.sphere
-                          .mostCalledAccounts"
+                            .mostCalledAccounts"
                           :key="item.account.id"
                         >
                           <div
@@ -754,11 +836,15 @@
                 <div class="text-right flex flex-col justify-center px-5 gap-2">
                   <div class="text-5xl mb-3">💬</div>
                   <div class="text-2xl font-bold">
-                    {{ getChatMessage(getTotalMessages(rewindData.data.sphere)) }}
+                    {{
+                      getChatMessage(getTotalMessages(rewindData.data.sphere))
+                    }}
                   </div>
                   <div class="text-md opacity-80">
                     {{
-                      getChatDescription(getTotalMessages(rewindData.data.sphere))
+                      getChatDescription(
+                        getTotalMessages(rewindData.data.sphere)
+                      )
                     }}
                   </div>
                 </div>
@@ -778,17 +864,29 @@
           class="scroll-section min-h-compact-layout flex items-center justify-center"
         >
           <div class="relative">
-            <div class="floating-emoji absolute -top-10 left-1/3 text-6xl z-10"
-                 style="animation: float 6s ease-in-out infinite;">🏆
+            <div
+              class="floating-emoji absolute -top-10 left-1/3 text-6xl z-10"
+              style="animation: float 6s ease-in-out infinite"
+            >
+              🏆
             </div>
-            <div class="floating-emoji absolute top-1/4 -right-6 text-5xl z-10"
-                 style="animation: float-delayed 7s ease-in-out infinite 0.7s;">🎊
+            <div
+              class="floating-emoji absolute top-1/4 -right-6 text-5xl z-10"
+              style="animation: float-delayed 7s ease-in-out infinite 0.7s"
+            >
+              🎊
             </div>
-            <div class="floating-emoji absolute bottom-1/3 -left-8 text-6xl z-10"
-                 style="animation: drift 9s ease-in-out infinite;">🎆
+            <div
+              class="floating-emoji absolute bottom-1/3 -left-8 text-6xl z-10"
+              style="animation: drift 9s ease-in-out infinite"
+            >
+              🎆
             </div>
-            <div class="floating-emoji absolute top-1/2 -right-12 text-4xl z-10"
-                 style="animation: float 10s ease-in-out infinite 0.3s;">🌟
+            <div
+              class="floating-emoji absolute top-1/2 -right-12 text-4xl z-10"
+              style="animation: float 10s ease-in-out infinite 0.3s"
+            >
+              🌟
             </div>
             <n-card
               class="w-full max-w-7xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-lg"
@@ -800,33 +898,40 @@
                     <div class="space-y-3">
                       <div class="flex justify-between items-center">
                         <span class="opacity-80">发帖总数</span>
-                        <span class="font-bold">{{
-                            rewindData.data.sphere.totalPostCount
-                          }} 篇</span>
+                        <span class="font-bold"
+                        >{{ rewindData.data.sphere.totalPostCount }} 篇</span
+                        >
                       </div>
                       <div class="flex justify-between items-center">
                         <span class="opacity-80">获得顶赞</span>
-                        <span class="font-bold">{{
+                        <span class="font-bold"
+                        >{{
                             rewindData.data.sphere.totalUpvoteCount
-                          }} 个</span>
+                          }}
+                          个</span
+                        >
                       </div>
                       <div class="flex justify-between items-center">
                         <span class="opacity-80">最长连续签到</span>
-                        <span class="font-bold">{{
-                            rewindData.data.pass.maxCheckInStreak
-                          }} 天</span>
+                        <span class="font-bold"
+                        >{{ rewindData.data.pass.maxCheckInStreak }} 天</span
+                        >
                       </div>
                       <div class="flex justify-between items-center">
                         <span class="opacity-80">彩票胜率</span>
-                        <span class="font-bold">{{
-                            (rewindData.data.pass.lotteriesWinRate * 100).toFixed(1)
-                          }}%</span>
+                        <span class="font-bold"
+                        >{{
+                            (
+                              rewindData.data.pass.lotteriesWinRate * 100
+                            ).toFixed(1)
+                          }}%</span
+                        >
                       </div>
                       <div class="flex justify-between items-center">
                         <span class="opacity-80">新增好友</span>
-                        <span class="font-bold">{{
-                            rewindData.data.pass.newFriendsCount
-                          }} 人</span>
+                        <span class="font-bold"
+                        >{{ rewindData.data.pass.newFriendsCount }} 人</span
+                        >
                       </div>
                     </div>
                   </n-card>
@@ -836,21 +941,35 @@
                     <div class="space-y-3">
                       <div>
                         <span class="font-medium opacity-80">高产日:</span>
-                        <span class="font-bold ml-2">{{
-                            rewindData.data.sphere.mostProductiveDay.date.split(" ")[0]?.split("/").slice(0, 2).join("/")
-                          }} 发布了 {{
+                        <span class="font-bold ml-2"
+                        >{{
+                            rewindData.data.sphere.mostProductiveDay.date
+                              .split(" ")[0]
+                              ?.split("/")
+                              .slice(0, 2)
+                              .join("/")
+                          }}
+                          发布了
+                          {{
                             rewindData.data.sphere.mostProductiveDay.postCount
-                          }} 篇帖子</span>
+                          }}
+                          篇帖子</span
+                        >
                       </div>
                       <div>
-                        <span class="font-medium opacity-80">最受欢迎帖子:</span>
-                        <span
-                          class="font-bold ml-2">{{ rewindData.data.sphere.mostPopularPost.title || "分享媒体" }}</span>
+                        <span class="font-medium opacity-80"
+                        >最受欢迎帖子:</span
+                        >
+                        <span class="font-bold ml-2">{{
+                            rewindData.data.sphere.mostPopularPost.title ||
+                            "分享媒体"
+                          }}</span>
                       </div>
                       <div>
                         <span class="font-medium opacity-80">最爱创作者:</span>
                         <span class="font-bold ml-2">{{
-                            rewindData.data.sphere.mostLovedPublisher.publisher.nick
+                            rewindData.data.sphere.mostLovedPublisher.publisher
+                              .nick
                           }}</span>
                       </div>
                     </div>
@@ -862,20 +981,27 @@
                       <div>
                         <span class="font-medium opacity-80">最常出没:</span>
                         <span class="font-bold ml-2">{{
-                            rewindData.data.sphere.mostMessagedChat.chat.name || "聊天室"
+                            rewindData.data.sphere.mostMessagedChat.chat.name ||
+                            "聊天室"
                           }}</span>
                       </div>
                       <div>
                         <span class="font-medium opacity-80">发送消息:</span>
-                        <span class="font-bold ml-2">{{
+                        <span class="font-bold ml-2"
+                        >{{
                             getTotalMessages(rewindData.data.sphere)
-                          }} 条</span>
+                          }}
+                          条</span
+                        >
                       </div>
                       <div>
                         <span class="font-medium opacity-80">通话时长:</span>
-                        <span class="font-bold ml-2">{{
+                        <span class="font-bold ml-2"
+                        >{{
                             rewindData.data.sphere.mostCalledChat.duration
-                          }} 分钟</span>
+                          }}
+                          分钟</span
+                        >
                       </div>
                     </div>
                   </n-card>
@@ -887,27 +1013,40 @@
                     <div class="space-y-3">
                       <div class="text-center">
                         <div class="text-2xl mb-2">🏅</div>
-                        <div class="font-bold text-lg">{{
-                            getStreakMessage(rewindData.data.pass.maxCheckInStreak)
+                        <div class="font-bold text-lg">
+                          {{
+                            getStreakMessage(
+                              rewindData.data.pass.maxCheckInStreak
+                            )
                           }}
                         </div>
                         <div class="text-sm opacity-80">签到成就</div>
                       </div>
                       <div class="text-center">
-                        <div class="text-2xl mb-2">{{
-                            rewindData.data.pass.lotteriesWinRate >= 0.5 ? "🎰" : "🎲"
+                        <div class="text-2xl mb-2">
+                          {{
+                            rewindData.data.pass.lotteriesWinRate >= 0.5
+                              ? "🎰"
+                              : "🎲"
                           }}
                         </div>
-                        <div class="font-bold text-lg">{{
-                            getLotteryMessage(rewindData.data.pass.lotteriesWinRate)
+                        <div class="font-bold text-lg">
+                          {{
+                            getLotteryMessage(
+                              rewindData.data.pass.lotteriesWinRate
+                            )
                           }}
                         </div>
                         <div class="text-sm opacity-80">彩票成就</div>
                       </div>
                       <div class="text-center">
                         <div class="text-2xl mb-2">🤝</div>
-                        <div class="font-bold text-lg">{{
-                            getConnectionMessage(rewindData.data.pass.newFriendsCount, rewindData.data.pass.newBlockedCount)
+                        <div class="font-bold text-lg">
+                          {{
+                            getConnectionMessage(
+                              rewindData.data.pass.newFriendsCount,
+                              rewindData.data.pass.newBlockedCount
+                            )
                           }}
                         </div>
                         <div class="text-sm opacity-80">社交成就</div>
@@ -918,11 +1057,12 @@
                   <n-card embedded>
                     <h3 class="text-xl font-bold mb-4">🚀 新一年展望</h3>
                     <p class="opacity-80">
-                      继续创作、连接和探索。你的 {{ rewindData.year + 1 }} 年度回顾将会更加精彩！
+                      继续创作、连接和探索。你的
+                      {{ rewindData.year + 1 }} 年度回顾将会更加精彩！
                     </p>
                     <div class="mt-4 text-sm opacity-60">
-                      ✨ 保持良好的创作习惯<br>
-                      💬 继续与朋友保持联系<br>
+                      ✨ 保持良好的创作习惯<br />
+                      💬 继续与朋友保持联系<br />
                       🎯 挑战更高的目标
                     </div>
                   </n-card>
@@ -932,7 +1072,10 @@
                   <div class="flex gap-4 items-center">
                     <n-avatar :src="getAccountAvatar(rewindData.account)" />
                     <div class="flex flex-col">
-                      <p class="text-md font-bold">{{ rewindData.account.nick }} 的 {{ rewindData.year }} 年</p>
+                      <p class="text-md font-bold">
+                        {{ rewindData.account.nick }} 的
+                        {{ rewindData.year }} 年
+                      </p>
                       <p>@{{ rewindData.account.name }}</p>
                     </div>
                   </div>
@@ -941,7 +1084,10 @@
                       <p class="text-md font-bold">Solar Network Rewind</p>
                       <p>2024/12/26 - 2025/12/25</p>
                     </div>
-                    <img :src="CloudyLamb" style="width: 34px; aspect-ratio: 1" />
+                    <img
+                      :src="CloudyLamb"
+                      style="width: 34px; aspect-ratio: 1"
+                    />
                   </div>
                 </div>
               </div>
@@ -954,16 +1100,25 @@
           <p>新的一年即将开始，让我们带着这些美好的回忆继续前行！</p>
         </div>
 
-        <div class="min-h-compact-layout flex items-center justify-center ">
+        <div class="min-h-compact-layout flex items-center justify-center">
           <n-card class="w-full max-w-xl relative">
-            <div class="floating-emoji absolute -top-20 left-10 text-4xl z-10"
-                 style="animation: float 5s ease-in-out infinite;">🎁
+            <div
+              class="floating-emoji absolute -top-20 left-10 text-4xl z-10"
+              style="animation: float 5s ease-in-out infinite"
+            >
+              🎁
             </div>
-            <div class="floating-emoji absolute top-0 -right-20 text-3xl z-10"
-                 style="animation: float-delayed 6s ease-in-out infinite 0.5s;">💌
+            <div
+              class="floating-emoji absolute top-0 -right-20 text-3xl z-10"
+              style="animation: float-delayed 6s ease-in-out infinite 0.5s"
+            >
+              💌
             </div>
-            <div class="floating-emoji absolute bottom-0 -left-20 text-4xl z-10"
-                 style="animation: drift 8s ease-in-out infinite;">🎊
+            <div
+              class="floating-emoji absolute bottom-0 -left-20 text-4xl z-10"
+              style="animation: drift 8s ease-in-out infinite"
+            >
+              🎊
             </div>
 
             <p class="opacity-80 mb-4 text-center">
@@ -990,11 +1145,7 @@
                   readonly
                   class="flex-1 bg-transparent border-none outline-none text-sm"
                 />
-                <n-button
-                  size="small"
-                  quaternary
-                  @click="copySharableUrl"
-                >
+                <n-button size="small" quaternary @click="copySharableUrl">
                   复制
                 </n-button>
               </div>
@@ -1017,17 +1168,17 @@
             </n-alert>
 
             <div class="flex gap-3 justify-center">
-              <n-button
-                type="primary"
-                size="large"
-                @click="downloadSummary"
-              >
+              <n-button type="primary" size="large" @click="downloadSummary">
                 <template #icon>
                   <n-icon :component="DownloadIcon" />
                 </template>
                 下载总结
               </n-button>
-              <n-button v-if="rewindData?.sharableCode" size="large" @click="shareOnSocial">
+              <n-button
+                v-if="rewindData?.sharableCode"
+                size="large"
+                @click="shareOnSocial"
+              >
                 <template #icon>
                   <n-icon :component="ShareIcon" />
                 </template>
@@ -1039,7 +1190,9 @@
                 @click="toggleVisibility(!rewindData?.sharableCode)"
               >
                 <template #icon>
-                  <n-icon :component="rewindData?.sharableCode ? LockIcon : ShareIcon" />
+                  <n-icon
+                    :component="rewindData?.sharableCode ? LockIcon : ShareIcon"
+                  />
                 </template>
                 {{ rewindData?.sharableCode ? "设为私密" : "设为公开" }}
               </n-button>
@@ -1079,6 +1232,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 
 import CloudyRewind from "~/assets/images/cloudy-lamb-rewind.png"
 import CloudyLamb from "~/assets/images/cloudy-lamb.png"
+import { FetchError } from "ofetch"
 
 const api = useSolarNetwork()
 
@@ -1086,7 +1240,9 @@ const pending = ref(true)
 const error = ref<unknown>(null)
 const rewindData = ref<SnRewind | null>(null)
 
-const notMyRewind = computed(() => userInfo.user?.id != rewindData.value?.account.id)
+const notMyRewind = computed(
+  () => userInfo.user?.id != rewindData.value?.account.id
+)
 
 const route = useRoute()
 const router = useRouter()
@@ -1101,9 +1257,17 @@ const fetchRewindData = async () => {
       await router.push(`/auth/login?redirect=${route.fullPath}`)
       return
     }
-    const data = await api<SnRewind>(`/pass/rewind/${route.params.code || "me"}`)
+    const data = await api<SnRewind>(
+      `/pass/rewind/${route.params.code || "me"}`
+    )
     rewindData.value = data
   } catch (e) {
+    if (e instanceof FetchError) {
+      if (e.response?.status === 401) {
+        await router.push(`/auth/login?redirect=${route.fullPath}`)
+        return
+      }
+    }
     error.value = e
   } finally {
     pending.value = false
@@ -1147,20 +1311,24 @@ onMounted(async () => {
     // Animate transition words
     const transitionWords = gsap.utils.toArray<HTMLElement>(".transition-words")
     transitionWords.forEach((transition) => {
-      gsap.fromTo(transition, {
-        opacity: 0,
-        y: 30
-      }, {
-        opacity: 0.7,
-        y: 0,
-        duration: 0.6,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: transition,
-          start: "top 85%",
-          toggleActions: "play none none none"
+      gsap.fromTo(
+        transition,
+        {
+          opacity: 0,
+          y: 30
+        },
+        {
+          opacity: 0.7,
+          y: 0,
+          duration: 0.6,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: transition,
+            start: "top 85%",
+            toggleActions: "play none none none"
+          }
         }
-      })
+      )
     })
 
     // Animate floating emojis
@@ -1187,7 +1355,6 @@ onBeforeUnmount(() => {
   ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
 })
 
-
 // Helper methods
 
 const getChatRoomAvatar = (item: SnRewindChat) => {
@@ -1211,7 +1378,9 @@ const getAccountAvatar = (account: SnAccount) => {
     : "/api/placeholder/32/32"
 }
 
-const sharableUrl = computed(() => `${window.location.origin}/rewind/${rewindData.value!.sharableCode}`)
+const sharableUrl = computed(
+  () => `${window.location.origin}/rewind/${rewindData.value!.sharableCode}`
+)
 
 function copySharableUrl() {
   navigator.clipboard.writeText(sharableUrl.value)
@@ -1246,22 +1415,25 @@ const downloadSummary = async () => {
     })
 
     // Convert to blob and download
-    canvas.toBlob((blob) => {
-      if (!blob) {
-        console.error("Failed to create image blob")
-        return
-      }
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) {
+          console.error("Failed to create image blob")
+          return
+        }
 
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement("a")
-      a.href = url
-      a.download = `solar-network-rewind-${rewindData.value?.year}-summary.png`
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
-    }, "image/png", 1.0)
-
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.href = url
+        a.download = `solar-network-rewind-${rewindData.value?.year}-summary.png`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+      },
+      "image/png",
+      1.0
+    )
   } catch (error: unknown) {
     message.error(`导出失败…… ${error}`)
   } finally {
@@ -1570,7 +1742,10 @@ const getCreatorMessage = (postCount: number): string => {
   }
 }
 
-const getCreatorDescription = (postCount: number, upvoteCount: number): string => {
+const getCreatorDescription = (
+  postCount: number,
+  upvoteCount: number
+): string => {
   if (postCount >= 500) {
     return `发布了 ${postCount} 篇帖子，获得 ${upvoteCount} 个顶，你已经是 Solar Network 的创作巅峰`
   } else if (postCount >= 300) {
@@ -1642,8 +1817,16 @@ definePageMeta({
 
 <style scoped>
 .rewind-bg {
-  background-image: radial-gradient(circle at top left, rgba(147, 197, 253, 0.1), transparent 30%),
-  radial-gradient(circle at bottom right, rgba(244, 114, 182, 0.1), transparent 30%);
+  background-image: radial-gradient(
+    circle at top left,
+    rgba(147, 197, 253, 0.1),
+    transparent 30%
+  ),
+  radial-gradient(
+    circle at bottom right,
+    rgba(244, 114, 182, 0.1),
+    transparent 30%
+  );
   background-attachment: fixed;
   min-height: 100vh;
 }
@@ -1655,7 +1838,8 @@ definePageMeta({
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px) rotate(0deg);
   }
   50% {
@@ -1664,7 +1848,8 @@ definePageMeta({
 }
 
 @keyframes float-delayed {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px) rotate(0deg);
   }
   50% {
@@ -1695,7 +1880,8 @@ definePageMeta({
 }
 
 @keyframes pulse-slow {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {

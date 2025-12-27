@@ -5,7 +5,7 @@
     </main>
 
     <footer
-      class="backdrop-blur-2xl flex items-center h-12 px-4 sticky bottom-0 border-t border-t-gray-100/50"
+      class="backdrop-blur-2xl flex items-center h-12 px-4 sticky bottom-0 border-t border-t-gray-100/50 dark:border-t-gray-800/50"
     >
       <div class="container mx-auto flex items-center justify-between">
         <nuxt-link to="/">
