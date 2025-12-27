@@ -46,6 +46,10 @@
   height: calc(100vh - 48px);
 }
 
+.min-h-compact-layout {
+  min-height: calc(100vh - 48px);
+}
+
 .min-h-layout {
   /* margin of the navbar + actual navbar */
   min-height: calc(100vh - 64px*2);
