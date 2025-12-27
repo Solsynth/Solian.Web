@@ -1,5 +1,5 @@
 <template>
-  <div class="px-5">
+  <div class="px-5 rewind-bg">
     <!-- Loading State -->
     <div
       v-if="pending"
@@ -280,9 +280,6 @@
             <div class="floating-emoji absolute bottom-1/3 -right-4 text-5xl z-10"
                  style="animation: drift 8s ease-in-out infinite;">💡
             </div>
-            <div class="floating-emoji absolute top-2/3 right-1/4 text-4xl z-10"
-                 style="animation: float 9s ease-in-out infinite 1s;">📝
-            </div>
             <n-card
               class="w-full max-w-4xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-lg border-l-4 border-green-600"
             >
@@ -390,7 +387,7 @@
         </div>
 
         <div class="transition-words text-center text-lg opacity-70 py-16">
-          <div class="text-3xl mb-3">🎨</div>
+          <div class="text-3xl mb-3">🤔</div>
           <p>每一个创作都是你心灵的印记，而这些印记汇聚成了什么？</p>
         </div>
 
@@ -401,16 +398,13 @@
         >
           <div class="relative">
             <div class="floating-emoji absolute -top-8 left-1/3 text-5xl z-10"
-                 style="animation: float 5s ease-in-out infinite;">☁️
+                 style="animation: float 5s ease-in-out infinite;">✍️
             </div>
             <div class="floating-emoji absolute top-1/4 -right-6 text-4xl z-10"
                  style="animation: float-delayed 7s ease-in-out infinite 0.5s;">💬
             </div>
             <div class="floating-emoji absolute bottom-1/4 -left-4 text-5xl z-10"
                  style="animation: drift 9s ease-in-out infinite;">💭
-            </div>
-            <div class="floating-emoji absolute top-2/3 right-1/3 text-4xl z-10"
-                 style="animation: float 8s ease-in-out infinite 1.2s;">✨
             </div>
             <n-card
               class="w-full max-w-4xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-lg border-l-4 border-blue-600"
@@ -474,14 +468,11 @@
             <div class="floating-emoji absolute -top-6 -right-4 text-5xl z-10"
                  style="animation: float 6s ease-in-out infinite;">🌍
             </div>
-            <div class="floating-emoji absolute top-1/3 -left-6 text-4xl z-10"
+            <div class="floating-emoji absolute -top-4 -left-6 text-4xl z-10"
                  style="animation: float-delayed 8s ease-in-out infinite 0.4s;">🔍
             </div>
-            <div class="floating-emoji absolute bottom-1/4 right-1/4 text-5xl z-10"
+            <div class="floating-emoji absolute -bottom-4 right-4 text-5xl z-10"
                  style="animation: drift 10s ease-in-out infinite;">🎯
-            </div>
-            <div class="floating-emoji absolute top-2/3 -right-8 text-4xl z-10"
-                 style="animation: float 7s ease-in-out infinite 1.5s;">📊
             </div>
             <n-card
               class="w-full max-w-4xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-lg border-l-4 border-indigo-600"
@@ -567,9 +558,6 @@
             </div>
             <div class="floating-emoji absolute bottom-1/3 -left-6 text-5xl z-10"
                  style="animation: drift 8s ease-in-out infinite;">📞
-            </div>
-            <div class="floating-emoji absolute top-2/3 right-1/3 text-4xl z-10"
-                 style="animation: float 7s ease-in-out infinite 1.8s;">🎭
             </div>
             <n-card
               class="w-full max-w-4xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-lg border-l-4 border-teal-600"
@@ -1084,9 +1072,12 @@ onMounted(async () => {
     // Animate transition words
     const transitionWords = gsap.utils.toArray<HTMLElement>(".transition-words")
     transitionWords.forEach((transition) => {
-      gsap.from(transition, {
+      gsap.fromTo(transition, {
         opacity: 0,
-        y: 30,
+        y: 30
+      }, {
+        opacity: 0.7,
+        y: 0,
         duration: 0.6,
         ease: "power2.out",
         scrollTrigger: {
@@ -1537,6 +1528,13 @@ definePageMeta({
 </script>
 
 <style scoped>
+.rewind-bg {
+  background-image: radial-gradient(circle at top left, rgba(147, 197, 253, 0.1), transparent 30%),
+  radial-gradient(circle at bottom right, rgba(244, 114, 182, 0.1), transparent 30%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
 .floating-emoji {
   position: absolute;
   pointer-events: none;
@@ -1580,18 +1578,7 @@ definePageMeta({
 }
 
 .transition-words {
-  animation: fadeInUp 0.8s ease-out;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 0.7;
-    transform: translateY(0);
-  }
+  transform: translateY(20px);
 }
 
 @keyframes pulse-slow {
@@ -1605,13 +1592,5 @@ definePageMeta({
 
 .animate-pulse-slow {
   animation: pulse-slow 3s ease-in-out infinite;
-}
-</style>
-
-<style>
-body {
-  background-image: radial-gradient(circle at top left, rgba(147, 197, 253, 0.1), transparent 30%),
-  radial-gradient(circle at bottom right, rgba(244, 114, 182, 0.1), transparent 30%);
-  background-attachment: fixed;
 }
 </style>

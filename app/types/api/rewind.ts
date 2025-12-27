@@ -123,6 +123,7 @@ export interface SnRewind {
   id: string
   year: number
   schemaVersion: number
+  sharableCode: string | null
   data: {
     pass: SnRewindActiveData
     sphere: SnRewindSocialData
