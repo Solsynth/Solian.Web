@@ -50,44 +50,17 @@ import type { SnAttachment } from "~/types/api"
 const props = defineProps<{
   item: SnAttachment
   original?: boolean
-  maxHeight?: string
+  maxHeight?: number
 }>()
 
 const itemType = computed(() => props.item.mimeType.split("/")[0] ?? "unknown")
 const blurhash = computed(() => props.item.fileMeta?.blur)
-const imageWidth = computed(() => props.item.fileMeta?.width)
 const imageHeight = computed(() => props.item.fileMeta?.height)
 const aspectRatio = computed(
   () =>
-    props.item.fileMeta?.ratio ??
-    (imageWidth.value && imageHeight.value
-      ? imageHeight.value / imageWidth.value
-      : null)
+    props.item.fileMeta?.ratio ?? null
 )
 const imageLoaded = ref(false)
-
-const router = useRouter()
-
-function openExternally() {
-  // Capture image position for transition
-  const img = event?.target as HTMLImageElement
-  if (img && itemType.value === "image") {
-    const rect = img.getBoundingClientRect()
-    const transitionData = {
-      src: remoteSource.value,
-      x: rect.left,
-      y: rect.top,
-      width: rect.width,
-      height: rect.height,
-      aspectRatio: aspectRatio.value == null ? 0 : aspectRatio.value
-    }
-
-    // Store transition data
-    sessionStorage.setItem("imageTransition", JSON.stringify(transitionData))
-  }
-
-  router.push("/files/" + props.item.id)
-}
 
 const blurCanvas = ref<HTMLCanvasElement | null>(null)
 
@@ -108,8 +81,8 @@ const blurhashContainerStyle = computed(() => {
 
 const containerStyle = computed(() => {
   return {
-    maxHeight: props.maxHeight ?? "720px",
-    aspectRatio: aspectRatio.value?.toString()
+    maxHeight: Math.min(props.maxHeight ?? 720, imageHeight.value).toString() + "px",
+    aspectRatio: aspectRatio.value != null ? aspectRatio.value.toString() : void 0
   }
 })
 

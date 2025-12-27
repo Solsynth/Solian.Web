@@ -62,24 +62,28 @@ const carouselHeight = computed(() => {
   if (!isAllImages.value) return Math.min(400, props.maxHeight || 400)
 
   const aspectRatio = calculateAspectRatio()
+  if (aspectRatio == null) return null
+
   // Use a base width of 600px for calculation, adjust height accordingly
   const baseWidth = 600
   const calculatedHeight = Math.round(baseWidth / aspectRatio)
 
   // Respect maxHeight constraint if provided
-  const constrainedHeight = props.maxHeight
+  return props.maxHeight
     ? Math.min(calculatedHeight, props.maxHeight)
     : calculatedHeight
-
-  return constrainedHeight
 })
 
 const carouselStyle = computed(() => {
   if (!isAllImages.value) return {}
 
   const aspectRatio = calculateAspectRatio()
+  if (aspectRatio == null) {
+    return {}
+  }
+
   const height = carouselHeight.value
-  const width = Math.round(height * aspectRatio)
+  const width = Math.round(height! * aspectRatio)
 
   return {
     width: `${width}px`,
@@ -88,7 +92,7 @@ const carouselStyle = computed(() => {
   }
 })
 
-function calculateAspectRatio(): number {
+function calculateAspectRatio(): number | null {
   const ratios: number[] = []
 
   // Collect all valid ratios
@@ -110,8 +114,7 @@ function calculateAspectRatio(): number {
   }
 
   if (ratios.length === 0) {
-    // Default to 4:3 aspect ratio when no valid ratios found
-    return 4 / 3
+    return null
   }
 
   if (ratios.length === 1 && ratios[0]) {

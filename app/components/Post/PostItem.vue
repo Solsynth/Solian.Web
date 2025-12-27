@@ -86,14 +86,19 @@
       </div>
 
       <!-- Post Reactions -->
-      <div v-if="!compact" @click.stop>
-        <post-reaction-list
-          :parent-id="props.item.id"
-          :reactions="props.item.reactionsCount"
-          :reactions-made="props.item.reactionsMade"
-          :can-react="true"
-          @react="handleReaction"
-        />
+      <div class="flex gap-2">
+        <n-tag type="success">
+          <template #icon>
+            <n-icon :component="ArrowUpIcon" />
+          </template>
+          {{ props.item.upvotes }}
+        </n-tag>
+        <n-tag type="error">
+          <template #icon>
+            <n-icon :component="ArrowDownIcon" />
+          </template>
+          {{ props.item.downvotes }}
+        </n-tag>
       </div>
     </div>
   </n-card>
@@ -104,7 +109,7 @@ import { ref, watch } from "vue"
 import { useMarkdownProcessor } from "~/composables/useMarkdownProcessor"
 import type { SnPost } from "~/types/api"
 import { useIntersectionObserver } from "@vueuse/core"
-import { ForwardIcon, ReplyIcon } from "lucide-vue-next"
+import { ForwardIcon, ReplyIcon, ArrowUpIcon, ArrowDownIcon } from "lucide-vue-next"
 
 const props = withDefaults(
   defineProps<{
@@ -133,7 +138,6 @@ function handleReaction(symbol: string, attitude: number, delta: number) {
 }
 
 function handleReplyReaction(
-  postId: string,
   symbol: string,
   attitude: number,
   delta: number
