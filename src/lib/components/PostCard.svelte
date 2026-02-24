@@ -34,13 +34,24 @@
 		return num.toString();
 	}
 
-	function formatDate(dateStr: string): string {
+	function formatDate(dateStr: string, isDetailMode: boolean = false): string {
 		const date = new Date(dateStr);
 		const now = new Date();
 		const diff = now.getTime() - date.getTime();
 		const minutes = Math.floor(diff / 60000);
 		const hours = Math.floor(diff / 3600000);
 		const days = Math.floor(diff / 86400000);
+
+		if (isDetailMode) {
+			return date.toLocaleDateString('en-US', {
+				weekday: 'long',
+				year: 'numeric',
+				month: 'long',
+				day: 'numeric',
+				hour: '2-digit',
+				minute: '2-digit'
+			});
+		}
 
 		if (minutes < 1) return 'just now';
 		if (minutes < 60) return `${minutes}m`;
@@ -59,7 +70,6 @@
 	}
 
 	let showMenu = $state(false);
-
 	let Wrapper = $derived(isDetail ? 'div' : 'a');
 	let wrapperProps = $derived(isDetail ? { href: undefined } : { href: `/posts/${post.id}` });
 </script>
@@ -71,25 +81,37 @@
 		<div class="card-body p-4">
 			<!-- Header -->
 			<div class="flex items-start justify-between gap-3">
-				<div class="flex items-center gap-3">
+				<button
+					type="button"
+					class="flex items-center gap-3"
+					onclick={(e) => {
+						e.preventDefault();
+						e.stopPropagation();
+						goto(`/publishers/${post.publisher.name}`);
+					}}
+				>
 					<!-- Avatar -->
-					<div class="placeholder avatar">
-						<div class="h-10 w-10 rounded-full bg-primary text-primary-content">
-							{#if avatarUrl}
+					{#if avatarUrl}
+						<div class="avatar">
+							<div class="h-10 w-10 rounded-full">
 								<img
 									src={avatarUrl}
 									alt={post.publisher.nick || post.publisher.name}
 									class="h-full w-full rounded-full object-cover"
 								/>
-							{:else}
+							</div>
+						</div>
+					{:else}
+						<div class="avatar avatar-placeholder">
+							<div class="h-10 w-10 rounded-full bg-primary text-primary-content">
 								<span class="text-sm font-medium"
 									>{getInitials(post.publisher.nick || post.publisher.name)}</span
 								>
-							{/if}
+							</div>
 						</div>
-					</div>
+					{/if}
 
-					<div class="flex flex-col">
+					<div class="flex flex-col items-start">
 						<div class="flex items-center gap-1.5">
 							<span class="text-base leading-tight font-semibold">
 								{post.publisher.nick || post.publisher.name}
@@ -99,9 +121,9 @@
 							{/if}
 							<span class="text-sm text-base-content/50">@{post.publisher.name}</span>
 						</div>
-						<span class="text-xs text-base-content/40">{formatDate(post.published_at)}</span>
+						<span class="text-xs text-base-content/40">{formatDate(post.published_at, isDetail)}</span>
 					</div>
-				</div>
+				</button>
 
 				<!-- Menu -->
 				<div class="relative">

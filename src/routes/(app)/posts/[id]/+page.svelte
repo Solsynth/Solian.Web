@@ -1,10 +1,18 @@
 <script lang="ts">
 	import PostCard from '$lib/components/PostCard.svelte';
-	import { ArrowLeft, Loader2 } from 'lucide-svelte';
+	import { ArrowLeft, Loader2, MessageSquare } from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
 
 	let { data }: { data: PageData } = $props();
+
+	function handleBack() {
+		if (typeof window !== 'undefined' && window.history.length > 1) {
+			window.history.back();
+			return;
+		}
+		goto('/');
+	}
 </script>
 
 <svelte:head>
@@ -20,7 +28,7 @@
 	<div class="flex items-center gap-4 px-4 py-3 max-w-2xl mx-auto">
 		<button
 			class="btn btn-ghost btn-sm btn-circle -ml-2"
-			onclick={() => goto('/')}
+			onclick={handleBack}
 		>
 			<ArrowLeft class="w-5 h-5" />
 		</button>
@@ -49,7 +57,8 @@
 
 		<!-- Replies Section -->
 		{#if data.replies.length > 0}
-			<div class="px-4 pb-2 text-sm font-medium text-base-content/60">
+			<div class="px-4 pb-2 text-sm font-medium text-base-content/60 flex items-center gap-2">
+				<MessageSquare class="w-4 h-4" />
 				Replies ({data.replies.length})
 			</div>
 			<div class="flex flex-col gap-4 p-4">

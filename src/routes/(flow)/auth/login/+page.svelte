@@ -63,7 +63,7 @@
 				<Shield size={22} />
 			</div>
 			<p class="text-xs font-semibold uppercase tracking-[0.2em] text-base-content/65">Secure Access</p>
-			<h1 class="mt-2 text-3xl font-black leading-tight">Sign in to Floating Island</h1>
+			<h1 class="mt-2 text-3xl font-black leading-tight">Sign in to Solar Network</h1>
 			<p class="mt-3 max-w-sm text-sm text-base-content/70">
 				Multi-factor login with pass challenge flow and social providers.
 			</p>
