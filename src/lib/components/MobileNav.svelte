@@ -1,9 +1,11 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.png';
 
-	import { House, Plus, Search, Menu, Compass } from 'lucide-svelte';
+	import { House, Plus, Search, Menu, Compass, LogIn, LogOut, User } from 'lucide-svelte';
+	import { auth } from '$lib/stores/auth.svelte';
+	import { getFileUrl } from '$lib/utils/files';
 
-	let menuOpen = false;
+	let menuOpen = $state(false);
 	let menuContainer: HTMLDivElement;
 
 	const navItems = [
@@ -24,9 +26,20 @@
 			menuOpen = false;
 		}
 	}
+
+	function handleLogout() {
+		auth.logout();
+		menuOpen = false;
+	}
+
+	const displayName = $derived(auth.user?.nick || auth.user?.name || '');
+	const username = $derived(auth.user?.name || '');
+	const avatarUrl = $derived(
+		auth.user?.profile?.picture?.url || getFileUrl(auth.user?.profile?.picture?.id)
+	);
 </script>
 
-<svelte:window on:click={handleClickOutside} />
+<svelte:window onclick={handleClickOutside} />
 
 <header class="lg:hidden fixed top-0 left-0 right-0 z-50 bg-base-100/95 backdrop-blur border-b border-base-300">
 	<div class="max-w-2xl mx-auto px-4">
@@ -43,23 +56,67 @@
 
 			<!-- Right: Actions -->
 			<div class="flex items-center gap-1 relative" bind:this={menuContainer}>
-				<button class="btn btn-ghost btn-sm btn-circle" on:click={toggleMenu} aria-label="Menu">
+				<button class="btn btn-ghost btn-sm btn-circle" onclick={toggleMenu} aria-label="Menu">
 					<Menu class="w-5 h-5" />
 				</button>
 
 				<!-- Dropdown Menu -->
 				{#if menuOpen}
 					<div class="absolute right-0 top-full mt-2 w-48 bg-base-100 rounded-xl shadow-lg border border-base-300 py-2 z-50">
-						{#each navItems as item}
+						{#if auth.isAuthenticated && auth.user}
+							<div class="px-4 py-3 border-b border-base-200 mb-1">
+								<div class="flex items-center gap-3">
+									<div class="avatar placeholder">
+										{#if avatarUrl}
+											<img src={avatarUrl} alt={username} class="w-9 h-9 rounded-full" />
+										{:else}
+											<div class="bg-primary text-primary-content w-9 h-9 rounded-full">
+												<span class="text-xs font-medium">{(username || '?').slice(0, 2).toUpperCase()}</span>
+											</div>
+										{/if}
+									</div>
+									<div class="min-w-0">
+										<p class="font-medium truncate">{displayName}</p>
+										<p class="text-sm text-base-content/60 truncate">@{username}</p>
+									</div>
+								</div>
+							</div>
 							<a
-								href={item.href}
+								href="/me"
 								class="flex items-center gap-3 px-4 py-3 hover:bg-base-200 transition-colors"
-								on:click={closeMenu}
+								onclick={closeMenu}
 							>
-								<item.icon class="w-5 h-5 text-base-content/70" />
-								<span class="font-medium">{item.label}</span>
+								<User class="w-5 h-5 text-base-content/70" />
+								<span class="font-medium">Profile</span>
 							</a>
-						{/each}
+							<button
+								class="flex items-center gap-3 px-4 py-3 hover:bg-base-200 transition-colors w-full text-left"
+								onclick={handleLogout}
+							>
+								<LogOut class="w-5 h-5 text-base-content/70" />
+								<span class="font-medium">Logout</span>
+							</button>
+						{:else}
+							{#each navItems as item}
+								<a
+									href={item.href}
+									class="flex items-center gap-3 px-4 py-3 hover:bg-base-200 transition-colors"
+									onclick={closeMenu}
+								>
+									<item.icon class="w-5 h-5 text-base-content/70" />
+									<span class="font-medium">{item.label}</span>
+								</a>
+							{/each}
+							<div class="divider my-1"></div>
+							<a
+								href="/auth/login"
+								class="flex items-center gap-3 px-4 py-3 hover:bg-base-200 transition-colors text-primary"
+								onclick={closeMenu}
+							>
+								<LogIn class="w-5 h-5" />
+								<span class="font-medium">Sign In</span>
+							</a>
+						{/if}
 					</div>
 				{/if}
 			</div>

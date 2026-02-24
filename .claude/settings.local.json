@@ -3,7 +3,8 @@
     "allow": [
       "WebFetch(domain:api.solian.app)",
       "Bash(bun add:*)",
-      "Bash(bun run check:*)"
+      "Bash(bun run check:*)",
+      "Bash(bun remove:*)"
     ],
     "deny": [],
     "ask": []

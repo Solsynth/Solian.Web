@@ -46,7 +46,7 @@
 		<div class="p-4">
 			<PostCard post={data.post} />
 		</div>
-	
+
 		<!-- Replies Section -->
 		{#if data.replies.length > 0}
 			<div class="px-4 pb-2 text-sm font-medium text-base-content/60">
