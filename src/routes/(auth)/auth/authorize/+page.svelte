@@ -50,7 +50,7 @@
 </script>
 
 <svelte:head>
-	<title>Authorize Application - Floating Island</title>
+	<title>Authorize Application - Solar Network</title>
 </svelte:head>
 
 {#if backgroundUrl}

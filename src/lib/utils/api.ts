@@ -191,6 +191,53 @@ export async function submitAuthorizeDecision(
 	return safeJsonParse(response);
 }
 
+export interface WalletOrder {
+	id: string;
+	productIdentifier: string | null;
+	remarks: string | null;
+	amount: number;
+	currency: string;
+	expiredAt?: string | null;
+}
+
+export interface SpellInfo {
+	type: number;
+	account: {
+		name: string;
+	};
+	createdAt: string;
+	affectedAt: string;
+	expiredAt?: string;
+}
+
+export async function getOrder(orderId: string): Promise<WalletOrder> {
+	const response = await apiClient(`/pass/orders/${encodeURIComponent(orderId)}`);
+	return safeJsonParse<WalletOrder>(response);
+}
+
+export async function payOrder(orderId: string, pinCode: string): Promise<unknown> {
+	const response = await apiClient(`/pass/orders/${encodeURIComponent(orderId)}/pay`, {
+		method: 'POST',
+		body: JSON.stringify({
+			pin_code: pinCode
+		})
+	});
+	return safeJsonParse(response);
+}
+
+export async function getSpell(spellWord: string): Promise<SpellInfo> {
+	const response = await apiClient(`/pass/spells/${encodeURIComponent(spellWord)}`);
+	return safeJsonParse<SpellInfo>(response);
+}
+
+export async function applySpell(spellWord: string, newPassword?: string): Promise<unknown> {
+	const response = await apiClient(`/pass/spells/${encodeURIComponent(spellWord)}/apply`, {
+		method: 'POST',
+		body: newPassword ? JSON.stringify({ new_password: newPassword }) : null
+	});
+	return safeJsonParse(response);
+}
+
 // OIDC login URLs
 export function getOidcLoginUrl(
 	provider: string,

@@ -12,7 +12,7 @@
 </script>
 
 <svelte:head>
-	<title>Redirecting - Floating Island</title>
+	<title>Redirecting - Solar Network</title>
 </svelte:head>
 
 <div class="w-full max-w-md rounded-3xl border border-base-300/70 bg-base-100/90 p-8 text-center shadow-2xl backdrop-blur-xl">

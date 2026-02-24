@@ -60,7 +60,7 @@
 </script>
 
 <svelte:head>
-	<title>Authenticating... - Floating Island</title>
+	<title>Authenticating... - Solar Network</title>
 </svelte:head>
 
 <div class="w-full max-w-md">

@@ -104,7 +104,7 @@
 </script>
 
 <svelte:head>
-	<title>Create Account - Floating Island</title>
+	<title>Create Account - Solar Network</title>
 </svelte:head>
 
 <div class="w-full max-w-3xl rounded-3xl border border-base-300/70 bg-base-100/85 shadow-2xl backdrop-blur-xl">

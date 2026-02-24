@@ -53,7 +53,7 @@
 </script>
 
 <svelte:head>
-	<title>Login - Floating Island</title>
+	<title>Login - Solar Network</title>
 </svelte:head>
 
 <div class="w-full max-w-4xl rounded-3xl border border-base-300/60 bg-base-100/90 shadow-2xl backdrop-blur-xl">

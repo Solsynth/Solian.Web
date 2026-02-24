@@ -28,7 +28,7 @@
 </script>
 
 <svelte:head>
-	<title>Captcha Verification - Floating Island</title>
+	<title>Captcha Verification - Solar Network</title>
 </svelte:head>
 
 <div class="w-full max-w-lg rounded-3xl border border-base-300/70 bg-base-100/90 p-6 shadow-2xl backdrop-blur-xl">
