@@ -57,7 +57,7 @@
 
 		<!-- Replies Section -->
 		{#if data.replies.length > 0}
-			<div class="px-4 pb-2 text-sm font-medium text-base-content/60 flex items-center gap-2">
+			<div class="px-8 py-1 text-sm font-medium text-base-content/60 flex items-center gap-2">
 				<MessageSquare class="w-4 h-4" />
 				Replies ({data.replies.length})
 			</div>

@@ -201,7 +201,7 @@
 							href="/tag/{tag.slug}"
 							class="badge badge-ghost badge-sm transition-colors hover:badge-primary"
 						>
-							#{tag.name}
+							{tag.name ?? '#'+tag.slug}
 						</a>
 					{/each}
 				</div>
