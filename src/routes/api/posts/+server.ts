@@ -6,7 +6,7 @@ export const GET: RequestHandler = async ({ fetch, url }) => {
 	const take = parseInt(url.searchParams.get('take') || '20');
 
 	try {
-		let apiUrl = `https://api.solian.app/sphere/posts?take=${take}`;
+		let apiUrl = `https://api.solian.app/sphere/posts?take=${take}&replies=false`;
 		if (offset) {
 			apiUrl += `&offset=${encodeURIComponent(offset)}`;
 		}

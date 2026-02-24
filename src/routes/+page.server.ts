@@ -3,7 +3,7 @@ import type { Post } from '$lib/types/post';
 
 export const load: PageServerLoad = async ({ fetch }) => {
 	try {
-		const response = await fetch('https://api.solian.app/sphere/posts?take=20');
+		const response = await fetch('https://api.solian.app/sphere/posts?take=20&replies=false');
 
 		if (!response.ok) {
 			throw new Error(`Failed to fetch posts: ${response.status}`);

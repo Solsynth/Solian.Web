@@ -1,10 +1,11 @@
 <script lang="ts">
 	import type { Post } from '$lib/types/post';
 	import { getFileUrl } from '$lib/utils/files';
+	import { renderMarkdown } from '$lib/utils/markdown';
+	import { goto } from '$app/navigation';
 	import {
 		MessageCircle,
 		Repeat2,
-		Heart,
 		ArrowBigUp,
 		ArrowBigDown,
 		MoreHorizontal,
@@ -16,11 +17,13 @@
 
 	interface Props {
 		post: Post;
+		isDetail?: boolean;
 	}
 
-	let { post }: Props = $props();
+	let { post, isDetail = false }: Props = $props();
 
 	let avatarUrl = $derived(getFileUrl(post.publisher.picture?.id));
+	let renderedContent = $derived(renderMarkdown(post.content));
 	function getAttachmentUrl(attachment: Post['attachments'][0]): string {
 		return attachment.url || getFileUrl(attachment.id) || '';
 	}
@@ -58,7 +61,10 @@
 	let showMenu = $state(false);
 </script>
 
-<article class="card bg-base-100 border-base-300 hover:border-base-400 border transition-all">
+<article
+	class="card bg-base-100 border-base-300 hover:border-base-400 border transition-all cursor-pointer"
+	onclick={() => !isDetail && goto(`/post/${post.id}`)}
+>
 	<div class="card-body p-4">
 		<!-- Header -->
 		<div class="flex items-start justify-between gap-3">
@@ -96,16 +102,16 @@
 			<div class="relative">
 				<button
 					class="btn btn-ghost btn-sm btn-circle"
-					onclick={() => showMenu = !showMenu}
+					onclick={(e) => { e.stopPropagation(); showMenu = !showMenu; }}
 				>
 					<MoreHorizontal class="w-5 h-5" />
 				</button>
 				{#if showMenu}
-					<div class="absolute right-0 top-full mt-1 z-10">
+					<div class="absolute right-0 top-full mt-1 z-10" onclick={(e) => e.stopPropagation()}>
 						<ul class="menu bg-base-100 rounded-box shadow-lg border border-base-300 w-40">
-							<li><button><Share class="w-4 h-4" /> Share</button></li>
-							<li><button><Link class="w-4 h-4" /> Copy link</button></li>
-							<li><button class="text-error"><Flag class="w-4 h-4" /> Report</button></li>
+							<li><button onclick={(e) => e.stopPropagation()}><Share class="w-4 h-4" /> Share</button></li>
+							<li><button onclick={(e) => e.stopPropagation()}><Link class="w-4 h-4" /> Copy link</button></li>
+							<li><button class="text-error" onclick={(e) => e.stopPropagation()}><Flag class="w-4 h-4" /> Report</button></li>
 						</ul>
 					</div>
 				{/if}
@@ -124,8 +130,8 @@
 			{#if post.title}
 				<h3 class="text-lg font-semibold mb-2">{post.title}</h3>
 			{/if}
-			<div class="prose prose-sm max-w-none text-base-content/90 whitespace-pre-wrap">
-				{post.content}
+			<div class="prose prose-xs max-w-none text-base-content/90">
+				{@html renderedContent}
 			</div>
 		</div>
 
@@ -157,24 +163,36 @@
 		{/if}
 
 		<!-- Actions -->
-		<div class="flex items-center justify-between mt-4 pt-3 border-t border-base-200">
+		<div class="flex items-center justify-between mt-4 pt-3">
 			<div class="flex items-center gap-1">
-				<button class="btn btn-ghost btn-sm gap-1.5 hover:bg-primary/10 hover:text-primary">
+				<button
+					class="btn btn-ghost btn-sm gap-1.5 hover:bg-primary/10 hover:text-primary"
+					onclick={(e) => e.stopPropagation()}
+				>
 					<MessageCircle class="w-4 h-4" />
 					<span class="text-xs">{formatNumber(post.replies_count)}</span>
 				</button>
-				<button class="btn btn-ghost btn-sm gap-1.5 hover:bg-success/10 hover:text-success">
+				<button
+					class="btn btn-ghost btn-sm gap-1.5 hover:bg-success/10 hover:text-success"
+					onclick={(e) => e.stopPropagation()}
+				>
 					<Repeat2 class="w-4 h-4" />
 					<span class="text-xs">{formatNumber(post.boost_count)}</span>
 				</button>
 			</div>
 
 			<div class="flex items-center gap-0.5 bg-base-200 rounded-lg p-0.5">
-				<button class="btn btn-ghost btn-xs hover:bg-success/20 hover:text-success px-2">
+				<button
+					class="btn btn-ghost btn-xs hover:bg-success/20 hover:text-success px-2"
+					onclick={(e) => e.stopPropagation()}
+				>
 					<ArrowBigUp class="w-5 h-5" />
 				</button>
 				<span class="text-sm font-medium min-w-[1.5ch] text-center">{formatNumber(post.upvotes - post.downvotes)}</span>
-				<button class="btn btn-ghost btn-xs hover:bg-error/20 hover:text-error px-2">
+				<button
+					class="btn btn-ghost btn-xs hover:bg-error/20 hover:text-error px-2"
+					onclick={(e) => e.stopPropagation()}
+				>
 					<ArrowBigDown class="w-5 h-5" />
 				</button>
 			</div>
