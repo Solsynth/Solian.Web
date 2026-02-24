@@ -2,7 +2,7 @@
 import type { SnAuthChallenge, SnAuthFactor, SnAuthToken, User } from '$lib/types/auth';
 import { snakeToCamel } from './case';
 
-const API_BASE_URL = 'https://api.solian.app';
+export const API_BASE_URL = 'https://api.solian.app';
 
 // Parse response - handles JSON, plain text, and empty responses
 async function parseResponse(response: Response): Promise<unknown> {
@@ -127,6 +127,28 @@ export async function getUserInfo(): Promise<User> {
 	return safeJsonParse<User>(response);
 }
 
+export async function createAccount(payload: {
+	name: string;
+	nick: string;
+	email: string;
+	password: string;
+	language: string;
+	captchaToken: string;
+}): Promise<unknown> {
+	const response = await apiClient('/pass/accounts', {
+		method: 'POST',
+		body: JSON.stringify({
+			name: payload.name,
+			nick: payload.nick,
+			email: payload.email,
+			password: payload.password,
+			language: payload.language,
+			captcha_token: payload.captchaToken
+		})
+	});
+	return safeJsonParse<unknown>(response);
+}
+
 export async function requestPasswordReset(
 	account: string,
 	captchaToken: string
@@ -139,6 +161,34 @@ export async function requestPasswordReset(
 		})
 	});
 	return safeJsonParse<unknown>(response);
+}
+
+export async function getAuthorizeClientInfo(query: URLSearchParams): Promise<{
+	clientName?: string;
+	homeUri?: string;
+	picture?: { id?: string };
+	background?: { id?: string };
+	scopes?: string[];
+}> {
+	const response = await apiClient(`/pass/auth/open/authorize?${query.toString()}`);
+	return safeJsonParse(response);
+}
+
+export async function submitAuthorizeDecision(
+	query: URLSearchParams,
+	authorize: boolean
+): Promise<{ redirectUri?: string }> {
+	const payload = new URLSearchParams(query);
+	payload.set('authorize', authorize ? 'true' : 'false');
+
+	const response = await apiClient('/pass/auth/open/authorize', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded'
+		},
+		body: payload.toString()
+	});
+	return safeJsonParse(response);
 }
 
 // OIDC login URLs

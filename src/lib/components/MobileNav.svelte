@@ -66,15 +66,19 @@
 						{#if auth.isAuthenticated && auth.user}
 							<div class="px-4 py-3 border-b border-base-200 mb-1">
 								<div class="flex items-center gap-3">
-									<div class="avatar placeholder">
-										{#if avatarUrl}
-											<img src={avatarUrl} alt={username} class="w-9 h-9 rounded-full" />
-										{:else}
-											<div class="bg-primary text-primary-content w-9 h-9 rounded-full">
+									{#if avatarUrl}
+										<div class="avatar">
+											<div class="w-9 rounded-full">
+												<img src={avatarUrl} alt={username} />
+											</div>
+										</div>
+									{:else}
+										<div class="avatar avatar-placeholder">
+											<div class="bg-primary text-primary-content w-9 rounded-full">
 												<span class="text-xs font-medium">{(username || '?').slice(0, 2).toUpperCase()}</span>
 											</div>
-										{/if}
-									</div>
+										</div>
+									{/if}
 									<div class="min-w-0">
 										<p class="font-medium truncate">{displayName}</p>
 										<p class="text-sm text-base-content/60 truncate">@{username}</p>

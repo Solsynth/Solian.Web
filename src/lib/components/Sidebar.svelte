@@ -56,15 +56,19 @@
 		{#if auth.isAuthenticated && auth.user}
 			<div class="dropdown dropdown-end dropdown-top w-full">
 				<button class="flex items-center gap-3 p-3 rounded-xl hover:bg-base-200 transition-colors w-full">
-					<div class="avatar placeholder">
-						{#if avatarUrl}
-							<img src={avatarUrl} alt={username} class="w-10 h-10 rounded-full" />
-						{:else}
-							<div class="bg-primary text-primary-content w-10 h-10 rounded-full">
+					{#if avatarUrl}
+						<div class="avatar">
+							<div class="w-10 rounded-full">
+								<img src={avatarUrl} alt={username} />
+							</div>
+						</div>
+					{:else}
+						<div class="avatar avatar-placeholder">
+							<div class="bg-primary text-primary-content w-10 rounded-full">
 								<span class="text-sm font-medium">{fallbackInitials}</span>
 							</div>
-						{/if}
-					</div>
+						</div>
+					{/if}
 					<div class="text-left flex-1 min-w-0">
 						<div class="font-semibold text-sm truncate">{displayName}</div>
 						<div class="text-base-content/50 text-xs truncate">@{username}</div>
@@ -87,8 +91,8 @@
 			</div>
 		{:else}
 			<a href="/auth/login" class="flex items-center gap-3 p-3 rounded-xl hover:bg-base-200 transition-colors w-full">
-				<div class="avatar placeholder">
-					<div class="bg-base-300 text-base-content w-10 h-10 rounded-full">
+				<div class="avatar avatar-placeholder">
+					<div class="bg-base-300 text-base-content w-10 rounded-full">
 						<LogIn size={20} />
 					</div>
 				</div>
