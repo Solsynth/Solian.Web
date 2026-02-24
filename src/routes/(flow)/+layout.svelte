@@ -1,8 +1,35 @@
 <script lang="ts">
 	import '../layout.css';
+	import { onMount } from 'svelte';
+	import { pickBackgroundForTheme, resolveThemeMode } from '$lib/utils/background';
 	import favicon from '$lib/assets/favicon.png';
 
 	let { children } = $props();
+	let backgroundUrl = $state<string | null>(pickBackgroundForTheme('light'));
+
+	onMount(() => {
+		const applyThemeBackground = () => {
+			const mode = resolveThemeMode();
+			backgroundUrl = pickBackgroundForTheme(mode);
+		};
+
+		applyThemeBackground();
+
+		const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+		const handleMediaChange = () => applyThemeBackground();
+		mediaQuery.addEventListener('change', handleMediaChange);
+
+		const observer = new MutationObserver(() => applyThemeBackground());
+		observer.observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ['data-theme', 'class']
+		});
+
+		return () => {
+			mediaQuery.removeEventListener('change', handleMediaChange);
+			observer.disconnect();
+		};
+	});
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
@@ -11,7 +38,7 @@
 	<!-- Background Image -->
 	<div
 		class="absolute inset-0 bg-cover bg-center bg-no-repeat"
-		style="background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80');"
+		style={`background-image: ${backgroundUrl ? `url('${backgroundUrl}')` : 'none'};`}
 	>
 		<div class="absolute inset-0 bg-base-100/80 backdrop-blur-sm"></div>
 	</div>

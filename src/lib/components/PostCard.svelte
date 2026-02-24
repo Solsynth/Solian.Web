@@ -137,20 +137,57 @@
 						<MoreHorizontal class="h-5 w-5" />
 					</button>
 					{#if showMenu}
-						<div class="absolute top-full right-0 z-10 mt-1" onclick={(e) => e.stopPropagation()}>
+						<div 
+							class="absolute top-full right-0 z-10 mt-1" 
+							role="menu"
+							onclick={(e) => e.stopPropagation()}
+							onkeydown={(e) => {
+								if (e.key === 'Escape') {
+									e.stopPropagation();
+									showMenu = false;
+								}
+							}}
+							aria-haspopup="true"
+							aria-expanded="true"
+						>
 							<ul class="menu w-40 rounded-box border border-base-300 bg-base-100 shadow-lg">
 								<li>
-									<button onclick={(e) => e.stopPropagation()}
+									<button 
+										role="menuitem"
+										onclick={(e) => e.stopPropagation()}
+										onkeydown={(e) => {
+											if (e.key === 'Enter' || e.key === ' ') {
+												e.stopPropagation();
+												// Handle share action
+											}
+										}}
 										><Share class="h-4 w-4" /> Share</button
 									>
 								</li>
 								<li>
-									<button onclick={(e) => e.stopPropagation()}
+									<button 
+										role="menuitem"
+										onclick={(e) => e.stopPropagation()}
+										onkeydown={(e) => {
+											if (e.key === 'Enter' || e.key === ' ') {
+												e.stopPropagation();
+												// Handle copy link action
+											}
+										}}
 										><Link class="h-4 w-4" /> Copy link</button
 									>
 								</li>
 								<li>
-									<button class="text-error" onclick={(e) => e.stopPropagation()}
+									<button 
+										class="text-error"
+										role="menuitem"
+										onclick={(e) => e.stopPropagation()}
+										onkeydown={(e) => {
+											if (e.key === 'Enter' || e.key === ' ') {
+												e.stopPropagation();
+												// Handle report action
+											}
+										}}
 										><Flag class="h-4 w-4" /> Report</button
 									>
 								</li>

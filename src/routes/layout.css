@@ -3,3 +3,14 @@
 @plugin 'daisyui' {
 	themes: light --default, dark --prefersdark;
 }
+
+@layer components {
+	.app-shell .card {
+		background-color: color-mix(in oklch, var(--color-base-100) 52%, transparent) !important;
+		backdrop-filter: blur(30px) saturate(130%);
+		border-color: color-mix(in oklch, var(--color-base-content) 18%, transparent) !important;
+		box-shadow:
+			0 14px 36px color-mix(in oklch, black 14%, transparent),
+			0 0 0 1px color-mix(in oklch, white 20%, transparent);
+	}
+}
