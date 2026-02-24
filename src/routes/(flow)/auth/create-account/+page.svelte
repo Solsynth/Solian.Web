@@ -3,6 +3,7 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { createAccount } from '$lib/utils/api';
+	import CaptchaWidget from '$lib/components/CaptchaWidget.svelte';
 	import { ArrowLeft, ArrowRight, CheckCircle2, ShieldCheck } from 'lucide-svelte';
 
 	type Stage = 'username-nick' | 'email' | 'password' | 'captcha' | 'terms';
@@ -76,6 +77,12 @@
 		else if (stage === 'terms') stage = 'captcha';
 	}
 
+	function onCaptchaVerified(token: string) {
+		captchaToken = token;
+		error = '';
+		stage = 'terms';
+	}
+
 	async function submit() {
 		error = '';
 		if (!captchaToken.trim()) {
@@ -146,9 +153,11 @@
 				</label>
 			{:else if stage === 'captcha'}
 				<div class="space-y-3">
-					<p class="text-sm text-base-content/70">Open captcha page, complete it, then paste token here. (Captcha widget migration point)</p>
-					<a class="btn btn-outline btn-sm" href={`/auth/captcha?redirect_uri=${encodeURIComponent($page.url.origin + '/auth/create-account')}`} target="_blank" rel="noreferrer">Open Captcha</a>
-					<input class="input input-bordered w-full" bind:value={captchaToken} placeholder="captcha token" />
+					<p class="text-sm text-base-content/70">Complete captcha to continue.</p>
+					<CaptchaWidget onVerified={onCaptchaVerified} />
+					{#if captchaToken}
+						<p class="text-xs text-success">Captcha verified successfully.</p>
+					{/if}
 				</div>
 			{:else if stage === 'terms'}
 				<div class="rounded-xl border border-base-300 bg-base-200/60 p-4 text-sm text-base-content/80">

@@ -163,6 +163,16 @@ export async function requestPasswordReset(
 	return safeJsonParse<unknown>(response);
 }
 
+export interface CaptchaConfig {
+	provider: string;
+	apiKey: string;
+}
+
+export async function getCaptchaConfig(): Promise<CaptchaConfig> {
+	const response = await apiClient('/pass/captcha');
+	return safeJsonParse<CaptchaConfig>(response);
+}
+
 export async function getAuthorizeClientInfo(query: URLSearchParams): Promise<{
 	clientName?: string;
 	homeUri?: string;

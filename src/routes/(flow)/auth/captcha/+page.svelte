@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { Puzzle } from 'lucide-svelte';
-
-	let token = $state('');
-	let generated = $state('');
+	import CaptchaWidget from '$lib/components/CaptchaWidget.svelte';
 
 	function useToken(value: string) {
 		const finalToken = value.trim();
@@ -21,37 +19,25 @@
 		}
 	}
 
-	function generateSampleToken() {
-		generated = crypto.randomUUID().replaceAll('-', '');
-		token = generated;
-	}
 </script>
 
 <svelte:head>
 	<title>Captcha Verification - Solar Network</title>
 </svelte:head>
 
-<div class="w-full max-w-lg rounded-3xl border border-base-300/70 bg-base-100/90 p-6 shadow-2xl backdrop-blur-xl">
-	<div class="mb-4 flex items-center gap-3">
+<div class="mx-auto w-full max-w-lg rounded-3xl border border-base-300/70 bg-base-100/90 p-6 text-center shadow-2xl backdrop-blur-xl">
+	<div class="mb-4 flex flex-col items-center gap-3">
 		<div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/15 text-primary">
 			<Puzzle size={20} />
 		</div>
 		<div>
 			<h1 class="text-xl font-black">Solar Network Anti-Robot</h1>
-			<p class="text-xs text-base-content/60">Captcha widget migration placeholder</p>
+			<p class="text-xs text-base-content/60">Complete verification to continue</p>
 		</div>
 	</div>
 
-	<p class="mb-4 text-sm text-base-content/70">
-		This route is ready for your final captcha provider component. For now, use a token to continue account flows.
-	</p>
-
-	<div class="space-y-3">
-		<input class="input input-bordered w-full" bind:value={token} placeholder="Paste captcha token" />
-		<div class="flex gap-2">
-			<button class="btn btn-outline flex-1" onclick={generateSampleToken}>Generate Sample Token</button>
-			<button class="btn btn-primary flex-1" onclick={() => useToken(token)}>Use Token</button>
-		</div>
+	<div class="my-4">
+		<CaptchaWidget onVerified={useToken} />
 	</div>
 
 	<p class="mt-5 text-xs text-base-content/60">
