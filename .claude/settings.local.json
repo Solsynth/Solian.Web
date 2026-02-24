@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:api.solian.app)",
+      "Bash(bun add:*)",
+      "Bash(bun run check:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
