@@ -1,15 +1,19 @@
 <script lang="ts">
-	import { Home, Plus } from 'lucide-svelte';
+	import favicon from '$lib/assets/favicon.png';
+
+	import { Compass, Plus } from 'lucide-svelte';
 
 	const navItems = [
-		{ icon: Home, label: 'Home', href: '/' }
+		{ icon: Compass, label: 'Explore', href: '/' },
 	];
 </script>
 
-<aside class="flex flex-col h-full py-4 px-2">
+<aside class="flex flex-col h-full py-4 px-4 items-stretch">
 	<!-- Logo -->
-	<div class="px-4 mb-6">
-		<a href="/" class="text-2xl font-bold text-primary">Sphere</a>
+	<div class="px-2 mb-6 flex justify-end">
+		<a href="/" class="text-2xl font-bold text-primary">
+			<img src={favicon} alt="Favicon" class="w-12 h-12" />
+		</a>
 	</div>
 
 	<!-- Navigation -->
@@ -17,19 +21,19 @@
 		{#each navItems as item}
 			<a
 				href={item.href}
-				class="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-base-200 transition-colors group"
+				class="flex items-center justify-end gap-4 px-4 py-3 rounded-xl hover:bg-base-200 transition-colors group"
 			>
+				<span class="text-lg font-medium group-hover:text-primary transition-colors">{item.label}</span>
 				<item.icon class="w-6 h-6 group-hover:text-primary transition-colors" />
-				<span class="text-lg font-medium hidden xl:block">{item.label}</span>
 			</a>
 		{/each}
 	</nav>
 
 	<!-- Compose Button -->
-	<div class="px-4 mt-4">
+	<div class="px-2 mt-4">
 		<button class="btn btn-primary btn-lg w-full rounded-full shadow-lg hover:shadow-xl transition-shadow">
-			<Plus class="w-6 h-6 xl:hidden" />
-			<span class="hidden xl:inline">New Post</span>
+			<Plus class="w-6 h-6" />
+			<span>New Post</span>
 		</button>
 	</div>
 
@@ -41,7 +45,7 @@
 					<span class="text-sm font-medium">YO</span>
 				</div>
 			</div>
-			<div class="hidden xl:block text-left">
+			<div class="text-left">
 				<div class="font-semibold text-sm">Your Name</div>
 				<div class="text-base-content/50 text-xs">@username</div>
 			</div>

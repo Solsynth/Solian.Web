@@ -72,53 +72,50 @@
 </script>
 
 <svelte:head>
-	<title>Home / Sphere</title>
+	<title>Explore | Solar Network</title>
 </svelte:head>
 
-<!-- Error State (Initial Load) -->
-{#if error && posts.length === 0}
-	<div class="p-8 text-center">
-		<div class="alert alert-error max-w-md mx-auto">
-			<span>Failed to load posts: {error}</span>
+<div class="mx-auto max-w-2xl">
+	<!-- Error State (Initial Load) -->
+	{#if error && posts.length === 0}
+		<div class="p-8 text-center">
+			<div class="mx-auto alert max-w-md alert-error">
+				<span>Failed to load posts: {error}</span>
+			</div>
+			<button class="btn mt-4 btn-primary" onclick={() => window.location.reload()}> Retry </button>
 		</div>
-		<button
-			class="btn btn-primary mt-4"
-			onclick={() => window.location.reload()}
-		>
-			Retry
-		</button>
-	</div>
-{/if}
+	{/if}
 
-<!-- Feed -->
-{#if posts.length > 0}
-	<div class="flex flex-col gap-4 p-4">
-		{#each posts as post (post.id)}
-			<PostCard {post} />
-		{/each}
-	</div>
+	<!-- Feed -->
+	{#if posts.length > 0}
+		<div class="flex flex-col gap-4 p-4">
+			{#each posts as post (post.id)}
+				<PostCard {post} />
+			{/each}
+		</div>
 
-	<!-- Load More Trigger / Button -->
-	<div bind:this={loadMoreTrigger} class="p-6 text-center">
-		{#if isLoading}
-			<div class="flex items-center justify-center gap-2 text-base-content/60">
-				<Loader2 class="w-5 h-5 animate-spin" />
-				<span>Loading more...</span>
-			</div>
-		{:else if error && posts.length > 0}
-			<div class="flex flex-col items-center gap-2">
-				<span class="text-error text-sm">{error}</span>
-				<button class="btn btn-sm btn-primary" onclick={loadMore}>Retry</button>
-			</div>
-		{:else if hasMore}
-			<button class="btn btn-ghost btn-sm" onclick={loadMore}>Load more</button>
-		{:else}
-			<p class="text-base-content/40 text-sm">No more posts</p>
-		{/if}
-	</div>
-{:else if !error}
-	<div class="p-12 text-center text-base-content/50">
-		<p class="text-lg mb-2">No posts yet</p>
-		<p>Be the first to post something!</p>
-	</div>
-{/if}
+		<!-- Load More Trigger / Button -->
+		<div bind:this={loadMoreTrigger} class="p-6 text-center">
+			{#if isLoading}
+				<div class="flex items-center justify-center gap-2 text-base-content/60">
+					<Loader2 class="h-5 w-5 animate-spin" />
+					<span>Loading more...</span>
+				</div>
+			{:else if error && posts.length > 0}
+				<div class="flex flex-col items-center gap-2">
+					<span class="text-sm text-error">{error}</span>
+					<button class="btn btn-sm btn-primary" onclick={loadMore}>Retry</button>
+				</div>
+			{:else if hasMore}
+				<button class="btn btn-ghost btn-sm" onclick={loadMore}>Load more</button>
+			{:else}
+				<p class="text-sm text-base-content/40">No more posts</p>
+			{/if}
+		</div>
+	{:else if !error}
+		<div class="p-12 text-center text-base-content/50">
+			<p class="mb-2 text-lg">No posts yet</p>
+			<p>Be the first to post something!</p>
+		</div>
+	{/if}
+</div>

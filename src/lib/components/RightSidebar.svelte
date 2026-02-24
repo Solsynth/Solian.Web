@@ -4,22 +4,21 @@
 		<input
 			type="text"
 			placeholder="Search..."
-			class="input input-bordered w-full bg-base-200/50 focus:bg-base-100"
+			class="input-bordered input w-full bg-base-200/50 focus:bg-base-100"
 		/>
 	</div>
 
-	<!-- Info Card -->
-	<div class="card bg-base-100 border border-base-300">
-		<div class="card-body p-4">
-			<h3 class="font-bold text-lg mb-2">Sphere</h3>
-			<p class="text-sm text-base-content/60">
-				A decentralized social platform.
-			</p>
+	<!-- Legal Footer -->
+	<div class="px-2 text-xs leading-relaxed text-base-content/40">
+		<p>© {new Date().getFullYear()} Solar Network. All rights reserved.</p>
+		<div class="flex flex-wrap gap-2 text-xs">
+			<a href="/about" class="link link-hover">About</a>
+			<span class="text-base-content/30">·</span>
+			<a href="/privacy" class="link link-hover">Privacy</a>
+			<span class="text-base-content/30">·</span>
+			<a href="/terms" class="link link-hover">Terms</a>
+			<span class="text-base-content/30">·</span>
+			<a href="/help" class="link link-hover">Help</a>
 		</div>
-	</div>
-
-	<!-- Footer -->
-	<div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-base-content/40 px-2">
-		<span>© 2026 Sphere</span>
 	</div>
 </div>

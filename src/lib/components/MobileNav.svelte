@@ -1,24 +1,33 @@
 <script lang="ts">
-	import { Home } from 'lucide-svelte';
+	import favicon from '$lib/assets/favicon.png';
 
-	const navItems = [
-		{ icon: Home, label: 'Home', href: '/' }
-	];
-
-	let activePath = $state('/');
+	import { House, Plus, Search, Menu } from 'lucide-svelte';
 </script>
 
-<nav class="sm:hidden fixed bottom-0 left-0 right-0 bg-base-100 border-t border-base-300 z-50">
-	<div class="flex items-center justify-around">
-		{#each navItems as item}
-			<a
-				href={item.href}
-				class="flex flex-col items-center py-2 px-4 text-xs {activePath === item.href ? 'text-primary' : 'text-base-content/60'}"
-				onclick={() => activePath = item.href}
-			>
-				<item.icon class="w-6 h-6 mb-0.5" />
-				<span>{item.label}</span>
+<header class="lg:hidden fixed top-0 left-0 right-0 z-50 bg-base-100/95 backdrop-blur border-b border-base-300">
+	<div class="max-w-2xl mx-auto px-4">
+		<div class="flex items-center justify-between h-14">
+			<!-- Left: Home -->
+			<a href="/" class="btn btn-ghost btn-sm btn-circle">
+				<House class="w-5 h-5" />
 			</a>
-		{/each}
+
+			<!-- Center: Logo -->
+			<a href="/" class="text-xl font-bold text-primary">
+				<img src={favicon} alt="Favicon" class="w-8 h-8" />
+			</a>
+
+			<!-- Right: Actions -->
+			<div class="flex items-center gap-1">
+				<button class="btn btn-ghost btn-sm btn-circle">
+					<Menu class="w-5 h-5" />
+				</button>
+			</div>
+		</div>
 	</div>
-</nav>
+</header>
+
+<!-- Floating Compose Button (Mobile) -->
+<button class="lg:hidden btn btn-primary btn-circle fixed bottom-6 right-6 shadow-lg z-40 w-14 h-14">
+	<Plus class="w-6 h-6" />
+</button>
