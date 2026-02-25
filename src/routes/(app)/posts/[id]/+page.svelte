@@ -42,7 +42,7 @@
 	{:else if data.post}
 		<!-- Main Post -->
 		<div class="p-4">
-			<PostCard post={data.post} />
+			<PostCard post={data.post} isDetail={true} />
 		</div>
 
 		<!-- Replies Section -->
