@@ -6,14 +6,6 @@ import type {
 	LivestreamLeaderboardEntry
 } from '$lib/types/livestream';
 
-function readString(source: Record<string, unknown>, keys: string[]): string | null {
-	for (const key of keys) {
-		const value = source[key];
-		if (typeof value === 'string' && value.trim() !== '') return value;
-	}
-	return null;
-}
-
 export async function fetchLivestreamDetail(livestreamId: string): Promise<LivestreamDetail> {
 	const resp = await apiClient(`/sphere/livestreams/${encodeURIComponent(livestreamId)}`);
 	const raw = (await resp.json()) as unknown;
@@ -21,37 +13,19 @@ export async function fetchLivestreamDetail(livestreamId: string): Promise<Lives
 }
 
 export async function fetchLivestreamCredentials(
-	livestreamId: string,
-	embed?: Record<string, unknown>
+	livestreamId: string
 ): Promise<LivestreamCredentials> {
-	const embeddedUrl =
-		embed && typeof embed === 'object'
-			? readString(embed, ['serverUrl', 'server_url', 'wsUrl', 'ws_url', 'url'])
-			: null;
-	const embeddedToken =
-		embed && typeof embed === 'object'
-			? readString(embed, ['participantToken', 'participant_token', 'token'])
-			: null;
-	if (embeddedUrl && embeddedToken) {
-		return { url: embeddedUrl, token: embeddedToken };
-	}
-
 	const resp = await apiClient(`/sphere/livestreams/${encodeURIComponent(livestreamId)}/token`, {
 		method: 'GET'
 	});
 	const raw = (await resp.json()) as unknown;
 	const payload = snakeToCamel<Record<string, unknown>>(raw);
-	const url = readString(payload, ['serverUrl', 'wsUrl', 'endpoint', 'url']);
-	const token = readString(payload, ['participantToken', 'token', 'accessToken']);
-	if (!url || !token) {
-		throw new Error('Unable to retrieve livestream credentials.');
-	}
 
 	return {
-		url,
-		token,
-		roomName: readString(payload, ['roomName']) || undefined,
-		identity: readString(payload, ['identity']) || undefined,
+		url: payload.url as string,
+		token: payload.token as string,
+		roomName: (payload.roomName || undefined) as string | undefined,
+		identity: (payload.identity || undefined) as string | undefined,
 		isStreamer: Boolean(payload.isStreamer)
 	};
 }

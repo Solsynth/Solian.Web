@@ -54,13 +54,18 @@
 </svelte:head>
 
 {#if backgroundUrl}
-	<div class="fixed inset-0 -z-10 bg-cover bg-center opacity-30 blur-sm" style={`background-image: url('${backgroundUrl}')`}></div>
+	<div
+		class="fixed inset-0 -z-10 bg-cover bg-center opacity-30 blur-sm"
+		style={`background-image: url('${backgroundUrl}')`}
+	></div>
 {/if}
 
-<div class="w-full max-w-2xl rounded-3xl border border-base-300/70 bg-base-100/85 p-6 shadow-2xl backdrop-blur-xl md:p-8">
+<div
+	class="w-full max-w-2xl rounded-3xl border border-base-300/70 bg-base-100/85 p-6 shadow-2xl backdrop-blur-xl md:p-8"
+>
 	{#if isLoading}
 		<div class="flex items-center justify-center py-16">
-			<span class="loading loading-spinner loading-lg text-primary"></span>
+			<span class="loading loading-lg loading-spinner text-primary"></span>
 		</div>
 	{:else}
 		<div class="mb-6 flex items-center gap-4">
@@ -76,13 +81,17 @@
 				</div>
 			{/if}
 			<div class="min-w-0">
-				<h1 class="truncate text-2xl font-black">{clientInfo?.clientName || 'Unknown Application'}</h1>
-				<p class="truncate text-sm text-base-content/70">wants access to your Solar Network account</p>
+				<h1 class="truncate text-2xl font-black">
+					{clientInfo?.clientName || 'Unknown Application'}
+				</h1>
+				<p class="truncate text-sm text-base-content/70">
+					wants access to your Solar Network account
+				</p>
 			</div>
 		</div>
 
 		{#if error}
-			<div class="alert alert-error mb-4"><span>{error}</span></div>
+			<div class="mb-4 alert alert-error"><span>{error}</span></div>
 		{/if}
 
 		<div class="rounded-2xl border border-base-300 bg-base-200/60 p-4">
@@ -102,15 +111,23 @@
 		</div>
 
 		<div class="mt-6 grid grid-cols-2 gap-3">
-			<button class="btn btn-primary" onclick={() => handleAuthorize(true)} disabled={isAuthorizing}>
+			<button
+				class="btn btn-primary"
+				onclick={() => handleAuthorize(true)}
+				disabled={isAuthorizing}
+			>
 				{#if isAuthorizing}
-					<span class="loading loading-spinner loading-sm"></span>
+					<span class="loading loading-sm loading-spinner"></span>
 				{:else}
 					<Check size={16} />
 				{/if}
 				Authorize
 			</button>
-			<button class="btn btn-outline" onclick={() => handleAuthorize(false)} disabled={isAuthorizing}>
+			<button
+				class="btn btn-outline"
+				onclick={() => handleAuthorize(false)}
+				disabled={isAuthorizing}
+			>
 				<X size={16} />
 				Deny
 			</button>

@@ -23,7 +23,11 @@
 </script>
 
 <div class="mt-3 rounded-xl border border-base-300 bg-base-200/25">
-	<button type="button" class="flex w-full items-center gap-2 px-3 py-2 text-left" onclick={onToggleCollapse}>
+	<button
+		type="button"
+		class="flex w-full items-center gap-2 px-3 py-2 text-left"
+		onclick={onToggleCollapse}
+	>
 		<MessageCircle class="h-4 w-4" />
 		<span class="text-sm font-medium">Live chat ({messages.length})</span>
 		<span class="ml-auto">
@@ -59,7 +63,12 @@
 						}
 					}}
 				/>
-				<button type="button" class="btn btn-primary btn-sm" onclick={submit} disabled={!inputValue.trim()}>
+				<button
+					type="button"
+					class="btn btn-sm btn-primary"
+					onclick={submit}
+					disabled={!inputValue.trim()}
+				>
 					<Send class="h-4 w-4" />
 				</button>
 			</div>

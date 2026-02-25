@@ -34,7 +34,7 @@
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 
-<div class="min-h-screen relative flex flex-col">
+<div class="relative flex min-h-screen flex-col">
 	<!-- Background Image -->
 	<div
 		class="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -44,7 +44,7 @@
 	</div>
 
 	<!-- Content -->
-	<div class="relative flex-1 flex flex-col items-center justify-center p-4">
+	<div class="relative flex flex-1 flex-col items-center justify-center p-4">
 		{@render children()}
 
 		<!-- Footer -->
@@ -52,7 +52,7 @@
 			<p class="text-sm text-base-content/60">
 				© {new Date().getFullYear()} Solar Network
 			</p>
-			<div class="mt-2 flex gap-4 justify-center text-xs text-base-content/50">
+			<div class="mt-2 flex justify-center gap-4 text-xs text-base-content/50">
 				<a href="https://solsynth.dev/terms" class="hover:underline">Terms</a>
 				<a href="https://solsynth.dev/privacy" class="hover:underline">Privacy</a>
 				<a href="https://github.com/solsynth" class="hover:underline">GitHub</a>

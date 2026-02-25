@@ -46,7 +46,11 @@
 
 	async function withOidc(provider: string) {
 		const deviceInfo = await getDeviceInfo();
-		const url = getOidcLoginUrl(provider, deviceInfo.device_id as string, `${window.location.origin}/auth/callback`);
+		const url = getOidcLoginUrl(
+			provider,
+			deviceInfo.device_id as string,
+			`${window.location.origin}/auth/callback`
+		);
 		window.location.href = url;
 	}
 </script>
@@ -54,8 +58,8 @@
 <div class="flex flex-col gap-4">
 	<!-- Header -->
 	<div class="flex flex-col gap-2">
-		<div class="avatar placeholder w-fit">
-			<div class="bg-primary text-primary-content w-12 h-12 rounded-full">
+		<div class="placeholder avatar w-fit">
+			<div class="h-12 w-12 rounded-full bg-primary text-primary-content">
 				<Asterisk size={24} />
 			</div>
 		</div>
@@ -64,7 +68,7 @@
 
 	<!-- Error display -->
 	{#if error}
-		<div class="alert alert-error alert-sm">
+		<div class="alert-sm alert alert-error">
 			<span>{error}</span>
 		</div>
 	{/if}
@@ -77,7 +81,7 @@
 		<input
 			id="username"
 			type="text"
-			class="input input-bordered w-full"
+			class="input-bordered input w-full"
 			placeholder="Enter your username"
 			autocomplete="username"
 			disabled={isBusy}
@@ -96,7 +100,7 @@
 		<div class="divider flex-1"></div>
 	</div>
 
-	<div class="flex gap-2 justify-center">
+	<div class="flex justify-center gap-2">
 		<button
 			class="btn btn-circle btn-outline"
 			onclick={() => withOidc('github')}
@@ -124,9 +128,9 @@
 	</div>
 
 	<!-- Actions -->
-	<div class="flex justify-between items-center pt-2">
+	<div class="flex items-center justify-between pt-2">
 		<button
-			class="btn btn-ghost btn-sm text-base-content/60"
+			class="btn text-base-content/60 btn-ghost btn-sm"
 			onclick={requestResetPassword}
 			disabled={isBusy}
 		>
@@ -138,7 +142,7 @@
 			disabled={isBusy || !username.trim()}
 		>
 			{#if isBusy}
-				<span class="loading loading-spinner loading-sm"></span>
+				<span class="loading loading-sm loading-spinner"></span>
 			{/if}
 			Next
 			<ChevronRight size={18} />
@@ -146,14 +150,12 @@
 	</div>
 
 	<!-- Terms -->
-	<div class="text-right pt-4">
-		<p class="text-xs text-base-content/60">
-			By continuing, you agree to our
-		</p>
+	<div class="pt-4 text-right">
+		<p class="text-xs text-base-content/60">By continuing, you agree to our</p>
 		<a
 			href="https://solsynth.dev/terms"
 			target="_blank"
-			class="link link-primary text-xs inline-flex items-center gap-1"
+			class="inline-flex link items-center gap-1 text-xs link-primary"
 		>
 			Terms of Service
 			<ExternalLink size={10} />

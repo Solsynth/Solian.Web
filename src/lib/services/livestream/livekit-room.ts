@@ -1,4 +1,5 @@
 import { writable, type Writable } from 'svelte/store';
+import { apiClient } from '$lib/utils/api';
 import type { ChatMessage, LivestreamCredentials } from '$lib/types/livestream';
 import { parseLivestreamEventPayload } from '$lib/utils/livestream/chat';
 
@@ -91,6 +92,43 @@ export class LivekitRoomController {
 	};
 
 	constructor(private readonly identityFallback = 'viewer') {}
+
+	public async fetchChatHistory(livestreamId: string, limit = 50, offset = 0) {
+		try {
+			const response = await apiClient(
+				`/sphere/livestreams/${encodeURIComponent(livestreamId)}/chat?limit=${limit}&offset=${offset}`
+			);
+
+			if (!response.ok) {
+				throw new Error(`Failed to fetch chat history: ${response.status}`);
+			}
+
+			const chatMessages = await response.json();
+
+			// Convert API response to ChatMessage format
+			const messages: ChatMessage[] = chatMessages
+				.map((msg: unknown) => {
+					if (typeof msg !== 'object' || msg === null) return null;
+					const message = msg as Record<string, unknown>;
+					return {
+						id: String(message.id || ''),
+						senderId: String(message.sender_id || ''),
+						sender: String(message.sender_name || ''),
+						senderIdentity: String(message.sender_name || ''),
+						message: String(message.content || ''),
+						isMine: false, // Assume these are not from the current user
+						createdAt: String(message.created_at || ''),
+						messageType: 'chat' as const
+					};
+				})
+				.filter((msg: unknown): msg is ChatMessage => msg !== null);
+
+			this.state.update((s) => ({ ...s, messages }));
+		} catch (err) {
+			const message = err instanceof Error ? err.message : 'Failed to fetch chat history.';
+			this.state.update((s) => ({ ...s, errorText: message }));
+		}
+	}
 
 	public setMediaContainer(container: HTMLDivElement | null) {
 		this.mediaContainer = container;
@@ -185,23 +223,42 @@ export class LivekitRoomController {
 		}
 	}
 
-	public async sendMessage(text: string) {
+	public async sendMessage(text: string, livestreamId: string) {
 		const messageText = text.trim();
 		if (!messageText || !this.room) return;
 		try {
-			await this.room.localParticipant.publishData(new TextEncoder().encode(messageText), {
-				reliable: true
-			});
+			// Send message via the new API endpoint
+			const response = await apiClient(
+				`/sphere/livestreams/${encodeURIComponent(livestreamId)}/chat`,
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						content: messageText
+					})
+				}
+			);
+
+			if (!response.ok) {
+				throw new Error(`Failed to send message: ${response.status}`);
+			}
+
+			const responseData = await response.json();
+
+			// Create the message from the API response
 			const mine: ChatMessage = {
-				id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-				senderId: '',
-				sender: 'you',
-				senderIdentity: 'you',
-				message: messageText,
+				id: responseData.id,
+				senderId: responseData.sender_id,
+				sender: responseData.sender_name,
+				senderIdentity: responseData.sender_name,
+				message: responseData.content,
 				isMine: true,
-				createdAt: new Date().toISOString(),
+				createdAt: responseData.created_at,
 				messageType: 'chat'
 			};
+
 			this.state.update((s) => ({ ...s, messages: [...s.messages, mine].slice(-200) }));
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'Failed to send chat message.';
@@ -329,7 +386,10 @@ export class LivekitRoomController {
 		if (this.handlers.onParticipantConnected)
 			targetRoom.off(this.livekitEvents.ParticipantConnected, this.handlers.onParticipantConnected);
 		if (this.handlers.onParticipantDisconnected)
-			targetRoom.off(this.livekitEvents.ParticipantDisconnected, this.handlers.onParticipantDisconnected);
+			targetRoom.off(
+				this.livekitEvents.ParticipantDisconnected,
+				this.handlers.onParticipantDisconnected
+			);
 		if (this.handlers.onDataReceived)
 			targetRoom.off(this.livekitEvents.DataReceived, this.handlers.onDataReceived);
 		if (this.handlers.onAudioPlaybackStatusChanged)

@@ -69,7 +69,7 @@
 				</div>
 			{:else if loading}
 				<div class="flex justify-center py-8">
-					<span class="loading loading-spinner loading-md"></span>
+					<span class="loading loading-md loading-spinner"></span>
 				</div>
 			{:else if order}
 				<div class="space-y-3 text-sm">
@@ -94,7 +94,7 @@
 
 				<div class="mt-4">
 					<input
-						class="input input-bordered w-full"
+						class="input-bordered input w-full"
 						type="password"
 						placeholder="6-digit PIN"
 						maxlength="6"
@@ -102,9 +102,13 @@
 						autocomplete="one-time-code"
 						bind:value={pinCode}
 					/>
-					<button class="btn btn-primary mt-4 w-full" onclick={pay} disabled={submitting || pinCode.length !== 6}>
+					<button
+						class="btn mt-4 w-full btn-primary"
+						onclick={pay}
+						disabled={submitting || pinCode.length !== 6}
+					>
 						{#if submitting}
-							<span class="loading loading-spinner loading-sm"></span>
+							<span class="loading loading-sm loading-spinner"></span>
 						{:else}
 							<Check size={16} />
 						{/if}

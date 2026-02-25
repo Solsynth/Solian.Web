@@ -41,7 +41,9 @@
 			if (existing.dataset.loaded === 'true') return;
 			await new Promise<void>((resolve, reject) => {
 				existing.addEventListener('load', () => resolve(), { once: true });
-				existing.addEventListener('error', () => reject(new Error(`Failed to load ${src}`)), { once: true });
+				existing.addEventListener('error', () => reject(new Error(`Failed to load ${src}`)), {
+					once: true
+				});
 			});
 			return;
 		}
@@ -105,7 +107,10 @@
 					callback: handleSuccess
 				});
 			} else if (currentProvider === 'hcaptcha') {
-				await loadScript('https://js.hcaptcha.com/1/api.js?render=explicit', 'captcha-hcaptcha-script');
+				await loadScript(
+					'https://js.hcaptcha.com/1/api.js?render=explicit',
+					'captcha-hcaptcha-script'
+				);
 				if (!w.hcaptcha) throw new Error('hCaptcha failed to initialize');
 				widgetId = w.hcaptcha.render(captchaContainer, {
 					sitekey: currentApiKey,
@@ -156,7 +161,7 @@
 
 <div class="flex w-full flex-col items-center gap-3">
 	{#if isLoading}
-		<span class="loading loading-spinner loading-md"></span>
+		<span class="loading loading-md loading-spinner"></span>
 	{:else if error}
 		<div class="flex flex-col items-center justify-center gap-1 text-sm text-base-content/70">
 			<AlertTriangle size={18} />

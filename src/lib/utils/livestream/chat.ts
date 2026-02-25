@@ -43,7 +43,10 @@ export function isSuperchatActive(message: ChatMessage, now = new Date()): boole
 	return createdAt.getTime() + seconds * 1000 > now.getTime();
 }
 
-export function latestActiveSuperchat(messages: ChatMessage[], now = new Date()): ChatMessage | null {
+export function latestActiveSuperchat(
+	messages: ChatMessage[],
+	now = new Date()
+): ChatMessage | null {
 	for (let i = messages.length - 1; i >= 0; i -= 1) {
 		if (isSuperchatActive(messages[i], now)) return messages[i];
 	}
@@ -96,7 +99,8 @@ export function parseLivestreamEventPayload(
 				senderId: (parsed.senderId as string) || '',
 				sender:
 					(typeof parsed.senderName === 'string' && parsed.senderName) ||
-					(senderIdentity || 'Unknown'),
+					senderIdentity ||
+					'Unknown',
 				senderIdentity,
 				message: parsed.content,
 				isMine: false,

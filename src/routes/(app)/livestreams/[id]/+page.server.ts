@@ -5,7 +5,9 @@ import type { LivestreamDetail } from '$lib/types/livestream';
 export const load: PageServerLoad = async ({ params, fetch }) => {
 	const { id } = params;
 	try {
-		const response = await fetch(`https://api.solian.app/sphere/livestreams/${encodeURIComponent(id)}`);
+		const response = await fetch(
+			`https://api.solian.app/sphere/livestreams/${encodeURIComponent(id)}`
+		);
 		if (!response.ok) {
 			if (response.status === 404) {
 				return { livestream: null as LivestreamDetail | null, error: 'Livestream not found.' };

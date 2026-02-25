@@ -66,7 +66,7 @@
 			<div class="mb-3 flex items-center gap-2">
 				<Trophy class="h-5 w-5 text-warning" />
 				<h3 class="text-lg font-semibold">Livestream Leaderboard</h3>
-				<button type="button" class="btn btn-circle btn-ghost btn-sm ml-auto" onclick={onClose}>
+				<button type="button" class="btn ml-auto btn-circle btn-ghost btn-sm" onclick={onClose}>
 					<X class="h-4 w-4" />
 				</button>
 			</div>
@@ -76,7 +76,7 @@
 					<Loader2 class="h-5 w-5 animate-spin" />
 				</div>
 			{:else if loadError}
-				<div class="alert alert-error py-2 text-sm">{loadError}</div>
+				<div class="alert py-2 text-sm alert-error">{loadError}</div>
 			{:else if entries.length === 0}
 				<div class="py-8 text-center text-sm text-base-content/60">No awards yet.</div>
 			{:else}
@@ -84,7 +84,9 @@
 					{#each entries as entry}
 						<div class="rounded-xl border border-base-300 bg-base-200/20 p-3">
 							<div class="flex items-center gap-3">
-								<div class={`w-7 text-center text-sm font-bold ${rankTone(entry.rank)}`}>#{entry.rank}</div>
+								<div class={`w-7 text-center text-sm font-bold ${rankTone(entry.rank)}`}>
+									#{entry.rank}
+								</div>
 								{#if entry.account?.profile?.picture?.id}
 									<img
 										src={getFileUrl(entry.account.profile.picture.id)}
@@ -93,7 +95,9 @@
 										loading="lazy"
 									/>
 								{:else}
-									<div class="flex h-9 w-9 items-center justify-center rounded-full bg-primary/20 text-sm font-semibold">
+									<div
+										class="flex h-9 w-9 items-center justify-center rounded-full bg-primary/20 text-sm font-semibold"
+									>
 										{entry.senderName?.[0]?.toUpperCase() ?? '?'}
 									</div>
 								{/if}

@@ -23,10 +23,7 @@ async function parseResponse(response: Response): Promise<unknown> {
 }
 
 // Client-side only fetch (for auth)
-export async function apiClient(
-	endpoint: string,
-	options: RequestInit = {}
-): Promise<Response> {
+export async function apiClient(endpoint: string, options: RequestInit = {}): Promise<Response> {
 	const url = `${API_BASE_URL}${endpoint}`;
 
 	const headers: Record<string, string> = {
@@ -86,10 +83,7 @@ export async function getFactors(challengeId: string): Promise<SnAuthFactor[]> {
 	return safeJsonParse<SnAuthFactor[]>(response);
 }
 
-export async function requestFactorCode(
-	challengeId: string,
-	factorId: string
-): Promise<unknown> {
+export async function requestFactorCode(challengeId: string, factorId: string): Promise<unknown> {
 	const response = await apiClient(`/pass/auth/challenge/${challengeId}/factors/${factorId}`, {
 		method: 'POST'
 	});
@@ -249,11 +243,7 @@ export async function applySpell(spellWord: string, newPassword?: string): Promi
 }
 
 // OIDC login URLs
-export function getOidcLoginUrl(
-	provider: string,
-	deviceId: string,
-	returnUrl: string
-): string {
+export function getOidcLoginUrl(provider: string, deviceId: string, returnUrl: string): string {
 	const params = new URLSearchParams({
 		returnUrl,
 		deviceId,

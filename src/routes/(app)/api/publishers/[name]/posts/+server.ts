@@ -23,7 +23,15 @@ export const GET: RequestHandler = async ({ fetch, params, url }) => {
 			orderDesc: url.searchParams.get('orderDesc') ?? 'true'
 		});
 
-		const passthroughKeys = ['replies', 'media', 'query', 'order', 'periodStart', 'periodEnd', 'type'];
+		const passthroughKeys = [
+			'replies',
+			'media',
+			'query',
+			'order',
+			'periodStart',
+			'periodEnd',
+			'type'
+		];
 		for (const key of passthroughKeys) {
 			const value = url.searchParams.get(key);
 			if (value != null && value !== '') query.set(key, value);

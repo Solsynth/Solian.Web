@@ -152,7 +152,9 @@
 		if (!realm?.slug || isJoining || isMember) return;
 		isJoining = true;
 		try {
-			await apiClient(`/pass/realms/${encodeURIComponent(realm.slug)}/members/me`, { method: 'POST' });
+			await apiClient(`/pass/realms/${encodeURIComponent(realm.slug)}/members/me`, {
+				method: 'POST'
+			});
 			isMember = true;
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to join realm';
@@ -185,20 +187,30 @@
 		<section class="relative overflow-hidden border-b border-base-300">
 			<div class="h-40 w-full bg-base-200 sm:h-52">
 				{#if backgroundUrl}
-					<img src={backgroundUrl} alt={`${displayName} background`} class="h-full w-full object-cover" />
+					<img
+						src={backgroundUrl}
+						alt={`${displayName} background`}
+						class="h-full w-full object-cover"
+					/>
 				{/if}
 			</div>
-			<div class="mx-auto -mt-16 flex max-w-5xl flex-col gap-4 px-4 pb-4 sm:-mt-14 sm:flex-row sm:items-end sm:px-6">
+			<div
+				class="mx-auto -mt-16 flex max-w-5xl flex-col gap-4 px-4 pb-4 sm:-mt-14 sm:flex-row sm:items-end sm:px-6"
+			>
 				<div class="shrink-0">
 					{#if avatarUrl}
 						<div class="avatar">
-							<div class="h-24 w-24 rounded-3xl ring ring-base-300 ring-offset-2 ring-offset-base-100 sm:h-28 sm:w-28">
+							<div
+								class="h-24 w-24 rounded-3xl ring ring-base-300 ring-offset-2 ring-offset-base-100 sm:h-28 sm:w-28"
+							>
 								<img src={avatarUrl} alt={displayName} />
 							</div>
 						</div>
 					{:else}
 						<div class="avatar avatar-placeholder">
-							<div class="h-24 w-24 rounded-3xl bg-primary text-primary-content ring ring-base-300 ring-offset-2 ring-offset-base-100 sm:h-28 sm:w-28">
+							<div
+								class="h-24 w-24 rounded-3xl bg-primary text-primary-content ring ring-base-300 ring-offset-2 ring-offset-base-100 sm:h-28 sm:w-28"
+							>
 								<span class="text-2xl font-semibold">{getInitials(displayName)}</span>
 							</div>
 						</div>
@@ -208,7 +220,7 @@
 					<div class="flex flex-wrap items-center gap-2 pt-18">
 						<h1 class="truncate text-2xl font-black sm:text-3xl">{displayName}</h1>
 						{#if realm.verification}
-							<span class="badge badge-primary gap-1">
+							<span class="badge gap-1 badge-primary">
 								<ShieldCheck size={12} />
 								Verified
 							</span>
@@ -244,7 +256,11 @@
 									Organization
 								{/if}
 							</span>
-							<span class="badge gap-1 {realm.is_public ? 'border-success/30 bg-success/15 text-success' : 'border-warning/30 bg-warning/20 text-warning'}">
+							<span
+								class="badge gap-1 {realm.is_public
+									? 'border-success/30 bg-success/15 text-success'
+									: 'border-warning/30 bg-warning/20 text-warning'}"
+							>
 								{#if realm.is_public}
 									<Globe2 size={12} />
 									Public
@@ -272,7 +288,11 @@
 				{/if}
 
 				{#if realm.is_public && !isMember}
-					<button class="btn btn-primary w-full sm:w-auto" onclick={handleJoin} disabled={isJoining}>
+					<button
+						class="btn w-full btn-primary sm:w-auto"
+						onclick={handleJoin}
+						disabled={isJoining}
+					>
 						{#if isJoining}
 							<Loader2 class="animate-spin" size={16} />
 						{:else}
@@ -293,32 +313,76 @@
 							</div>
 						{/if}
 						<div class="join w-full">
-							<button class="flex-1 btn join-item {contentType === 'all' ? 'btn-primary' : 'border-base-300 bg-base-100 text-base-content hover:bg-base-200'}" onclick={() => { contentType = 'all'; reloadWithFilters(); }}>All</button>
-							<button class="flex-1 btn join-item {contentType === 'posts' ? 'btn-primary' : 'border-base-300 bg-base-100 text-base-content hover:bg-base-200'}" onclick={() => { contentType = 'posts'; reloadWithFilters(); }}>Posts</button>
-							<button class="flex-1 btn join-item {contentType === 'articles' ? 'btn-primary' : 'border-base-300 bg-base-100 text-base-content hover:bg-base-200'}" onclick={() => { contentType = 'articles'; reloadWithFilters(); }}>Articles</button>
+							<button
+								class="btn join-item flex-1 {contentType === 'all'
+									? 'btn-primary'
+									: 'border-base-300 bg-base-100 text-base-content hover:bg-base-200'}"
+								onclick={() => {
+									contentType = 'all';
+									reloadWithFilters();
+								}}>All</button
+							>
+							<button
+								class="btn join-item flex-1 {contentType === 'posts'
+									? 'btn-primary'
+									: 'border-base-300 bg-base-100 text-base-content hover:bg-base-200'}"
+								onclick={() => {
+									contentType = 'posts';
+									reloadWithFilters();
+								}}>Posts</button
+							>
+							<button
+								class="btn join-item flex-1 {contentType === 'articles'
+									? 'btn-primary'
+									: 'border-base-300 bg-base-100 text-base-content hover:bg-base-200'}"
+								onclick={() => {
+									contentType = 'articles';
+									reloadWithFilters();
+								}}>Articles</button
+							>
 						</div>
 						<div class="grid gap-2 sm:grid-cols-2">
-							<button class="btn justify-start border-base-300 bg-base-100 text-base-content hover:bg-base-200" onclick={() => { cycleRepliesFilter(); reloadWithFilters(); }}>
+							<button
+								class="btn justify-start border-base-300 bg-base-100 text-base-content hover:bg-base-200"
+								onclick={() => {
+									cycleRepliesFilter();
+									reloadWithFilters();
+								}}
+							>
 								<MessageCircle size={14} />
 								Replies:
 								{includeReplies === null ? 'Auto' : includeReplies ? 'On' : 'Off'}
 							</button>
-							<button class="btn justify-start border-base-300 bg-base-100 text-base-content hover:bg-base-200" onclick={() => { mediaOnly = !mediaOnly; reloadWithFilters(); }}>
+							<button
+								class="btn justify-start border-base-300 bg-base-100 text-base-content hover:bg-base-200"
+								onclick={() => {
+									mediaOnly = !mediaOnly;
+									reloadWithFilters();
+								}}
+							>
 								<Image size={14} />
 								Media only: {mediaOnly ? 'On' : 'Off'}
 							</button>
-							<button class="btn justify-start border-base-300 bg-base-100 text-base-content hover:bg-base-200" onclick={() => { orderDesc = !orderDesc; reloadWithFilters(); }}>
+							<button
+								class="btn justify-start border-base-300 bg-base-100 text-base-content hover:bg-base-200"
+								onclick={() => {
+									orderDesc = !orderDesc;
+									reloadWithFilters();
+								}}
+							>
 								<ArrowDownUp size={14} />
 								Order: {orderDesc ? 'Newest' : 'Oldest'}
 							</button>
 							<div class="join">
 								<input
-									class="input input-bordered join-item w-full"
+									class="input-bordered input join-item w-full"
 									placeholder="Search posts"
 									bind:value={query}
 									onkeydown={(e) => e.key === 'Enter' && reloadWithFilters()}
 								/>
-								<button class="btn btn-primary join-item" onclick={reloadWithFilters}><Search size={14} /></button>
+								<button class="btn join-item btn-primary" onclick={reloadWithFilters}
+									><Search size={14} /></button
+								>
 							</div>
 						</div>
 					</div>
@@ -329,7 +393,11 @@
 				{/if}
 
 				{#if posts.length > 0}
-					<div class="space-y-4 transition-opacity duration-200 {isRefreshing ? 'opacity-60' : 'opacity-100'}">
+					<div
+						class="space-y-4 transition-opacity duration-200 {isRefreshing
+							? 'opacity-60'
+							: 'opacity-100'}"
+					>
 						{#each posts as post (post.id)}
 							<PostCard {post} />
 						{/each}
@@ -347,7 +415,9 @@
 						{/if}
 					</div>
 				{:else if !error}
-					<div class="rounded-xl border border-base-300 bg-base-100 p-8 text-center text-base-content/60">
+					<div
+						class="rounded-xl border border-base-300 bg-base-100 p-8 text-center text-base-content/60"
+					>
 						No posts for this realm with current filters.
 					</div>
 				{/if}

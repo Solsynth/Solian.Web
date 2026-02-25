@@ -19,7 +19,9 @@
 	let language = $state('en-us');
 	let captchaToken = $state('');
 
-	const stepIndex = $derived(['username-nick', 'email', 'password', 'captcha', 'terms'].indexOf(stage) + 1);
+	const stepIndex = $derived(
+		['username-nick', 'email', 'password', 'captcha', 'terms'].indexOf(stage) + 1
+	);
 
 	onMount(() => {
 		language = navigator.language?.toLowerCase() || 'en-us';
@@ -114,42 +116,66 @@
 	<title>Create Account - Solar Network</title>
 </svelte:head>
 
-<div class="w-full max-w-3xl rounded-3xl border border-base-300/70 bg-base-100/85 shadow-2xl backdrop-blur-xl">
+<div
+	class="w-full max-w-3xl rounded-3xl border border-base-300/70 bg-base-100/85 shadow-2xl backdrop-blur-xl"
+>
 	<div class="grid md:grid-cols-[0.95fr_1.05fr]">
-		<section class="relative overflow-hidden rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none bg-gradient-to-br from-primary/25 via-info/15 to-base-100 p-7 md:p-9">
-			<div class="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-primary-content shadow">
+		<section
+			class="relative overflow-hidden rounded-t-3xl bg-gradient-to-br from-primary/25 via-info/15 to-base-100 p-7 md:rounded-l-3xl md:rounded-tr-none md:p-9"
+		>
+			<div
+				class="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-primary-content shadow"
+			>
 				<ShieldCheck size={22} />
 			</div>
-			<p class="text-xs font-semibold uppercase tracking-[0.2em] text-base-content/70">Step {stepIndex} / 5</p>
-			<h1 class="mt-2 text-3xl font-black leading-tight">Create your account</h1>
-			<p class="mt-3 text-sm text-base-content/70">Fast setup with username, email, password, captcha, and terms confirmation.</p>
+			<p class="text-xs font-semibold tracking-[0.2em] text-base-content/70 uppercase">
+				Step {stepIndex} / 5
+			</p>
+			<h1 class="mt-2 text-3xl leading-tight font-black">Create your account</h1>
+			<p class="mt-3 text-sm text-base-content/70">
+				Fast setup with username, email, password, captcha, and terms confirmation.
+			</p>
 		</section>
 
 		<section class="p-6 md:p-9">
 			{#if error}
-				<div class="alert alert-error mb-4"><span>{error}</span></div>
+				<div class="mb-4 alert alert-error"><span>{error}</span></div>
 			{/if}
 
 			{#if stage === 'username-nick'}
 				<div class="space-y-4">
 					<label class="form-control">
 						<span class="label-text mb-1">Username</span>
-						<input class="input input-bordered w-full" bind:value={name} placeholder="littlesheep" />
+						<input
+							class="input-bordered input w-full"
+							bind:value={name}
+							placeholder="littlesheep"
+						/>
 					</label>
 					<label class="form-control">
 						<span class="label-text mb-1">Nickname</span>
-						<input class="input input-bordered w-full" bind:value={nick} placeholder="ラムです" />
+						<input class="input-bordered input w-full" bind:value={nick} placeholder="ラムです" />
 					</label>
 				</div>
 			{:else if stage === 'email'}
 				<label class="form-control">
 					<span class="label-text mb-1">Email</span>
-					<input class="input input-bordered w-full" type="email" bind:value={email} placeholder="you@example.com" />
+					<input
+						class="input-bordered input w-full"
+						type="email"
+						bind:value={email}
+						placeholder="you@example.com"
+					/>
 				</label>
 			{:else if stage === 'password'}
 				<label class="form-control">
 					<span class="label-text mb-1">Password</span>
-					<input class="input input-bordered w-full" type="password" bind:value={password} placeholder="At least 4 characters" />
+					<input
+						class="input-bordered input w-full"
+						type="password"
+						bind:value={password}
+						placeholder="At least 4 characters"
+					/>
 				</label>
 			{:else if stage === 'captcha'}
 				<div class="space-y-3">
@@ -160,7 +186,9 @@
 					{/if}
 				</div>
 			{:else if stage === 'terms'}
-				<div class="rounded-xl border border-base-300 bg-base-200/60 p-4 text-sm text-base-content/80">
+				<div
+					class="rounded-xl border border-base-300 bg-base-200/60 p-4 text-sm text-base-content/80"
+				>
 					<ul class="list-disc space-y-1 pl-5">
 						<li>One account per person under Solar Network terms.</li>
 						<li>Activate your account via email before full access.</li>
@@ -185,7 +213,7 @@
 				{:else}
 					<button class="btn btn-primary" onclick={submit} disabled={isLoading}>
 						{#if isLoading}
-							<span class="loading loading-spinner loading-sm"></span>
+							<span class="loading loading-sm loading-spinner"></span>
 						{:else}
 							<CheckCircle2 size={16} />
 						{/if}

@@ -1,17 +1,24 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import type { PageData } from './$types';
 	import LivestreamPlayer from '$lib/components/livestreams/LivestreamPlayer.svelte';
 	import { getFileUrl } from '$lib/utils/files';
-	import { ArrowLeft, Clapperboard, Radio, PlayCircle, MessageCircle, Info } from 'lucide-svelte';
+	import { ArrowLeft, Clapperboard, Radio, PlayCircle } from 'lucide-svelte';
+	import LivestreamChatPanel from '$lib/components/livestreams/LivestreamChatPanel.svelte';
+	import { LivekitRoomController } from '$lib/services/livestream/livekit-room';
 
 	type PlaybackMode = 'webrtc' | 'hls';
 
 	let { data }: { data: PageData } = $props();
 
 	let playbackMode = $state<PlaybackMode>('webrtc');
+	let chatCollapsed = $state(false);
 	let isWide = $state(false);
+
+	const roomController = new LivekitRoomController('viewer');
+	const roomState = roomController.state;
+	let room = $derived($roomState);
 
 	const livestream = $derived(data.livestream);
 	const hasHls = $derived(Boolean(resolveHlsUrl(livestream?.hlsPlaylistPath)));
@@ -50,6 +57,10 @@
 		media.addEventListener('change', sync);
 		return () => media.removeEventListener('change', sync);
 	});
+
+	onDestroy(() => {
+		void roomController.destroy();
+	});
 </script>
 
 <svelte:head>
@@ -71,7 +82,7 @@
 	</div>
 </div>
 
-<div class="mx-auto max-w-6xl px-4 pb-6 pt-2">
+<div class="mx-auto max-w-6xl px-4 pt-2 pb-6">
 	{#if data.error}
 		<div class="alert alert-error">{data.error}</div>
 	{:else if !livestream}
@@ -118,7 +129,8 @@
 					<LivestreamPlayer
 						livestreamId={livestream.id ?? data.livestream?.id ?? ''}
 						isInteractive={true}
-						showChat={true}
+						showChat={false}
+						{roomController}
 					/>
 				{:else}
 					<div class="card border border-base-300 bg-base-100">
@@ -172,6 +184,15 @@
 							</div>
 						</a>
 					</div>
+				{/if}
+
+				{#if playbackMode == 'webrtc'}
+					<LivestreamChatPanel
+						messages={room.messages}
+						collapsed={chatCollapsed}
+						onToggleCollapse={() => (chatCollapsed = !chatCollapsed)}
+						onSend={async (value) => roomController.sendMessage(value, data.livestream!.id!)}
+					/>
 				{/if}
 			</div>
 		</div>

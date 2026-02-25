@@ -62,34 +62,36 @@
 <div class="w-full max-w-md">
 	<div class="card border border-base-300 bg-base-100/90 shadow-xl backdrop-blur">
 		<div class="card-body">
-		<div class="mb-4 flex items-center gap-3 border-b border-base-300 pb-4">
-			<div class="rounded-xl bg-warning/20 p-2">
-				<Wand2 class="text-warning" size={22} />
+			<div class="mb-4 flex items-center gap-3 border-b border-base-300 pb-4">
+				<div class="rounded-xl bg-warning/20 p-2">
+					<Wand2 class="text-warning" size={22} />
+				</div>
+				<div>
+					<h1 class="text-xl font-bold">Magic Spell</h1>
+					<p class="text-sm text-base-content/60">
+						{spell ? (spellTypes[spell.type] ?? 'Unknown Spell') : 'Loading...'}
+					</p>
+				</div>
 			</div>
-			<div>
-				<h1 class="text-xl font-bold">Magic Spell</h1>
-				<p class="text-sm text-base-content/60">{spell ? spellTypes[spell.type] ?? 'Unknown Spell' : 'Loading...'}</p>
-			</div>
-		</div>
 
-		{#if done}
-			<div class="alert alert-success">
-				<span>Spell applied successfully. You can close this tab now.</span>
-			</div>
-		{:else if error}
-			<div class="alert alert-error">
-				<span>{error}</span>
-			</div>
-		{:else if loading}
-			<div class="flex justify-center py-10">
-				<span class="loading loading-spinner loading-lg"></span>
-			</div>
-		{:else if spell}
-			<div class="space-y-4 text-sm">
+			{#if done}
+				<div class="alert alert-success">
+					<span>Spell applied successfully. You can close this tab now.</span>
+				</div>
+			{:else if error}
+				<div class="alert alert-error">
+					<span>{error}</span>
+				</div>
+			{:else if loading}
+				<div class="flex justify-center py-10">
+					<span class="loading loading-lg loading-spinner"></span>
+				</div>
+			{:else if spell}
+				<div class="space-y-4 text-sm">
 					<div class="flex items-center gap-3">
 						<User size={18} class="text-base-content/60" />
 						<div>
-							<p class="text-xs uppercase tracking-wide text-base-content/60">Account</p>
+							<p class="text-xs tracking-wide text-base-content/60 uppercase">Account</p>
 							<p class="font-semibold">@{spell.account.name}</p>
 						</div>
 					</div>
@@ -97,8 +99,10 @@
 					<div class="flex items-center gap-3">
 						<Clock size={18} class="text-base-content/60" />
 						<div>
-							<p class="text-xs uppercase tracking-wide text-base-content/60">Available at</p>
-							<p class="font-semibold">{new Date(spell.createdAt ?? spell.affectedAt).toLocaleString()}</p>
+							<p class="text-xs tracking-wide text-base-content/60 uppercase">Available at</p>
+							<p class="font-semibold">
+								{new Date(spell.createdAt ?? spell.affectedAt).toLocaleString()}
+							</p>
 						</div>
 					</div>
 
@@ -106,7 +110,7 @@
 						<div class="flex items-center gap-3">
 							<Calendar size={18} class="text-base-content/60" />
 							<div>
-								<p class="text-xs uppercase tracking-wide text-base-content/60">Expires</p>
+								<p class="text-xs tracking-wide text-base-content/60 uppercase">Expires</p>
 								<p class="font-semibold">{new Date(spell.expiredAt).toLocaleString()}</p>
 							</div>
 						</div>
@@ -117,18 +121,18 @@
 					{#if spell.type === 3}
 						<input
 							type="password"
-							class="input input-bordered w-full"
+							class="input-bordered input w-full"
 							placeholder="New password"
 							bind:value={newPassword}
 						/>
 					{/if}
 					<button
-						class="btn btn-primary w-full"
+						class="btn w-full btn-primary"
 						onclick={apply}
 						disabled={submitting || (spell.type === 3 && newPassword.length === 0)}
 					>
 						{#if submitting}
-							<span class="loading loading-spinner loading-sm"></span>
+							<span class="loading loading-sm loading-spinner"></span>
 						{:else}
 							<Check size={16} />
 						{/if}

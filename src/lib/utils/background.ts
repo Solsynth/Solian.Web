@@ -11,7 +11,9 @@ interface BackgroundGroup {
 	dark: string[];
 }
 
-const groupedBackgrounds: BackgroundGroup = Object.entries(backgroundModules).reduce<BackgroundGroup>(
+const groupedBackgrounds: BackgroundGroup = Object.entries(
+	backgroundModules
+).reduce<BackgroundGroup>(
 	(acc, [path, url]) => {
 		const name = path.split('/').pop()?.toLowerCase() || '';
 		if (name.startsWith('light-')) acc.light.push(url);

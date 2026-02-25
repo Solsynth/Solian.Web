@@ -253,24 +253,24 @@
 							<ChevronUp class="h-4 w-4 text-base-content/60" />
 						{/if}
 					</button>
-						{#if !referenceCollapsed && referencePost}
-							<div
-								class="grid cursor-pointer grid-cols-[40px_1fr] gap-3"
-								role="link"
-								tabindex="0"
-								onclick={(e) => {
+					{#if !referenceCollapsed && referencePost}
+						<div
+							class="grid cursor-pointer grid-cols-[40px_1fr] gap-3"
+							role="link"
+							tabindex="0"
+							onclick={(e) => {
+								e.preventDefault();
+								e.stopPropagation();
+								goto(`/posts/${referencePost.id}`);
+							}}
+							onkeydown={(e) => {
+								if (e.key === 'Enter' || e.key === ' ') {
 									e.preventDefault();
 									e.stopPropagation();
 									goto(`/posts/${referencePost.id}`);
-								}}
-								onkeydown={(e) => {
-									if (e.key === 'Enter' || e.key === ' ') {
-										e.preventDefault();
-										e.stopPropagation();
-										goto(`/posts/${referencePost.id}`);
-									}
-								}}
-							>
+								}
+							}}
+						>
 							<div class="relative flex justify-center">
 								<button
 									type="button"
@@ -296,7 +296,7 @@
 										</div>
 									{/if}
 								</button>
-								<div class="absolute top-10 bottom-[-10px] w-px bg-base-300/80"></div>
+								<div class="absolute top-10 -bottom-2.5 w-px bg-base-300/80"></div>
 							</div>
 							<div class="min-w-0 pb-2">
 								<div class="flex items-center gap-2">
@@ -359,10 +359,10 @@
 									</div>
 								{/if}
 							</div>
-							</div>
-						{/if}
-					</div>
-				{/if}
+						</div>
+					{/if}
+				</div>
+			{/if}
 
 			<!-- Header -->
 			<div class="flex items-start justify-between gap-3">
@@ -514,9 +514,9 @@
 				</div>
 			{/if}
 
-				<!-- Tags -->
-				{#if post.tags.length > 0}
-					<div class="mt-3 flex flex-wrap gap-2">
+			<!-- Tags -->
+			{#if post.tags.length > 0}
+				<div class="mt-3 flex flex-wrap gap-2">
 					{#each post.tags as tag}
 						<a
 							href="/tag/{tag.slug}"
@@ -525,190 +525,196 @@
 							{tag.name ?? '#' + tag.slug}
 						</a>
 					{/each}
-					</div>
-				{/if}
+				</div>
+			{/if}
 
-				<!-- Embeds -->
-				{#if embeds.length > 0}
-					<div class="mt-3 space-y-3">
-						{#if linkEmbeds.length > 0}
-							<div class="rounded-xl border border-base-300/80 bg-base-200/20 p-2">
-								<div class="mb-2 flex items-center gap-2 px-1 text-sm font-medium text-base-content/70">
-									<Link2 class="h-4 w-4" />
-									<span>Links ({linkEmbeds.length})</span>
-								</div>
-								{#if linkEmbeds.length === 1}
-									{@const embed = linkEmbeds[0]}
-									{@const linkUrl = getEmbedUrl(embed)}
-									{@const title = getEmbedString(embed, ['title'])}
-									{@const description = getEmbedString(embed, ['description'])}
-									{@const siteName = getEmbedString(embed, ['siteName', 'site_name'])}
-									{@const faviconRaw = getEmbedString(embed, ['faviconUrl', 'favicon_url'])}
-									{@const imageRaw = getEmbedString(embed, ['imageUrl', 'image_url'])}
-									{@const author = getEmbedString(embed, ['author'])}
-									{@const published = getEmbedString(embed, ['publishedDate', 'published_date'])}
-									{#if linkUrl}
-										<button
-											type="button"
-											class="card w-full cursor-pointer border border-base-300 bg-base-100 text-left"
-											onclick={(e) => openExternal(linkUrl, e)}
-										>
-											{#if imageRaw && imageRaw !== faviconRaw}
-												<img
-													src={resolveAssetUrl(linkUrl, imageRaw)}
-													alt={title ?? 'Link preview image'}
-													class="h-36 w-full rounded-t-xl object-cover"
-													loading="lazy"
-												/>
-											{/if}
-											<div class="card-body gap-2 p-3">
-												<div class="flex items-center gap-2 text-xs text-base-content/60">
-													{#if faviconRaw}
-														<img
-															src={resolveAssetUrl(linkUrl, faviconRaw)}
-															alt="Site icon"
-															class="h-4 w-4 rounded object-cover"
-															loading="lazy"
-														/>
-													{:else}
-														<Link class="h-4 w-4" />
-													{/if}
-													<span class="truncate">{siteName ?? getHost(linkUrl)}</span>
-													<ExternalLink class="ml-auto h-4 w-4" />
-												</div>
-												{#if title}
-													<div class="line-clamp-2 text-sm font-semibold">{title}</div>
-												{/if}
-												{#if description}
-													<div class="line-clamp-3 text-sm text-base-content/75">{description}</div>
-												{/if}
-												<div class="truncate text-xs text-primary underline">{linkUrl}</div>
-												{#if author || published}
-													<div class="mt-1 flex items-center gap-3 text-xs text-base-content/60">
-														{#if author}
-															<span class="inline-flex items-center gap-1">
-																<User class="h-3.5 w-3.5" /> {author}
-															</span>
-														{/if}
-														{#if published}
-															<span class="inline-flex items-center gap-1">
-																<Clock3 class="h-3.5 w-3.5" /> {formatDateLabel(published)}
-															</span>
-														{/if}
-													</div>
-												{/if}
-											</div>
-										</button>
-									{:else}
-										<div class="alert alert-warning py-2 text-sm">Link embed was unavailable.</div>
-									{/if}
-								{:else}
-									<div class="carousel carousel-center w-full gap-3">
-										{#each linkEmbeds as embed}
-											{@const linkUrl = getEmbedUrl(embed)}
-											{@const title = getEmbedString(embed, ['title'])}
-											{@const description = getEmbedString(embed, ['description'])}
-											{@const siteName = getEmbedString(embed, ['siteName', 'site_name'])}
-											{@const imageRaw = getEmbedString(embed, ['imageUrl', 'image_url'])}
-											{#if linkUrl}
-												<button
-													type="button"
-													class="carousel-item card w-80 cursor-pointer border border-base-300 bg-base-100 text-left"
-													onclick={(e) => openExternal(linkUrl, e)}
-												>
-													{#if imageRaw}
-														<img
-															src={resolveAssetUrl(linkUrl, imageRaw)}
-															alt={title ?? 'Link preview image'}
-															class="h-24 w-full rounded-t-xl object-cover"
-															loading="lazy"
-														/>
-													{/if}
-													<div class="card-body p-3">
-														<div class="truncate text-xs text-base-content/60">
-															{siteName ?? getHost(linkUrl)}
-														</div>
-														<div class="line-clamp-1 text-sm font-semibold">{title ?? linkUrl}</div>
-														{#if description}
-															<div class="line-clamp-2 text-xs text-base-content/70">{description}</div>
-														{/if}
-													</div>
-												</button>
-											{/if}
-										{/each}
-									</div>
-								{/if}
+			<!-- Embeds -->
+			{#if embeds.length > 0}
+				<div class="mt-3 space-y-3">
+					{#if linkEmbeds.length > 0}
+						<div class="rounded-xl border border-base-300/80 bg-base-200/20 p-2">
+							<div
+								class="mb-2 flex items-center gap-2 px-1 text-sm font-medium text-base-content/70"
+							>
+								<Link2 class="h-4 w-4" />
+								<span>Links ({linkEmbeds.length})</span>
 							</div>
-						{/if}
-
-						{#each nonLinkEmbeds as embed}
-							{@const type = getEmbedType(embed)}
-							{@const embedId = getEmbedId(embed)}
-							{@const title = getEmbedString(embed, ['title', 'name'])}
-							{@const description = getEmbedString(embed, ['description'])}
-
-							{#if type === 'poll'}
-								<div class="card border border-base-300 bg-base-100">
-									<div class="card-body p-3">
-										<div class="flex items-center gap-2 font-medium">
-											<Vote class="h-4 w-4" /> Poll
-										</div>
-										{#if !embedId}
-											<div class="text-sm text-base-content/70">Poll was unavailable.</div>
-										{:else}
-											<div class="text-sm text-base-content/80">{title ?? `Poll #${embedId}`}</div>
-											{#if description}
-												<div class="text-xs text-base-content/65">{description}</div>
-											{/if}
+							{#if linkEmbeds.length === 1}
+								{@const embed = linkEmbeds[0]}
+								{@const linkUrl = getEmbedUrl(embed)}
+								{@const title = getEmbedString(embed, ['title'])}
+								{@const description = getEmbedString(embed, ['description'])}
+								{@const siteName = getEmbedString(embed, ['siteName', 'site_name'])}
+								{@const faviconRaw = getEmbedString(embed, ['faviconUrl', 'favicon_url'])}
+								{@const imageRaw = getEmbedString(embed, ['imageUrl', 'image_url'])}
+								{@const author = getEmbedString(embed, ['author'])}
+								{@const published = getEmbedString(embed, ['publishedDate', 'published_date'])}
+								{#if linkUrl}
+									<button
+										type="button"
+										class="card w-full cursor-pointer border border-base-300 bg-base-100 text-left"
+										onclick={(e) => openExternal(linkUrl, e)}
+									>
+										{#if imageRaw && imageRaw !== faviconRaw}
+											<img
+												src={resolveAssetUrl(linkUrl, imageRaw)}
+												alt={title ?? 'Link preview image'}
+												class="h-36 w-full rounded-t-xl object-cover"
+												loading="lazy"
+											/>
 										{/if}
-									</div>
-								</div>
-							{:else if type === 'fund'}
-								<div class="card border border-base-300 bg-base-100">
-									<div class="card-body p-3">
-										<div class="flex items-center gap-2 font-medium">
-											<CircleDollarSign class="h-4 w-4" /> Fund Envelope
-										</div>
-										{#if !embedId}
-											<div class="text-sm text-base-content/70">Fund envelope was unavailable.</div>
-										{:else}
-											<div class="text-sm text-base-content/80">{title ?? `Fund #${embedId}`}</div>
-											{#if description}
-												<div class="text-xs text-base-content/65">{description}</div>
-											{/if}
-										{/if}
-									</div>
-								</div>
-							{:else if type === 'livestream'}
-								{#if !embedId}
-									<div class="card border border-base-300 bg-base-100">
-										<div class="card-body p-3">
-											<div class="flex items-center gap-2 font-medium">
-												<Radio class="h-4 w-4" /> Livestream
+										<div class="card-body gap-2 p-3">
+											<div class="flex items-center gap-2 text-xs text-base-content/60">
+												{#if faviconRaw}
+													<img
+														src={resolveAssetUrl(linkUrl, faviconRaw)}
+														alt="Site icon"
+														class="h-4 w-4 rounded object-cover"
+														loading="lazy"
+													/>
+												{:else}
+													<Link class="h-4 w-4" />
+												{/if}
+												<span class="truncate">{siteName ?? getHost(linkUrl)}</span>
+												<ExternalLink class="ml-auto h-4 w-4" />
 											</div>
-											<div class="text-sm text-base-content/70">Livestream was unavailable.</div>
+											{#if title}
+												<div class="line-clamp-2 text-sm font-semibold">{title}</div>
+											{/if}
+											{#if description}
+												<div class="line-clamp-3 text-sm text-base-content/75">{description}</div>
+											{/if}
+											<div class="truncate text-xs text-primary underline">{linkUrl}</div>
+											{#if author || published}
+												<div class="mt-1 flex items-center gap-3 text-xs text-base-content/60">
+													{#if author}
+														<span class="inline-flex items-center gap-1">
+															<User class="h-3.5 w-3.5" />
+															{author}
+														</span>
+													{/if}
+													{#if published}
+														<span class="inline-flex items-center gap-1">
+															<Clock3 class="h-3.5 w-3.5" />
+															{formatDateLabel(published)}
+														</span>
+													{/if}
+												</div>
+											{/if}
 										</div>
-									</div>
+									</button>
 								{:else}
-									<LivestreamPlayer
-										livestreamId={embedId}
-										embed={embed}
-										isInteractive={true}
-										showChat={isDetail}
-									/>
+									<div class="alert py-2 text-sm alert-warning">Link embed was unavailable.</div>
 								{/if}
 							{:else}
-								<div class="alert alert-info py-2 text-sm">
-									<AlertCircle class="h-4 w-4" />
-									<span>Unable to show embed: {type || 'unknown'}</span>
+								<div class="carousel w-full carousel-center gap-3">
+									{#each linkEmbeds as embed}
+										{@const linkUrl = getEmbedUrl(embed)}
+										{@const title = getEmbedString(embed, ['title'])}
+										{@const description = getEmbedString(embed, ['description'])}
+										{@const siteName = getEmbedString(embed, ['siteName', 'site_name'])}
+										{@const imageRaw = getEmbedString(embed, ['imageUrl', 'image_url'])}
+										{#if linkUrl}
+											<button
+												type="button"
+												class="card carousel-item w-80 cursor-pointer border border-base-300 bg-base-100 text-left"
+												onclick={(e) => openExternal(linkUrl, e)}
+											>
+												{#if imageRaw}
+													<img
+														src={resolveAssetUrl(linkUrl, imageRaw)}
+														alt={title ?? 'Link preview image'}
+														class="h-24 w-full rounded-t-xl object-cover"
+														loading="lazy"
+													/>
+												{/if}
+												<div class="card-body p-3">
+													<div class="truncate text-xs text-base-content/60">
+														{siteName ?? getHost(linkUrl)}
+													</div>
+													<div class="line-clamp-1 text-sm font-semibold">{title ?? linkUrl}</div>
+													{#if description}
+														<div class="line-clamp-2 text-xs text-base-content/70">
+															{description}
+														</div>
+													{/if}
+												</div>
+											</button>
+										{/if}
+									{/each}
 								</div>
 							{/if}
-						{/each}
-					</div>
-				{/if}
+						</div>
+					{/if}
 
-				<!-- Metadata -->
-				<div class="mt-3 flex flex-wrap items-center gap-2 text-xs">
+					{#each nonLinkEmbeds as embed}
+						{@const type = getEmbedType(embed)}
+						{@const embedId = getEmbedId(embed)}
+						{@const title = getEmbedString(embed, ['title', 'name'])}
+						{@const description = getEmbedString(embed, ['description'])}
+
+						{#if type === 'poll'}
+							<div class="card border border-base-300 bg-base-100">
+								<div class="card-body p-3">
+									<div class="flex items-center gap-2 font-medium">
+										<Vote class="h-4 w-4" /> Poll
+									</div>
+									{#if !embedId}
+										<div class="text-sm text-base-content/70">Poll was unavailable.</div>
+									{:else}
+										<div class="text-sm text-base-content/80">{title ?? `Poll #${embedId}`}</div>
+										{#if description}
+											<div class="text-xs text-base-content/65">{description}</div>
+										{/if}
+									{/if}
+								</div>
+							</div>
+						{:else if type === 'fund'}
+							<div class="card border border-base-300 bg-base-100">
+								<div class="card-body p-3">
+									<div class="flex items-center gap-2 font-medium">
+										<CircleDollarSign class="h-4 w-4" /> Fund Envelope
+									</div>
+									{#if !embedId}
+										<div class="text-sm text-base-content/70">Fund envelope was unavailable.</div>
+									{:else}
+										<div class="text-sm text-base-content/80">{title ?? `Fund #${embedId}`}</div>
+										{#if description}
+											<div class="text-xs text-base-content/65">{description}</div>
+										{/if}
+									{/if}
+								</div>
+							</div>
+						{:else if type === 'livestream'}
+							{#if !embedId}
+								<div class="card border border-base-300 bg-base-100">
+									<div class="card-body p-3">
+										<div class="flex items-center gap-2 font-medium">
+											<Radio class="h-4 w-4" /> Livestream
+										</div>
+										<div class="text-sm text-base-content/70">Livestream was unavailable.</div>
+									</div>
+								</div>
+							{:else}
+								<LivestreamPlayer
+									livestreamId={embedId}
+									{embed}
+									isInteractive={true}
+									showChat={isDetail}
+								/>
+							{/if}
+						{:else}
+							<div class="alert py-2 text-sm alert-info">
+								<AlertCircle class="h-4 w-4" />
+								<span>Unable to show embed: {type || 'unknown'}</span>
+							</div>
+						{/if}
+					{/each}
+				</div>
+			{/if}
+
+			<!-- Metadata -->
+			<div class="mt-3 flex flex-wrap items-center gap-2 text-xs">
 				{#if post.visibility !== 0}
 					<span class="badge badge-sm {visibilityMeta.tone}">
 						{#if post.visibility === 0}

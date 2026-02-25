@@ -10,7 +10,7 @@
 
 	const navItems = [
 		{ icon: House, label: 'Home', href: '/' },
-		{ icon: Compass, label: 'Explore', href: '/' },
+		{ icon: Compass, label: 'Explore', href: '/' }
 	];
 
 	function toggleMenu() {
@@ -41,30 +41,34 @@
 
 <svelte:window onclick={handleClickOutside} />
 
-<header class="lg:hidden fixed top-0 left-0 right-0 z-50 bg-base-100/95 backdrop-blur border-b border-base-300">
-	<div class="max-w-2xl mx-auto px-4">
-		<div class="flex items-center justify-between h-14">
+<header
+	class="fixed top-0 right-0 left-0 z-50 border-b border-base-300 bg-base-100/95 backdrop-blur lg:hidden"
+>
+	<div class="mx-auto max-w-2xl px-4">
+		<div class="flex h-14 items-center justify-between">
 			<!-- Left: Home -->
-			<a href="/" class="btn btn-ghost btn-sm btn-circle">
-				<House class="w-5 h-5" />
+			<a href="/" class="btn btn-circle btn-ghost btn-sm">
+				<House class="h-5 w-5" />
 			</a>
 
 			<!-- Center: Logo -->
 			<a href="/" class="text-xl font-bold text-primary">
-				<img src={favicon} alt="Favicon" class="w-8 h-8" />
+				<img src={favicon} alt="Favicon" class="h-8 w-8" />
 			</a>
 
 			<!-- Right: Actions -->
-			<div class="flex items-center gap-1 relative" bind:this={menuContainer}>
-				<button class="btn btn-ghost btn-sm btn-circle" onclick={toggleMenu} aria-label="Menu">
-					<Menu class="w-5 h-5" />
+			<div class="relative flex items-center gap-1" bind:this={menuContainer}>
+				<button class="btn btn-circle btn-ghost btn-sm" onclick={toggleMenu} aria-label="Menu">
+					<Menu class="h-5 w-5" />
 				</button>
 
 				<!-- Dropdown Menu -->
 				{#if menuOpen}
-					<div class="absolute right-0 top-full mt-2 w-48 bg-base-100 rounded-xl shadow-lg border border-base-300 py-2 z-50">
+					<div
+						class="absolute top-full right-0 z-50 mt-2 w-48 rounded-xl border border-base-300 bg-base-100 py-2 shadow-lg"
+					>
 						{#if auth.isAuthenticated && auth.user}
-							<div class="px-4 py-3 border-b border-base-200 mb-1">
+							<div class="mb-1 border-b border-base-200 px-4 py-3">
 								<div class="flex items-center gap-3">
 									{#if avatarUrl}
 										<div class="avatar">
@@ -74,50 +78,52 @@
 										</div>
 									{:else}
 										<div class="avatar avatar-placeholder">
-											<div class="bg-primary text-primary-content w-9 rounded-full">
-												<span class="text-xs font-medium">{(username || '?').slice(0, 2).toUpperCase()}</span>
+											<div class="w-9 rounded-full bg-primary text-primary-content">
+												<span class="text-xs font-medium"
+													>{(username || '?').slice(0, 2).toUpperCase()}</span
+												>
 											</div>
 										</div>
 									{/if}
 									<div class="min-w-0">
-										<p class="font-medium truncate">{displayName}</p>
-										<p class="text-sm text-base-content/60 truncate">@{username}</p>
+										<p class="truncate font-medium">{displayName}</p>
+										<p class="truncate text-sm text-base-content/60">@{username}</p>
 									</div>
 								</div>
 							</div>
 							<a
 								href="/me"
-								class="flex items-center gap-3 px-4 py-3 hover:bg-base-200 transition-colors"
+								class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200"
 								onclick={closeMenu}
 							>
-								<User class="w-5 h-5 text-base-content/70" />
+								<User class="h-5 w-5 text-base-content/70" />
 								<span class="font-medium">Profile</span>
 							</a>
 							<button
-								class="flex items-center gap-3 px-4 py-3 hover:bg-base-200 transition-colors w-full text-left"
+								class="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-base-200"
 								onclick={handleLogout}
 							>
-								<LogOut class="w-5 h-5 text-base-content/70" />
+								<LogOut class="h-5 w-5 text-base-content/70" />
 								<span class="font-medium">Logout</span>
 							</button>
 						{:else}
 							{#each navItems as item}
 								<a
 									href={item.href}
-									class="flex items-center gap-3 px-4 py-3 hover:bg-base-200 transition-colors"
+									class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200"
 									onclick={closeMenu}
 								>
-									<item.icon class="w-5 h-5 text-base-content/70" />
+									<item.icon class="h-5 w-5 text-base-content/70" />
 									<span class="font-medium">{item.label}</span>
 								</a>
 							{/each}
 							<div class="divider my-1"></div>
 							<a
 								href="/auth/login"
-								class="flex items-center gap-3 px-4 py-3 hover:bg-base-200 transition-colors text-primary"
+								class="flex items-center gap-3 px-4 py-3 text-primary transition-colors hover:bg-base-200"
 								onclick={closeMenu}
 							>
-								<LogIn class="w-5 h-5" />
+								<LogIn class="h-5 w-5" />
 								<span class="font-medium">Sign In</span>
 							</a>
 						{/if}
@@ -129,6 +135,8 @@
 </header>
 
 <!-- Floating Compose Button (Mobile) -->
-<button class="lg:hidden btn btn-primary btn-circle fixed bottom-6 right-6 shadow-lg z-40 w-14 h-14">
-	<Plus class="w-6 h-6" />
+<button
+	class="btn fixed right-6 bottom-6 z-40 btn-circle h-14 w-14 shadow-lg btn-primary lg:hidden"
+>
+	<Plus class="h-6 w-6" />
 </button>

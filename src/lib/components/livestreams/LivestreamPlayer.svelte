@@ -27,9 +27,16 @@
 		embed?: Record<string, unknown>;
 		isInteractive?: boolean;
 		showChat?: boolean;
+		roomController?: LivekitRoomController;
 	}
 
-	let { livestreamId, embed = {}, isInteractive = true, showChat = true }: Props = $props();
+	let {
+		livestreamId,
+		embed = {},
+		isInteractive = true,
+		showChat = true,
+		roomController: externalRoomController
+	}: Props = $props();
 
 	let detail = $state<LivestreamDetail | null>(null);
 	let loadingDetail = $state(true);
@@ -39,8 +46,9 @@
 	let playerShell: HTMLDivElement | null = null;
 	let mediaContainer: HTMLDivElement | null = null;
 
-	const roomController = new LivekitRoomController('viewer');
-	const roomState = roomController.state;
+	const internalRoomController = new LivekitRoomController('viewer');
+	const roomController = $derived(externalRoomController ?? internalRoomController);
+	const roomState = $derived(roomController.state);
 
 	let room = $derived($roomState);
 	let activeSuperchat = $derived(latestActiveSuperchat(room.messages));
@@ -70,7 +78,7 @@
 
 	async function connect() {
 		try {
-			const credentials = await fetchLivestreamCredentials(livestreamId, embed);
+			const credentials = await fetchLivestreamCredentials(livestreamId);
 			await roomController.connect(credentials);
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'Unable to get livestream credentials.';
@@ -97,7 +105,8 @@
 	});
 
 	onDestroy(() => {
-		void roomController.destroy();
+		if (externalRoomController) return;
+		void internalRoomController.destroy();
 	});
 </script>
 
@@ -150,7 +159,9 @@
 			<div bind:this={mediaContainer} class="absolute inset-0"></div>
 
 			{#if activeSuperchat}
-				<div class="absolute top-2 left-2 rounded-full border border-warning/40 bg-warning/20 px-2 py-1 text-xs font-semibold text-warning">
+				<div
+					class="absolute top-2 left-2 rounded-full border border-warning/40 bg-warning/20 px-2 py-1 text-xs font-semibold text-warning"
+				>
 					<Crown class="mr-1 inline h-3.5 w-3.5" />
 					{activeSuperchat.sender} donated
 				</div>
@@ -241,7 +252,9 @@
 					}}
 					class="range w-full range-primary range-xs"
 				/>
-				<span class="w-10 text-right text-xs text-base-content/70">{Math.round(room.volume * 100)}%</span>
+				<span class="w-10 text-right text-xs text-base-content/70"
+					>{Math.round(room.volume * 100)}%</span
+				>
 			</div>
 
 			{#if room.playbackBlocked}
@@ -264,7 +277,7 @@
 					messages={room.messages}
 					collapsed={chatCollapsed}
 					onToggleCollapse={() => (chatCollapsed = !chatCollapsed)}
-					onSend={async (value) => roomController.sendMessage(value)}
+					onSend={async (value) => roomController.sendMessage(value, livestreamId)}
 				/>
 			{/if}
 		{/if}

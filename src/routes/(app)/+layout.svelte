@@ -35,35 +35,33 @@
 </script>
 
 <div
-	class="app-shell min-h-screen bg-cover bg-center bg-fixed bg-no-repeat"
+	class="app-shell min-h-screen bg-cover bg-fixed bg-center bg-no-repeat"
 	style={`background-image: ${backgroundUrl ? `url('${backgroundUrl}')` : 'none'};`}
 >
 	<div class="min-h-screen bg-base-100/75">
-	<!-- Mobile Top Navigation -->
-	<MobileNav />
+		<!-- Mobile Top Navigation -->
+		<MobileNav />
 
-	<div class="mx-auto flex max-w-350 justify-center">
-		<!-- Left Sidebar (Navigation) - Desktop only -->
-		<div class="sticky top-0 hidden h-screen w-64 shrink-0 lg:block">
-			<Sidebar />
+		<div class="mx-auto flex max-w-350 justify-center">
+			<!-- Left Sidebar (Navigation) - Desktop only -->
+			<div class="sticky top-0 hidden h-screen w-64 shrink-0 lg:block">
+				<Sidebar />
+			</div>
+
+			<!-- Main Content -->
+			<main class="min-h-screen w-full min-w-0 flex-1 pt-14 lg:max-w-2xl lg:pt-0">
+				{@render children()}
+			</main>
+
+			<!-- Right Sidebar (Legal/Info) - Desktop only -->
+			<div class="sticky top-0 hidden h-screen w-80 shrink-0 px-4 xl:block">
+				<RightSidebar />
+			</div>
 		</div>
 
-		<!-- Main Content -->
-		<main
-			class="min-h-screen w-full lg:max-w-2xl min-w-0 flex-1 pt-14 lg:pt-0"
-		>
-			{@render children()}
-		</main>
-
-		<!-- Right Sidebar (Legal/Info) - Desktop only -->
-		<div class="sticky top-0 hidden h-screen w-80 shrink-0 px-4 xl:block">
-			<RightSidebar />
+		<!-- Legal Info Footer - Mobile only -->
+		<div class="mt-8 border-base-300 px-4 py-6 text-center lg:hidden">
+			<p class="text-sm text-base-content/50">© {new Date().getFullYear()} Solar Network</p>
 		</div>
-	</div>
-
-	<!-- Legal Info Footer - Mobile only -->
-	<div class="mt-8 border-base-300 px-4 py-6 text-center lg:hidden">
-		<p class="text-sm text-base-content/50">© {new Date().getFullYear()} Solar Network</p>
-	</div>
 	</div>
 </div>

@@ -18,7 +18,7 @@
 
 			<p>
 				If you want to experience the full features of Solar Network, please use the Solian instead.
-				<a href="https://web.solian.app" class="underline font-bold">Open web version</a>
+				<a href="https://web.solian.app" class="font-bold underline">Open web version</a>
 			</p>
 		</div>
 	</div>

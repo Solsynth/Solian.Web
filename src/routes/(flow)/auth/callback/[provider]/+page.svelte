@@ -15,8 +15,12 @@
 	<title>Redirecting - Solar Network</title>
 </svelte:head>
 
-<div class="w-full max-w-md rounded-3xl border border-base-300/70 bg-base-100/90 p-8 text-center shadow-2xl backdrop-blur-xl">
-	<div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary">
+<div
+	class="w-full max-w-md rounded-3xl border border-base-300/70 bg-base-100/90 p-8 text-center shadow-2xl backdrop-blur-xl"
+>
+	<div
+		class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary"
+	>
 		<Loader2 class="animate-spin" size={26} />
 	</div>
 	<h1 class="text-xl font-black">Almost There</h1>

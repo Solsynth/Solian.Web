@@ -65,20 +65,20 @@
 
 <div class="w-full max-w-md">
 	<div class="card bg-base-100 shadow-2xl">
-		<div class="card-body p-8 flex flex-col items-center text-center">
+		<div class="card-body flex flex-col items-center p-8 text-center">
 			{#if isProcessing}
 				<div class="flex flex-col items-center gap-4 py-8">
-					<Loader2 class="w-12 h-12 text-primary animate-spin" />
+					<Loader2 class="h-12 w-12 animate-spin text-primary" />
 					<p class="text-lg font-medium">Completing authentication...</p>
 				</div>
 			{:else if error}
 				<div class="flex flex-col items-center gap-4 py-4">
-					<XCircle class="w-12 h-12 text-error" />
+					<XCircle class="h-12 w-12 text-error" />
 					<div>
 						<h1 class="text-xl font-bold">Authentication Failed</h1>
-						<p class="text-base-content/70 mt-1">{error}</p>
+						<p class="mt-1 text-base-content/70">{error}</p>
 					</div>
-					<a href="/auth/login" class="btn btn-primary mt-2">Try Again</a>
+					<a href="/auth/login" class="btn mt-2 btn-primary">Try Again</a>
 				</div>
 			{/if}
 		</div>

@@ -26,7 +26,9 @@ export const load: PageServerLoad = async ({ fetch, params, url }) => {
 	}
 
 	try {
-		const realmResponse = await fetch(`https://api.solian.app/pass/realms/${encodeURIComponent(slug)}`);
+		const realmResponse = await fetch(
+			`https://api.solian.app/pass/realms/${encodeURIComponent(slug)}`
+		);
 		if (!realmResponse.ok) {
 			if (realmResponse.status === 404) {
 				return {
@@ -55,7 +57,8 @@ export const load: PageServerLoad = async ({ fetch, params, url }) => {
 		const queryTerm = url.searchParams.get('query');
 		const type = url.searchParams.get('type');
 
-		if (includeReplies === 'true' || includeReplies === 'false') query.set('replies', includeReplies);
+		if (includeReplies === 'true' || includeReplies === 'false')
+			query.set('replies', includeReplies);
 		if (mediaOnly === 'true' || mediaOnly === 'false') query.set('media', mediaOnly);
 		if (queryTerm) query.set('query', queryTerm);
 		if (type === '0' || type === '1') query.set('type', type);
