@@ -2,7 +2,6 @@
 	import '../layout.css';
 	import { onMount } from 'svelte';
 	import { pickBackgroundForTheme, resolveThemeMode } from '$lib/utils/background';
-	import favicon from '$lib/assets/favicon.png';
 
 	let { children } = $props();
 	let backgroundUrl = $state<string | null>(pickBackgroundForTheme('light'));
@@ -31,8 +30,6 @@
 		};
 	});
 </script>
-
-<svelte:head><link rel="icon" href={favicon} /></svelte:head>
 
 <div class="relative flex min-h-screen flex-col">
 	<!-- Background Image -->

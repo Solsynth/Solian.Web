@@ -47,12 +47,20 @@ export const load: PageServerLoad = async ({ fetch }) => {
 
 		return {
 			livestreams,
-			error: null as string | null
+			error: null as string | null,
+			seo: {
+				title: 'Livestreams',
+				description: 'Watch live streams and discover creators streaming right now.'
+			}
 		};
 	} catch (error) {
 		return {
 			livestreams: [] as LivestreamListItem[],
-			error: error instanceof Error ? error.message : 'Failed to load livestreams.'
+			error: error instanceof Error ? error.message : 'Failed to load livestreams.',
+			seo: {
+				title: 'Livestreams',
+				description: 'Browse active livestreams on Solar Network.'
+			}
 		};
 	}
 };

@@ -2,6 +2,8 @@ import type { PageServerLoad } from './$types';
 import type { Post } from '$lib/types/post';
 import type { Realm } from '$lib/types/realm';
 import { redirect } from '@sveltejs/kit';
+import { excerptText } from '$lib/seo';
+import { getFileUrl } from '$lib/utils/files';
 
 const TAKE = 20;
 
@@ -21,7 +23,12 @@ export const load: PageServerLoad = async ({ fetch, params, url }) => {
 			error: 'Invalid realm slug',
 			notFound: true,
 			total: 0,
-			initialTake: TAKE
+			initialTake: TAKE,
+			seo: {
+				title: 'Realm not found',
+				description: 'The requested realm is invalid.',
+				robots: 'noindex, nofollow'
+			}
 		};
 	}
 
@@ -37,7 +44,12 @@ export const load: PageServerLoad = async ({ fetch, params, url }) => {
 					error: null,
 					notFound: true,
 					total: 0,
-					initialTake: TAKE
+					initialTake: TAKE,
+					seo: {
+						title: 'Realm not found',
+						description: 'The requested realm does not exist.',
+						robots: 'noindex, nofollow'
+					}
 				};
 			}
 			throw new Error(`Failed to fetch realm: ${realmResponse.status}`);
@@ -73,7 +85,14 @@ export const load: PageServerLoad = async ({ fetch, params, url }) => {
 			error: null,
 			notFound: false,
 			total,
-			initialTake: TAKE
+			initialTake: TAKE,
+			seo: {
+				title: realm.name,
+				description: excerptText(
+					realm.description || `Join the ${realm.name} realm on Solar Network.`
+				),
+				image: getFileUrl(realm.picture?.id)
+			}
 		};
 	} catch (error) {
 		return {
@@ -82,7 +101,11 @@ export const load: PageServerLoad = async ({ fetch, params, url }) => {
 			error: error instanceof Error ? error.message : 'Failed to load realm',
 			notFound: false,
 			total: 0,
-			initialTake: TAKE
+			initialTake: TAKE,
+			seo: {
+				title: 'Realm',
+				description: 'Discover communities and posts in Solar Network realms.'
+			}
 		};
 	}
 };

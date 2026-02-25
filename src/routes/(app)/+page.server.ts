@@ -13,13 +13,21 @@ export const load: PageServerLoad = async ({ fetch }) => {
 
 		return {
 			posts,
-			error: null
+			error: null,
+			seo: {
+				title: 'Explore',
+				description: 'Discover fresh posts and updates across Solar Network.'
+			}
 		};
 	} catch (error) {
 		console.error('Error fetching posts:', error);
 		return {
 			posts: [],
-			error: error instanceof Error ? error.message : 'Failed to load posts'
+			error: error instanceof Error ? error.message : 'Failed to load posts',
+			seo: {
+				title: 'Explore',
+				description: 'Browse posts and updates from the Solar Network community.'
+			}
 		};
 	}
 };

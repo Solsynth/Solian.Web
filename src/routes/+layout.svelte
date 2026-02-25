@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { page } from '$app/stores';
 	import { onNavigate } from '$app/navigation';
 	import { onDestroy } from 'svelte';
+	import { resolveSeo, SITE_NAME, type SeoData } from '$lib/seo';
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.png';
 
@@ -84,9 +86,35 @@
 	onDestroy(() => {
 		clearProgressTimers();
 	});
+
+	const seo = $derived.by(() => {
+		const routeData = ($page.data ?? {}) as { seo?: SeoData; robots?: string };
+		return resolveSeo($page.url, routeData.seo, routeData.robots);
+	});
 </script>
 
-<svelte:head><link rel="icon" href={favicon} /></svelte:head>
+<svelte:head>
+	<title>{seo.title}</title>
+	<meta name="description" content={seo.description} />
+	<meta name="robots" content={seo.robots} />
+	{#if seo.keywords}
+		<meta name="keywords" content={seo.keywords} />
+	{/if}
+	<link rel="canonical" href={seo.canonical} />
+	<link rel="icon" href={favicon} />
+
+	<meta property="og:site_name" content={SITE_NAME} />
+	<meta property="og:type" content={seo.type} />
+	<meta property="og:title" content={seo.title} />
+	<meta property="og:description" content={seo.description} />
+	<meta property="og:url" content={seo.canonical} />
+	<meta property="og:image" content={seo.image} />
+
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content={seo.title} />
+	<meta name="twitter:description" content={seo.description} />
+	<meta name="twitter:image" content={seo.image} />
+</svelte:head>
 
 <div class={`route-progress${showRouteProgress ? ' is-visible' : ''}`} aria-hidden="true">
 	<div class="route-progress__bar" style={`transform: scaleX(${routeProgress});`}></div>

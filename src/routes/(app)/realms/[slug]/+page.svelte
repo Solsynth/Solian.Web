@@ -164,10 +164,6 @@
 	}
 </script>
 
-<svelte:head>
-	<title>{displayName} | Solar Network</title>
-</svelte:head>
-
 {#if data.notFound}
 	<div class="mx-auto max-w-2xl p-6">
 		<div class="card border border-base-300 bg-base-100">

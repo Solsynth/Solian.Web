@@ -1,6 +1,8 @@
 import type { PageServerLoad } from './$types';
 import type { Post } from '$lib/types/post';
 import type { PublisherProfile } from '$lib/types/publisher';
+import { excerptText } from '$lib/seo';
+import { getFileUrl } from '$lib/utils/files';
 
 const TAKE = 20;
 
@@ -15,7 +17,12 @@ export const load: PageServerLoad = async ({ fetch, params, url }) => {
 			error: 'Invalid publisher name',
 			notFound: true,
 			total: 0,
-			initialTake: TAKE
+			initialTake: TAKE,
+			seo: {
+				title: 'Publisher not found',
+				description: 'The requested publisher profile is invalid.',
+				robots: 'noindex, nofollow'
+			}
 		};
 	}
 
@@ -32,7 +39,12 @@ export const load: PageServerLoad = async ({ fetch, params, url }) => {
 					error: null,
 					notFound: true,
 					total: 0,
-					initialTake: TAKE
+					initialTake: TAKE,
+					seo: {
+						title: 'Publisher not found',
+						description: 'The requested publisher profile does not exist.',
+						robots: 'noindex, nofollow'
+					}
 				};
 			}
 			throw new Error(`Failed to fetch publisher: ${publisherResponse.status}`);
@@ -61,6 +73,7 @@ export const load: PageServerLoad = async ({ fetch, params, url }) => {
 		const postsResponse = await fetch(`https://api.solian.app/sphere/posts?${query.toString()}`);
 		const posts: Post[] = postsResponse.ok ? await postsResponse.json() : [];
 		const total = parseInt(postsResponse.headers.get('x-total') || '0', 10);
+		const displayName = publisher.nick || publisher.name;
 
 		return {
 			publisher,
@@ -68,7 +81,15 @@ export const load: PageServerLoad = async ({ fetch, params, url }) => {
 			error: null,
 			notFound: false,
 			total,
-			initialTake: TAKE
+			initialTake: TAKE,
+			seo: {
+				title: displayName,
+				description: excerptText(
+					publisher.bio || `View posts and profile details from @${publisher.name}.`
+				),
+				type: 'profile',
+				image: getFileUrl(publisher.picture?.id)
+			}
 		};
 	} catch (error) {
 		return {
@@ -77,7 +98,11 @@ export const load: PageServerLoad = async ({ fetch, params, url }) => {
 			error: error instanceof Error ? error.message : 'Failed to load publisher profile',
 			notFound: false,
 			total: 0,
-			initialTake: TAKE
+			initialTake: TAKE,
+			seo: {
+				title: 'Publisher',
+				description: 'Browse publisher profiles and posts on Solar Network.'
+			}
 		};
 	}
 };

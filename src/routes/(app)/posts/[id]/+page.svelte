@@ -15,14 +15,6 @@
 	}
 </script>
 
-<svelte:head>
-	{#if data.post}
-		<title>{data.post.publisher.nick || data.post.publisher.name} | Solar Network</title>
-	{:else}
-		<title>Post | Solar Network</title>
-	{/if}
-</svelte:head>
-
 <!-- Header -->
 <div class="sticky z-10 mb-4 max-lg:top-14 lg:top-4 lg:mb-6">
 	<div class="mx-auto max-w-2xl lg:px-4">

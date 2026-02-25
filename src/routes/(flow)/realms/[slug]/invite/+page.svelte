@@ -68,10 +68,6 @@
 	}
 </script>
 
-<svelte:head>
-	<title>{realm?.name ? `Invite to ${realm.name}` : 'Realm Invite'}</title>
-</svelte:head>
-
 {#if data.notFound}
 	<div
 		class="w-full max-w-md rounded-3xl border border-base-300/70 bg-base-100/90 p-8 text-center shadow-2xl backdrop-blur-xl"

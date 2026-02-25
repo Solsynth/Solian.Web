@@ -26,10 +26,6 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Livestreams | Solar Network</title>
-</svelte:head>
-
 <div class="mx-auto max-w-2xl">
 	<div class="flex items-center justify-between gap-3 px-4 pt-4">
 		<div>

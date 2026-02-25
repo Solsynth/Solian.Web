@@ -71,10 +71,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Explore | Solar Network</title>
-</svelte:head>
-
 <div class="mx-auto max-w-2xl">
 	<!-- Error State (Initial Load) -->
 	{#if error && posts.length === 0}

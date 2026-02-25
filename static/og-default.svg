@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B1220"/>
+      <stop offset="1" stop-color="#1E293B"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="1060" cy="96" r="180" fill="#38BDF8" fill-opacity="0.2"/>
+  <circle cx="180" cy="550" r="220" fill="#22C55E" fill-opacity="0.2"/>
+  <text x="92" y="290" fill="#E2E8F0" font-family="Helvetica, Arial, sans-serif" font-size="76" font-weight="700">
+    Solar Network
+  </text>
+  <text x="92" y="352" fill="#94A3B8" font-family="Helvetica, Arial, sans-serif" font-size="34">
+    Explore posts, realms, publishers, and livestreams
+  </text>
+</svg>
