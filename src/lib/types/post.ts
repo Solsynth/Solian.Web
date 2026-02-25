@@ -79,5 +79,6 @@ export interface Post {
 	} | null;
 	resource_identifier: string;
 	created_at: string;
+	edited_at: string | null;
 	updated_at: string;
 }

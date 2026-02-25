@@ -3,7 +3,7 @@
 	import { getFileUrl } from '$lib/utils/files';
 	import { renderMarkdown } from '$lib/utils/markdown';
 	import { goto } from '$app/navigation';
-	import LivestreamEmbed from '$lib/components/embeds/LivestreamEmbed.svelte';
+	import LivestreamPlayer from '$lib/components/livestreams/LivestreamPlayer.svelte';
 	import {
 		MessageCircle,
 		Repeat2,
@@ -214,7 +214,7 @@
 	let wrapperProps = $derived(isDetail ? { href: undefined } : { href: `/posts/${post.id}` });
 	let netScore = $derived(post.upvotes - post.downvotes);
 	let visibilityMeta = $derived(getVisibilityMeta(post.visibility));
-	let hasEdits = $derived(post.updated_at !== post.created_at);
+	let hasEdits = $derived(post.edited_at != null);
 	let sortedReactions = $derived(Object.entries(post.reactions_count).sort((a, b) => b[1] - a[1]));
 	let topReaction = $derived(sortedReactions.length ? sortedReactions[0] : null);
 	let embeds = $derived(getEmbeds(post));
@@ -253,11 +253,34 @@
 							<ChevronUp class="h-4 w-4 text-base-content/60" />
 						{/if}
 					</button>
-					{#if !referenceCollapsed && referencePost}
-						<div class="grid grid-cols-[40px_1fr] gap-3">
+						{#if !referenceCollapsed && referencePost}
+							<div
+								class="grid cursor-pointer grid-cols-[40px_1fr] gap-3"
+								role="link"
+								tabindex="0"
+								onclick={(e) => {
+									e.preventDefault();
+									e.stopPropagation();
+									goto(`/posts/${referencePost.id}`);
+								}}
+								onkeydown={(e) => {
+									if (e.key === 'Enter' || e.key === ' ') {
+										e.preventDefault();
+										e.stopPropagation();
+										goto(`/posts/${referencePost.id}`);
+									}
+								}}
+							>
 							<div class="relative flex justify-center">
-								{#if getAvatarUrl(referencePost)}
-									<div class="avatar">
+								<button
+									type="button"
+									class="avatar"
+									onclick={(e) => {
+										e.stopPropagation();
+										goto(`/publishers/${referencePost.publisher.name}`);
+									}}
+								>
+									{#if getAvatarUrl(referencePost)}
 										<div class="h-10 w-10 rounded-full">
 											<img
 												src={getAvatarUrl(referencePost)}
@@ -265,16 +288,14 @@
 												class="h-full w-full rounded-full object-cover"
 											/>
 										</div>
-									</div>
-								{:else}
-									<div class="avatar avatar-placeholder">
+									{:else}
 										<div class="h-10 w-10 rounded-full bg-primary text-primary-content">
 											<span class="text-sm font-medium"
 												>{getInitials(getDisplayName(referencePost))}</span
 											>
 										</div>
-									</div>
-								{/if}
+									{/if}
+								</button>
 								<div class="absolute top-10 bottom-[-10px] w-px bg-base-300/80"></div>
 							</div>
 							<div class="min-w-0 pb-2">
@@ -338,10 +359,10 @@
 									</div>
 								{/if}
 							</div>
-						</div>
-					{/if}
-				</div>
-			{/if}
+							</div>
+						{/if}
+					</div>
+				{/if}
 
 			<!-- Header -->
 			<div class="flex items-start justify-between gap-3">
@@ -669,7 +690,7 @@
 										</div>
 									</div>
 								{:else}
-									<LivestreamEmbed
+									<LivestreamPlayer
 										livestreamId={embedId}
 										embed={embed}
 										isInteractive={true}
@@ -705,7 +726,7 @@
 				{#if hasEdits}
 					<span class="badge badge-outline badge-sm">
 						<PenLine class="h-3 w-3" />
-						{formatDate(post.updated_at)} edited
+						{formatDate(post.edited_at as string)} edited
 					</span>
 				{/if}
 				{#if post.attachments.length > 0}

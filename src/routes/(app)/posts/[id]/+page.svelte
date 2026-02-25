@@ -27,22 +27,19 @@
 <div class="sticky z-10 mb-4 max-lg:top-14 lg:top-4 lg:mb-6">
 	<div class="mx-auto max-w-2xl lg:px-4">
 		<div
-			class="flex items-center gap-4 border-b border-base-300 bg-base-100/95 px-4 py-3 backdrop-blur lg:rounded-full lg:-mx-3 lg:border lg:shadow-lg lg:shadow-base-content/5 lg:px-6"
+			class="flex items-center gap-4 border-b border-base-300 bg-base-100/95 px-4 py-3 backdrop-blur lg:-mx-3 lg:rounded-full lg:border lg:px-6 lg:shadow-lg lg:shadow-base-content/5"
 		>
 			<button class="btn -ml-2 btn-circle btn-ghost btn-sm" onclick={handleBack}>
 				<ArrowLeft class="h-5 w-5" />
 			</button>
 			<div>
 				<h1 class="text-lg font-bold">Post</h1>
-				{#if data.post}
-					<p class="text-xs text-base-content/50">{data.post.replies_count} replies</p>
-				{/if}
 			</div>
 		</div>
 	</div>
 </div>
 
-<div class="mx-auto max-w-2xl lg:pt-1">
+<div class="mx-auto max-w-2xl">
 	{#if data.error}
 		<div class="p-8 text-center">
 			<div class="mx-auto alert max-w-md alert-error">
