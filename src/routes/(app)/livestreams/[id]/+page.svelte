@@ -129,7 +129,7 @@
 						{roomController}
 					/>
 				{:else}
-					<div class="card border border-base-300 bg-base-100">
+					<div class="card">
 						<div class="card-body p-3">
 							<div class="relative overflow-hidden rounded-xl bg-black">
 								<video
@@ -147,7 +147,7 @@
 				{/if}
 
 				{#if publisherName}
-					<div class="card border border-base-300 bg-base-100">
+					<div class="card">
 						<a
 							class="card-body cursor-pointer p-3 hover:bg-base-200/30"
 							href={livestream.publisher?.name

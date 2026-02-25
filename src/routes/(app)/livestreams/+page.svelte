@@ -53,7 +53,7 @@
 			</a>
 		</div>
 	{:else if livestreams.length === 0}
-		<div class="card border border-base-300 bg-base-100">
+		<div class="card">
 			<div class="card-body items-center py-12 text-center">
 				<div class="rounded-full bg-base-200 p-4">
 					<TvMinimal class="h-8 w-8 text-base-content/60" />

@@ -60,7 +60,7 @@
 </svelte:head>
 
 <div class="w-full max-w-md">
-	<div class="card border border-base-300 bg-base-100/90 shadow-xl backdrop-blur">
+	<div class="card/90 shadow-xl backdrop-blur">
 		<div class="card-body">
 			<div class="mb-4 flex items-center gap-3 border-b border-base-300 pb-4">
 				<div class="rounded-xl bg-warning/20 p-2">

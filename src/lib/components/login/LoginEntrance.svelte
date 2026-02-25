@@ -55,76 +55,63 @@
 	}
 </script>
 
+<!-- Error display -->
+{#if error}
+	<div class="alert-sm alert alert-error">
+		<span>{error}</span>
+	</div>
+{/if}
+
 <div class="flex flex-col gap-4">
 	<!-- Header -->
-	<div class="flex flex-col gap-2">
-		<div class="placeholder avatar w-fit">
-			<div class="h-12 w-12 rounded-full bg-primary text-primary-content">
-				<Asterisk size={24} />
-			</div>
-		</div>
+	<div class="pt-14">
 		<h1 class="text-3xl font-black">Welcome back</h1>
 	</div>
 
-	<!-- Error display -->
-	{#if error}
-		<div class="alert-sm alert alert-error">
-			<span>{error}</span>
-		</div>
-	{/if}
-
 	<!-- Username input -->
-	<div class="form-control">
-		<label class="label" for="username">
-			<span class="label-text">Username or Email</span>
-		</label>
+	<fieldset class="fieldset">
+		<legend class="fieldset-legend">Username or Email</legend>
 		<input
 			id="username"
 			type="text"
-			class="input-bordered input w-full"
+			class="input w-full"
 			placeholder="Enter your username"
 			autocomplete="username"
 			disabled={isBusy}
 			bind:value={username}
 			onkeydown={(e) => e.key === 'Enter' && !isBusy && performNewTicket()}
 		/>
-		<label class="label" for="username">
-			<span class="label-text-alt text-base-content/60">Enter your username or email address</span>
-		</label>
-	</div>
+	</fieldset>
 
 	<!-- Third party login -->
-	<div class="flex items-center gap-2 py-2">
-		<div class="divider flex-1"></div>
-		<span class="text-xs text-base-content/60">or continue with</span>
-		<div class="divider flex-1"></div>
-	</div>
+	<div class="flex justify-end items-center py-2">
 
-	<div class="flex justify-center gap-2">
-		<button
-			class="btn btn-circle btn-outline"
-			onclick={() => withOidc('github')}
-			disabled={isBusy}
-			title="GitHub"
-		>
-			<Github size={18} />
-		</button>
-		<button
-			class="btn btn-circle btn-outline"
-			onclick={() => withOidc('google')}
-			disabled={isBusy}
-			title="Google"
-		>
-			<Chrome size={18} />
-		</button>
-		<button
-			class="btn btn-circle btn-outline"
-			onclick={() => alert('Apple Sign In requires mobile app')}
-			disabled={isBusy}
-			title="Apple"
-		>
-			<Apple size={18} />
-		</button>
+		<div class="flex justify-center gap-2">
+			<button
+				class="btn btn-circle btn-outline"
+				onclick={() => withOidc('github')}
+				disabled={isBusy}
+				title="GitHub"
+			>
+				<Github size={18} />
+			</button>
+			<button
+				class="btn btn-circle btn-outline"
+				onclick={() => withOidc('google')}
+				disabled={isBusy}
+				title="Google"
+			>
+				<Chrome size={18} />
+			</button>
+			<button
+				class="btn btn-circle btn-outline"
+				onclick={() => alert('Apple Sign In requires mobile app')}
+				disabled={isBusy}
+				title="Apple"
+			>
+				<Apple size={18} />
+			</button>
+		</div>
 	</div>
 
 	<!-- Actions -->

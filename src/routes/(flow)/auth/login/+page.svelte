@@ -2,10 +2,10 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { auth } from '$lib/stores/auth.svelte';
-	import LoginLookup from '$lib/components/login/LoginLookup.svelte';
-	import LoginPicker from '$lib/components/login/LoginPicker.svelte';
-	import LoginCheck from '$lib/components/login/LoginCheck.svelte';
-	import { Shield } from 'lucide-svelte';
+	import LoginEntrance from '$lib/components/login/LoginEntrance.svelte';
+	import LoginFactorList from '$lib/components/login/LoginFactorList.svelte';
+	import LoginAuthenticate from '$lib/components/login/LoginAuthenticate.svelte';
+	import favicon from '$lib/assets/favicon.png';
 
 	// Current step in login flow
 	let step = $state<'lookup' | 'picker' | 'check'>('lookup');
@@ -43,11 +43,22 @@
 
 	$effect(() => {
 		const requestedStep = $page.url.searchParams.get('step');
+		const challengeId = $page.url.searchParams.get('challenge');
+		
 		if (requestedStep === 'picker' && auth.challenge) {
 			step = 'picker';
 		}
 		if (requestedStep === 'check' && auth.selectedFactor) {
 			step = 'check';
+		}
+		
+		// Set challenge ID in state if provided in URL
+		if (challengeId && auth.challenge?.id !== challengeId) {
+			// Find the challenge with matching ID from factors
+			const matchingFactor = auth.factors.find(f => f.id === challengeId);
+			if (matchingFactor) {
+				auth.selectFactor(matchingFactor);
+			}
 		}
 	});
 </script>
@@ -61,20 +72,15 @@
 >
 	<div class="grid md:grid-cols-[1fr_1.15fr]">
 		<section
-			class="rounded-t-3xl bg-linear-to-br from-primary/25 via-base-100 to-info/15 p-6 md:rounded-l-3xl md:rounded-tr-none md:p-8"
+			class="flex flex-col justify-between rounded-t-3xl bg-linear-to-br from-primary/25 via-base-100 to-info/15 p-6 md:rounded-l-3xl md:rounded-tr-none md:p-8"
 		>
-			<div
-				class="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-primary-content shadow-lg"
-			>
-				<Shield size={22} />
+			<div>
+				<img src={favicon} alt="Solar Network" class="h-12 w-12 rounded-full" />
+				<h1 class="mt-2 text-3xl leading-tight font-black">Sign in</h1>
+				<p class="mt-3 max-w-sm text-sm text-base-content/70">
+					Multi-factor login with pass challenge flow and social providers.
+				</p>
 			</div>
-			<p class="text-xs font-semibold tracking-[0.2em] text-base-content/65 uppercase">
-				Secure Access
-			</p>
-			<h1 class="mt-2 text-3xl leading-tight font-black">Sign in to Solar Network</h1>
-			<p class="mt-3 max-w-sm text-sm text-base-content/70">
-				Multi-factor login with pass challenge flow and social providers.
-			</p>
 			<div class="mt-6 text-sm">
 				No account?
 				<a class="link font-semibold link-primary" href="/auth/create-account">Create one</a>
@@ -83,11 +89,11 @@
 
 		<section class="p-6 md:p-8">
 			{#if step === 'lookup'}
-				<LoginLookup onNext={goToPicker} />
+				<LoginEntrance onNext={goToPicker} />
 			{:else if step === 'picker'}
-				<LoginPicker onNext={goToCheck} onBack={goBackToLookup} />
+				<LoginFactorList onNext={goToCheck} onBack={goBackToLookup} />
 			{:else if step === 'check'}
-				<LoginCheck onComplete={completeLogin} onBack={goBackToPicker} />
+				<LoginAuthenticate onComplete={completeLogin} onBack={goBackToPicker} />
 			{/if}
 		</section>
 	</div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Lock, ChevronRight } from 'lucide-svelte';
+	import { Lock, ChevronRight, Key, Mail, Eye, Clock, Globe, HelpCircle } from 'lucide-svelte';
 	import { requestFactorCode } from '$lib/utils/api';
 	import { auth } from '$lib/stores/auth.svelte';
 	import { FACTOR_TYPES } from '$lib/types/auth';
@@ -55,13 +55,8 @@
 
 <div class="flex flex-col gap-4">
 	<!-- Header -->
-	<div class="flex flex-col gap-2">
-		<div class="placeholder avatar w-fit">
-			<div class="h-12 w-12 rounded-full bg-primary text-primary-content">
-				<Lock size={24} />
-			</div>
-		</div>
-		<h1 class="text-3xl font-black">Verify your identity</h1>
+	<div class="flex flex-col gap-2 pt-14">
+		<h1 class="text-3xl font-black">Authentication</h1>
 		{#if auth.challenge}
 			<p class="text-sm text-base-content/70">
 				Step {auth.loginStep + 1} of {auth.challenge.stepTotal}
@@ -102,95 +97,19 @@
 					/>
 					<div class="flex flex-1 items-center gap-3">
 						<div class="flex h-10 w-10 items-center justify-center rounded-lg bg-base-100">
-							<!-- Simple icon rendering based on type -->
+							<!-- Lucide icons based on factor type -->
 							{#if factor.type === 0}
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="20"
-									height="20"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									><path d="M15 7a2 2 0 0 1 2 2v4" /><path d="M9 7a2 2 0 0 0-2 2v4" /><circle
-										cx="12"
-										cy="12"
-										r="3"
-									/></svg
-								>
+								<Key size={20} />
 							{:else if factor.type === 1}
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="20"
-									height="20"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									><rect width="20" height="16" x="2" y="4" rx="2" /><path
-										d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"
-									/></svg
-								>
+								<Mail size={20} />
 							{:else if factor.type === 2}
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="20"
-									height="20"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path
-										d="M10.3 21a1.94 1.94 0 0 0 3.4 0"
-									/></svg
-								>
+								<Eye size={20} />
 							{:else if factor.type === 3}
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="20"
-									height="20"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg
-								>
+								<Clock size={20} />
 							{:else if factor.type === 4}
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="20"
-									height="20"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" /></svg
-								>
+								<Globe size={20} />
 							{:else}
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="20"
-									height="20"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									><circle cx="12" cy="12" r="10" /><path
-										d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"
-									/><path d="M12 17h.01" /></svg
-								>
+								<HelpCircle size={20} />
 							{/if}
 						</div>
 						<div class="flex-1">

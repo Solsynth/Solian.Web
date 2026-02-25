@@ -223,9 +223,7 @@
 </script>
 
 <svelte:element this={Wrapper} class="block hover:no-underline" {...wrapperProps}>
-	<article
-		class="hover:border-base-400 card cursor-pointer border border-base-300 bg-base-100 transition-all"
-	>
+	<article class="card cursor-pointer bg-base-100 transition-all">
 		<div class="card-body p-4">
 			<!-- Reference Post (Parent, Twitter-style) -->
 			{#if showReference && hasReference}
@@ -654,7 +652,7 @@
 						{@const description = getEmbedString(embed, ['description'])}
 
 						{#if type === 'poll'}
-							<div class="card border border-base-300 bg-base-100">
+							<div class="card">
 								<div class="card-body p-3">
 									<div class="flex items-center gap-2 font-medium">
 										<Vote class="h-4 w-4" /> Poll
@@ -670,7 +668,7 @@
 								</div>
 							</div>
 						{:else if type === 'fund'}
-							<div class="card border border-base-300 bg-base-100">
+							<div class="card">
 								<div class="card-body p-3">
 									<div class="flex items-center gap-2 font-medium">
 										<CircleDollarSign class="h-4 w-4" /> Fund Envelope
@@ -687,7 +685,7 @@
 							</div>
 						{:else if type === 'livestream'}
 							{#if !embedId}
-								<div class="card border border-base-300 bg-base-100">
+								<div class="card">
 									<div class="card-body p-3">
 										<div class="flex items-center gap-2 font-medium">
 											<Radio class="h-4 w-4" /> Livestream
@@ -762,7 +760,7 @@
 					</button>
 				</div>
 
-				<div class="flex items-center gap-0.5 rounded-lg bg-base-200 p-0.5">
+				<div class="flex items-center gap-0.5 rounded-xl bg-base-200 p-0.5">
 					<button
 						class="btn px-2 btn-ghost btn-xs hover:bg-success/20 hover:text-success"
 						onclick={(e) => e.stopPropagation()}

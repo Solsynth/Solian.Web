@@ -110,7 +110,7 @@
 	});
 </script>
 
-<div class="card border border-base-300 bg-base-100">
+<div class="card">
 	<div class="card-body p-3">
 		<div class="mb-2 flex items-start justify-between gap-3">
 			<div class="min-w-0">

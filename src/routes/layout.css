@@ -1,12 +1,15 @@
 /*! 🌼 daisyUI 5.5.19 */
-/*! 🌼 daisyUI 5.5.19 */
-/*! 🌼 daisyUI 5.5.19 */
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
 @plugin 'daisyui' {
 	themes:
 		light --default,
 		dark --prefersdark;
+}
+
+@theme {
+    --font-sans: "Nunito", sans-serif;
+	--default-font-family: var(--font-sans);
 }
 
 @plugin 'daisyui/theme' {

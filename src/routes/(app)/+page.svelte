@@ -1,6 +1,6 @@
 <script lang="ts">
 	import PostCard from '$lib/components/PostCard.svelte';
-	import { Loader2 } from 'lucide-svelte';
+	import { LoaderCircle } from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import type { Post } from '$lib/types/post';
 
@@ -94,7 +94,7 @@
 		<div bind:this={loadMoreTrigger} class="p-6 text-center">
 			{#if isLoading}
 				<div class="flex items-center justify-center gap-2 text-base-content/60">
-					<Loader2 class="h-5 w-5 animate-spin" />
+					<LoaderCircle class="h-5 w-5 animate-spin" />
 					<span>Loading more...</span>
 				</div>
 			{:else if error && posts.length > 0}

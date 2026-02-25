@@ -139,7 +139,7 @@
 
 {#if data.notFound}
 	<div class="mx-auto max-w-2xl p-6">
-		<div class="card border border-base-300 bg-base-100">
+		<div class="card">
 			<div class="card-body items-center text-center">
 				<UserX class="text-base-content/50" size={40} />
 				<h1 class="text-xl font-bold">Publisher not found</h1>
@@ -210,7 +210,7 @@
 
 		<div class="space-y-4 px-4 py-4 lg:px-6">
 			<section class="space-y-4">
-				<div class="card border border-base-300 bg-base-100">
+				<div class="card">
 					<div class="card-body p-4">
 						<h2 class="text-sm font-semibold text-base-content/70">Bio</h2>
 						{#if bioHtml}
@@ -221,7 +221,7 @@
 					</div>
 				</div>
 				{#if publisher.verification}
-					<div class="card border border-base-300 bg-base-100">
+					<div class="card">
 						<div class="card-body p-4">
 							<p class="text-sm font-semibold">
 								{publisher.verification.title || 'Verified account'}
@@ -238,7 +238,7 @@
 			</section>
 
 			<section class="space-y-4">
-				<div class="card border border-base-300 bg-base-100">
+				<div class="card">
 					<div class="card-body gap-4 p-4">
 						{#if isRefreshing}
 							<div class="mb-1 flex items-center gap-2 text-sm text-base-content/60">
