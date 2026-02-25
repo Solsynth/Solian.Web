@@ -1,8 +1,9 @@
 <script lang="ts">
 	import PostCard from '$lib/components/PostCard.svelte';
-	import { ArrowLeft, Loader2, MessageSquare } from 'lucide-svelte';
+	import { ArrowLeft, Loader2, MessageSquare, Reply } from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
+	import { compose } from '$lib/stores/compose.svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -12,6 +13,16 @@
 			return;
 		}
 		goto('/');
+	}
+
+	function handleReply() {
+		if (data.post) {
+			compose.initializeFromState({
+				content: '',
+				replyingTo: data.post
+			});
+			(document.getElementById('compose-dialog') as HTMLDialogElement)?.showModal();
+		}
 	}
 </script>
 
@@ -24,9 +35,13 @@
 			<button class="btn -ml-2 btn-circle btn-ghost btn-sm" onclick={handleBack}>
 				<ArrowLeft class="h-5 w-5" />
 			</button>
-			<div>
+			<div class="flex-1">
 				<h1 class="text-lg font-bold">Post</h1>
 			</div>
+			<button class="btn btn-sm btn-primary" onclick={handleReply}>
+				<Reply class="h-4 w-4" />
+				Reply
+			</button>
 		</div>
 	</div>
 </div>

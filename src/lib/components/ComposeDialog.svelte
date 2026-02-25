@@ -26,10 +26,14 @@
 
 	const isEditing = $derived(originalPost !== undefined);
 	const isReply = $derived(
-		initialState?.replyingTo !== undefined || originalPost?.replied_post !== undefined
+		initialState?.replyingTo !== undefined ||
+			originalPost?.replied_post !== undefined ||
+			compose.replyingTo !== undefined
 	);
 	const isForward = $derived(
-		initialState?.forwardingTo !== undefined || originalPost?.forwarded_post !== undefined
+		initialState?.forwardingTo !== undefined ||
+			originalPost?.forwarded_post !== undefined ||
+			compose.forwardingTo !== undefined
 	);
 
 	const canSubmit = $derived(
@@ -154,11 +158,25 @@
 			if (compose.description.trim()) {
 				body.description = compose.description;
 			}
-			if (isReply && (initialState?.replyingTo ?? originalPost?.replied_post)) {
-				body.replied_post_id = (initialState?.replyingTo ?? originalPost?.replied_post)?.id;
+			if (
+				isReply &&
+				(initialState?.replyingTo ?? originalPost?.replied_post ?? compose.replyingTo)
+			) {
+				body.replied_post_id = (
+					initialState?.replyingTo ??
+					originalPost?.replied_post ??
+					compose.replyingTo
+				)?.id;
 			}
-			if (isForward && (initialState?.forwardingTo ?? originalPost?.forwarded_post)) {
-				body.forwarded_post_id = (initialState?.forwardingTo ?? originalPost?.forwarded_post)?.id;
+			if (
+				isForward &&
+				(initialState?.forwardingTo ?? originalPost?.forwarded_post ?? compose.forwardingTo)
+			) {
+				body.forwarded_post_id = (
+					initialState?.forwardingTo ??
+					originalPost?.forwarded_post ??
+					compose.forwardingTo
+				)?.id;
 			}
 
 			const response = await fetch(endpoint, {
@@ -289,8 +307,8 @@
 			<!-- Reply/Forward Reference -->
 			{#if isReply || isForward}
 				{@const refPost = isReply
-					? (initialState?.replyingTo ?? originalPost?.replied_post)
-					: (initialState?.forwardingTo ?? originalPost?.forwarded_post)}
+					? (initialState?.replyingTo ?? originalPost?.replied_post ?? compose.replyingTo)
+					: (initialState?.forwardingTo ?? originalPost?.forwarded_post ?? compose.forwardingTo)}
 				{#if refPost}
 					<div class="rounded-lg border border-base-300 bg-base-200/30 p-3">
 						<div class="flex items-center gap-2 text-sm">

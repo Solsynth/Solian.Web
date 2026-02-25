@@ -12,7 +12,7 @@ export interface ComposeInitialState {
 	description?: string;
 	content: string;
 	visibility?: number;
-	attachments: FileAttachment[];
+	attachments?: FileAttachment[];
 	replyingTo?: Post;
 	forwardingTo?: Post;
 }

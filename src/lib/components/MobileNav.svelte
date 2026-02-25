@@ -137,6 +137,7 @@
 <!-- Floating Compose Button (Mobile) -->
 <button
 	class="btn fixed right-6 bottom-6 z-40 btn-circle h-14 w-14 shadow-lg btn-primary lg:hidden"
+	onclick={() => (document.getElementById('compose-dialog') as HTMLDialogElement)?.showModal()}
 >
 	<Plus class="h-6 w-6" />
 </button>
