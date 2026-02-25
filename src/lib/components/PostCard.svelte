@@ -3,6 +3,7 @@
 	import { getFileUrl } from '$lib/utils/files';
 	import { renderMarkdown } from '$lib/utils/markdown';
 	import { goto } from '$app/navigation';
+	import LivestreamEmbed from '$lib/components/embeds/LivestreamEmbed.svelte';
 	import {
 		MessageCircle,
 		Repeat2,
@@ -27,7 +28,15 @@
 		BarChart3,
 		Sparkles,
 		AtSign,
-		Forward
+		Forward,
+		ExternalLink,
+		Vote,
+		CircleDollarSign,
+		Radio,
+		AlertCircle,
+		Link2,
+		User,
+		Clock3
 	} from 'lucide-svelte';
 
 	interface Props {
@@ -57,9 +66,76 @@
 		label: string;
 		tone: string;
 	};
+	type EmbedItem = Record<string, unknown> & { type?: string };
 
 	function getAttachmentUrl(attachment: Post['attachments'][0]): string {
 		return attachment.url || getFileUrl(attachment.id) || '';
+	}
+
+	function isEmbedItem(value: unknown): value is EmbedItem {
+		return typeof value === 'object' && value !== null;
+	}
+
+	function getEmbeds(target: Post): EmbedItem[] {
+		const raw = target.meta?.embeds ?? target.metadata?.embeds;
+		if (!Array.isArray(raw)) return [];
+		return raw.filter(isEmbedItem);
+	}
+
+	function getEmbedType(embed: EmbedItem): string {
+		return typeof embed.type === 'string' ? embed.type.toLowerCase() : 'unknown';
+	}
+
+	function getEmbedString(embed: EmbedItem, keys: string[]): string | null {
+		for (const key of keys) {
+			const value = embed[key];
+			if (typeof value === 'string' && value.trim() !== '') return value;
+		}
+		return null;
+	}
+
+	function getEmbedUrl(embed: EmbedItem): string | null {
+		return getEmbedString(embed, ['url', 'uri', 'href']);
+	}
+
+	function getEmbedId(embed: EmbedItem): string | null {
+		const raw = embed.id;
+		if (typeof raw === 'string' && raw.trim() !== '') return raw;
+		if (typeof raw === 'number') return String(raw);
+		return null;
+	}
+
+	function getHost(url: string): string {
+		try {
+			return new URL(url).host;
+		} catch {
+			return url;
+		}
+	}
+
+	function resolveAssetUrl(baseUrl: string, rawUrl: string): string {
+		if (rawUrl.startsWith('//')) return `https:${rawUrl}`;
+		if (rawUrl.startsWith('/')) {
+			try {
+				const parsed = new URL(baseUrl);
+				return `${parsed.protocol}//${parsed.host}${rawUrl}`;
+			} catch {
+				return rawUrl;
+			}
+		}
+		return rawUrl;
+	}
+
+	function formatDateLabel(value: string): string {
+		const date = new Date(value);
+		if (Number.isNaN(date.getTime())) return value;
+		return formatDate(date.toISOString());
+	}
+
+	function openExternal(url: string, event: MouseEvent): void {
+		event.preventDefault();
+		event.stopPropagation();
+		window.open(url, '_blank', 'noopener,noreferrer');
 	}
 
 	function getVisibilityMeta(visibility: number): VisibilityMeta {
@@ -141,6 +217,9 @@
 	let hasEdits = $derived(post.updated_at !== post.created_at);
 	let sortedReactions = $derived(Object.entries(post.reactions_count).sort((a, b) => b[1] - a[1]));
 	let topReaction = $derived(sortedReactions.length ? sortedReactions[0] : null);
+	let embeds = $derived(getEmbeds(post));
+	let linkEmbeds = $derived(embeds.filter((embed) => getEmbedType(embed) === 'link'));
+	let nonLinkEmbeds = $derived(embeds.filter((embed) => getEmbedType(embed) !== 'link'));
 </script>
 
 <svelte:element this={Wrapper} class="block hover:no-underline" {...wrapperProps}>
@@ -414,9 +493,9 @@
 				</div>
 			{/if}
 
-			<!-- Tags -->
-			{#if post.tags.length > 0}
-				<div class="mt-3 flex flex-wrap gap-2">
+				<!-- Tags -->
+				{#if post.tags.length > 0}
+					<div class="mt-3 flex flex-wrap gap-2">
 					{#each post.tags as tag}
 						<a
 							href="/tag/{tag.slug}"
@@ -425,11 +504,190 @@
 							{tag.name ?? '#' + tag.slug}
 						</a>
 					{/each}
-				</div>
-			{/if}
+					</div>
+				{/if}
 
-			<!-- Metadata -->
-			<div class="mt-3 flex flex-wrap items-center gap-2 text-xs">
+				<!-- Embeds -->
+				{#if embeds.length > 0}
+					<div class="mt-3 space-y-3">
+						{#if linkEmbeds.length > 0}
+							<div class="rounded-xl border border-base-300/80 bg-base-200/20 p-2">
+								<div class="mb-2 flex items-center gap-2 px-1 text-sm font-medium text-base-content/70">
+									<Link2 class="h-4 w-4" />
+									<span>Links ({linkEmbeds.length})</span>
+								</div>
+								{#if linkEmbeds.length === 1}
+									{@const embed = linkEmbeds[0]}
+									{@const linkUrl = getEmbedUrl(embed)}
+									{@const title = getEmbedString(embed, ['title'])}
+									{@const description = getEmbedString(embed, ['description'])}
+									{@const siteName = getEmbedString(embed, ['siteName', 'site_name'])}
+									{@const faviconRaw = getEmbedString(embed, ['faviconUrl', 'favicon_url'])}
+									{@const imageRaw = getEmbedString(embed, ['imageUrl', 'image_url'])}
+									{@const author = getEmbedString(embed, ['author'])}
+									{@const published = getEmbedString(embed, ['publishedDate', 'published_date'])}
+									{#if linkUrl}
+										<button
+											type="button"
+											class="card w-full cursor-pointer border border-base-300 bg-base-100 text-left"
+											onclick={(e) => openExternal(linkUrl, e)}
+										>
+											{#if imageRaw && imageRaw !== faviconRaw}
+												<img
+													src={resolveAssetUrl(linkUrl, imageRaw)}
+													alt={title ?? 'Link preview image'}
+													class="h-36 w-full rounded-t-xl object-cover"
+													loading="lazy"
+												/>
+											{/if}
+											<div class="card-body gap-2 p-3">
+												<div class="flex items-center gap-2 text-xs text-base-content/60">
+													{#if faviconRaw}
+														<img
+															src={resolveAssetUrl(linkUrl, faviconRaw)}
+															alt="Site icon"
+															class="h-4 w-4 rounded object-cover"
+															loading="lazy"
+														/>
+													{:else}
+														<Link class="h-4 w-4" />
+													{/if}
+													<span class="truncate">{siteName ?? getHost(linkUrl)}</span>
+													<ExternalLink class="ml-auto h-4 w-4" />
+												</div>
+												{#if title}
+													<div class="line-clamp-2 text-sm font-semibold">{title}</div>
+												{/if}
+												{#if description}
+													<div class="line-clamp-3 text-sm text-base-content/75">{description}</div>
+												{/if}
+												<div class="truncate text-xs text-primary underline">{linkUrl}</div>
+												{#if author || published}
+													<div class="mt-1 flex items-center gap-3 text-xs text-base-content/60">
+														{#if author}
+															<span class="inline-flex items-center gap-1">
+																<User class="h-3.5 w-3.5" /> {author}
+															</span>
+														{/if}
+														{#if published}
+															<span class="inline-flex items-center gap-1">
+																<Clock3 class="h-3.5 w-3.5" /> {formatDateLabel(published)}
+															</span>
+														{/if}
+													</div>
+												{/if}
+											</div>
+										</button>
+									{:else}
+										<div class="alert alert-warning py-2 text-sm">Link embed was unavailable.</div>
+									{/if}
+								{:else}
+									<div class="carousel carousel-center w-full gap-3">
+										{#each linkEmbeds as embed}
+											{@const linkUrl = getEmbedUrl(embed)}
+											{@const title = getEmbedString(embed, ['title'])}
+											{@const description = getEmbedString(embed, ['description'])}
+											{@const siteName = getEmbedString(embed, ['siteName', 'site_name'])}
+											{@const imageRaw = getEmbedString(embed, ['imageUrl', 'image_url'])}
+											{#if linkUrl}
+												<button
+													type="button"
+													class="carousel-item card w-80 cursor-pointer border border-base-300 bg-base-100 text-left"
+													onclick={(e) => openExternal(linkUrl, e)}
+												>
+													{#if imageRaw}
+														<img
+															src={resolveAssetUrl(linkUrl, imageRaw)}
+															alt={title ?? 'Link preview image'}
+															class="h-24 w-full rounded-t-xl object-cover"
+															loading="lazy"
+														/>
+													{/if}
+													<div class="card-body p-3">
+														<div class="truncate text-xs text-base-content/60">
+															{siteName ?? getHost(linkUrl)}
+														</div>
+														<div class="line-clamp-1 text-sm font-semibold">{title ?? linkUrl}</div>
+														{#if description}
+															<div class="line-clamp-2 text-xs text-base-content/70">{description}</div>
+														{/if}
+													</div>
+												</button>
+											{/if}
+										{/each}
+									</div>
+								{/if}
+							</div>
+						{/if}
+
+						{#each nonLinkEmbeds as embed}
+							{@const type = getEmbedType(embed)}
+							{@const embedId = getEmbedId(embed)}
+							{@const title = getEmbedString(embed, ['title', 'name'])}
+							{@const description = getEmbedString(embed, ['description'])}
+
+							{#if type === 'poll'}
+								<div class="card border border-base-300 bg-base-100">
+									<div class="card-body p-3">
+										<div class="flex items-center gap-2 font-medium">
+											<Vote class="h-4 w-4" /> Poll
+										</div>
+										{#if !embedId}
+											<div class="text-sm text-base-content/70">Poll was unavailable.</div>
+										{:else}
+											<div class="text-sm text-base-content/80">{title ?? `Poll #${embedId}`}</div>
+											{#if description}
+												<div class="text-xs text-base-content/65">{description}</div>
+											{/if}
+										{/if}
+									</div>
+								</div>
+							{:else if type === 'fund'}
+								<div class="card border border-base-300 bg-base-100">
+									<div class="card-body p-3">
+										<div class="flex items-center gap-2 font-medium">
+											<CircleDollarSign class="h-4 w-4" /> Fund Envelope
+										</div>
+										{#if !embedId}
+											<div class="text-sm text-base-content/70">Fund envelope was unavailable.</div>
+										{:else}
+											<div class="text-sm text-base-content/80">{title ?? `Fund #${embedId}`}</div>
+											{#if description}
+												<div class="text-xs text-base-content/65">{description}</div>
+											{/if}
+										{/if}
+									</div>
+								</div>
+							{:else if type === 'livestream'}
+								{#if !embedId}
+									<div class="card border border-base-300 bg-base-100">
+										<div class="card-body p-3">
+											<div class="flex items-center gap-2 font-medium">
+												<Radio class="h-4 w-4" /> Livestream
+											</div>
+											<div class="text-sm text-base-content/70">Livestream was unavailable.</div>
+										</div>
+									</div>
+								{:else}
+									<LivestreamEmbed
+										livestreamId={embedId}
+										embed={embed}
+										isInteractive={true}
+										showChat={isDetail}
+									/>
+								{/if}
+							{:else}
+								<div class="alert alert-info py-2 text-sm">
+									<AlertCircle class="h-4 w-4" />
+									<span>Unable to show embed: {type || 'unknown'}</span>
+								</div>
+							{/if}
+						{/each}
+					</div>
+				{/if}
+
+				<!-- Metadata -->
+				<div class="mt-3 flex flex-wrap items-center gap-2 text-xs">
 				{#if post.visibility !== 0}
 					<span class="badge badge-sm {visibilityMeta.tone}">
 						{#if post.visibility === 0}

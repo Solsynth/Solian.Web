@@ -69,6 +69,14 @@ export interface Post {
 	tags: Tag[];
 	replied_post: Post | null;
 	forwarded_post: Post | null;
+	meta?: {
+		embeds?: unknown[];
+		[key: string]: unknown;
+	} | null;
+	metadata?: {
+		embeds?: unknown[];
+		[key: string]: unknown;
+	} | null;
 	resource_identifier: string;
 	created_at: string;
 	updated_at: string;
