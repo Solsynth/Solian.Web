@@ -33,9 +33,10 @@
 	interface Props {
 		post: Post;
 		isDetail?: boolean;
+		showReference?: boolean;
 	}
 
-	let { post, isDetail = false }: Props = $props();
+	let { post, isDetail = false, showReference = true }: Props = $props();
 
 	let avatarUrl = $derived(getFileUrl(post.publisher.picture?.id));
 	let displayContent = $derived(post.is_truncated ? `${post.content}...` : post.content);
@@ -148,7 +149,7 @@
 	>
 		<div class="card-body p-4">
 			<!-- Reference Post (Parent, Twitter-style) -->
-			{#if hasReference}
+			{#if showReference && hasReference}
 				<div class="mb-2">
 					<button
 						type="button"

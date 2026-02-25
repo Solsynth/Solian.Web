@@ -64,7 +64,7 @@
 			</div>
 			<div class="flex flex-col gap-4 p-4">
 				{#each data.replies as reply (reply.id)}
-					<PostCard post={reply} />
+					<PostCard post={reply} showReference={false} />
 				{/each}
 			</div>
 		{:else}
