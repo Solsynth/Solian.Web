@@ -24,16 +24,13 @@
 </svelte:head>
 
 <!-- Header -->
-<div class="sticky z-10 max-lg:top-14 lg:top-4 mb-4 lg:mb-6">
-	<div class="max-w-2xl mx-auto lg:px-4">
+<div class="sticky z-10 mb-4 max-lg:top-14 lg:top-4 lg:mb-6">
+	<div class="mx-auto max-w-2xl lg:px-4">
 		<div
-			class="flex items-center gap-4 px-4 py-3 border-b border-base-300 bg-base-100/95 backdrop-blur lg:rounded-[2rem] lg:border lg:shadow-lg lg:shadow-base-content/5"
+			class="flex items-center gap-4 border-b border-base-300 bg-base-100/95 px-4 py-3 backdrop-blur lg:rounded-full lg:-mx-3 lg:border lg:shadow-lg lg:shadow-base-content/5 lg:px-6"
 		>
-			<button
-				class="btn btn-ghost btn-sm btn-circle -ml-2"
-				onclick={handleBack}
-			>
-				<ArrowLeft class="w-5 h-5" />
+			<button class="btn -ml-2 btn-circle btn-ghost btn-sm" onclick={handleBack}>
+				<ArrowLeft class="h-5 w-5" />
 			</button>
 			<div>
 				<h1 class="text-lg font-bold">Post</h1>
@@ -45,13 +42,13 @@
 	</div>
 </div>
 
-<div class="max-w-2xl mx-auto lg:pt-1">
+<div class="mx-auto max-w-2xl lg:pt-1">
 	{#if data.error}
 		<div class="p-8 text-center">
-			<div class="alert alert-error max-w-md mx-auto">
+			<div class="mx-auto alert max-w-md alert-error">
 				<span>{data.error}</span>
 			</div>
-			<button class="btn btn-primary mt-4" onclick={() => goto('/')}>Back to Home</button>
+			<button class="btn mt-4 btn-primary" onclick={() => goto('/')}>Back to Home</button>
 		</div>
 	{:else if data.post}
 		<!-- Main Post -->
@@ -61,8 +58,8 @@
 
 		<!-- Replies Section -->
 		{#if data.replies.length > 0}
-			<div class="px-8 py-1 text-sm font-medium text-base-content/60 flex items-center gap-2">
-				<MessageSquare class="w-4 h-4" />
+			<div class="flex items-center gap-2 px-8 py-1 text-sm font-medium text-base-content/60">
+				<MessageSquare class="h-4 w-4" />
 				Replies ({data.replies.length})
 			</div>
 			<div class="flex flex-col gap-4 p-4">
@@ -73,12 +70,12 @@
 		{:else}
 			<div class="p-8 text-center text-base-content/50">
 				<p>No replies yet</p>
-				<p class="text-sm mt-1">Be the first to reply</p>
+				<p class="mt-1 text-sm">Be the first to reply</p>
 			</div>
 		{/if}
 	{:else}
-		<div class="flex items-center justify-center h-64">
-			<Loader2 class="w-8 h-8 animate-spin text-primary" />
+		<div class="flex h-64 items-center justify-center">
+			<Loader2 class="h-8 w-8 animate-spin text-primary" />
 		</div>
 	{/if}
 </div>
