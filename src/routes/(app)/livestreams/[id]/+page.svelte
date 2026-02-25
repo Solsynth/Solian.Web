@@ -193,6 +193,7 @@
 						onToggleCollapse={() => (chatCollapsed = !chatCollapsed)}
 						onSend={async (value) => roomController.sendMessage(value, data.livestream!.id!)}
 						onLoadHistory={async () => roomController.fetchChatHistory(data.livestream!.id!)}
+						maxHeight="20rem"
 					/>
 				{/if}
 			</div>

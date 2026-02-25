@@ -1,11 +1,14 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.png';
 
-	import { Compass, Plus, LogIn, LogOut, User } from 'lucide-svelte';
+	import { Compass, Radio, Plus, LogIn, LogOut, User } from 'lucide-svelte';
 	import { auth } from '$lib/stores/auth.svelte';
 	import { getFileUrl } from '$lib/utils/files';
 
-	const navItems = [{ icon: Compass, label: 'Explore', href: '/' }];
+	const navItems = [
+		{ icon: Compass, label: 'Explore', href: '/' },
+		{ icon: Radio, label: 'Livestreams', href: '/livestreams' }
+	];
 
 	function handleLogout() {
 		auth.logout();

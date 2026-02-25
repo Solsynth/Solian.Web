@@ -1,7 +1,7 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.png';
 
-	import { House, Plus, Search, Menu, Compass, LogIn, LogOut, User } from 'lucide-svelte';
+	import { House, Plus, Menu, Radio, Compass, LogIn, LogOut, User } from 'lucide-svelte';
 	import { auth } from '$lib/stores/auth.svelte';
 	import { getFileUrl } from '$lib/utils/files';
 
@@ -9,8 +9,8 @@
 	let menuContainer: HTMLDivElement;
 
 	const navItems = [
-		{ icon: House, label: 'Home', href: '/' },
-		{ icon: Compass, label: 'Explore', href: '/' }
+		{ icon: Compass, label: 'Explore', href: '/' },
+		{ icon: Radio, label: 'Livestreams', href: '/livestreams' }
 	];
 
 	function toggleMenu() {

@@ -2,6 +2,7 @@ import { writable, type Writable } from 'svelte/store';
 import { apiClient } from '$lib/utils/api';
 import type { ChatMessage, LivestreamCredentials } from '$lib/types/livestream';
 import { parseLivestreamEventPayload } from '$lib/utils/livestream/chat';
+import type { Account } from '$lib/types/post';
 
 type LivekitRoom = {
 	connect: (url: string, token: string, options?: Record<string, unknown>) => Promise<void>;
@@ -113,8 +114,8 @@ export class LivekitRoomController {
 					return {
 						id: String(message.id || ''),
 						senderId: String(message.sender_id || ''),
-						sender: String(message.sender_name || ''),
-						senderIdentity: String(message.sender_name || ''),
+						sender: message.sender as Account,
+						senderName: String(message.sender_name || ''),
 						message: String(message.content || ''),
 						isMine: false, // Assume these are not from the current user
 						createdAt: String(message.created_at || ''),
@@ -253,7 +254,7 @@ export class LivekitRoomController {
 				id: responseData.id,
 				senderId: responseData.sender_id,
 				sender: responseData.sender_name,
-				senderIdentity: responseData.sender_name,
+				senderName: responseData.sender_name,
 				message: responseData.content,
 				isMine: true,
 				createdAt: responseData.created_at,

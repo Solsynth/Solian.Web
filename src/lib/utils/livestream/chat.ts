@@ -55,7 +55,7 @@ export function latestActiveSuperchat(
 
 export function parseLivestreamEventPayload(
 	payloadText: string,
-	senderIdentity = 'viewer'
+	senderName = 'viewer'
 ): ChatMessage | null {
 	const trimmed = payloadText.trim();
 	if (!trimmed) return null;
@@ -66,7 +66,7 @@ export function parseLivestreamEventPayload(
 
 		if (eventType === 'streamAwarded') {
 			const amount = readNumber(parsed.amount);
-			const senderName = (parsed.senderName as string) || senderIdentity || 'Someone';
+			const senderName = (parsed.senderName as string) || senderName || 'Someone';
 			const senderId = (parsed.senderId as string) || '';
 			const highlightSeconds = readNumber(parsed.highlightSeconds);
 			const createdAt = new Date().toISOString();
@@ -78,7 +78,7 @@ export function parseLivestreamEventPayload(
 				id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
 				senderId,
 				sender: senderName,
-				senderIdentity,
+				senderName: senderName,
 				message: typeof parsed.message === 'string' ? parsed.message : '',
 				isMine: false,
 				createdAt,
@@ -99,9 +99,9 @@ export function parseLivestreamEventPayload(
 				senderId: (parsed.senderId as string) || '',
 				sender:
 					(typeof parsed.senderName === 'string' && parsed.senderName) ||
-					senderIdentity ||
+					senderName ||
 					'Unknown',
-				senderIdentity,
+				senderName: senderName,
 				message: parsed.content,
 				isMine: false,
 				createdAt:
@@ -116,8 +116,8 @@ export function parseLivestreamEventPayload(
 	return {
 		id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
 		senderId: '',
-		sender: senderIdentity || 'viewer',
-		senderIdentity,
+		sender: senderName || 'viewer',
+		senderName: senderName,
 		message: trimmed,
 		isMine: false,
 		createdAt: new Date().toISOString(),

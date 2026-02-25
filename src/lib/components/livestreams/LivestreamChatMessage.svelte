@@ -2,6 +2,7 @@
 	import type { ChatMessage } from '$lib/types/livestream';
 	import { Crown } from 'lucide-svelte';
 	import { isSuperchatMessage } from '$lib/utils/livestream/chat';
+	import { getFileUrl } from '$lib/utils/files';
 
 	interface Props {
 		message: ChatMessage;
@@ -23,7 +24,7 @@
 	}
 
 	function senderLabel(): string {
-		return message.sender?.trim() || message.senderIdentity?.trim() || 'Unknown';
+		return message.sender.nick?.trim() || message.senderName?.trim() || 'Unknown';
 	}
 </script>
 
@@ -41,7 +42,23 @@
 	<div class="text-center text-xs text-base-content/55">{message.message}</div>
 {:else}
 	<div class="rounded-lg bg-base-100 px-2 py-1.5 text-sm">
-		<div class="text-xs text-base-content/60">{senderLabel()}</div>
-		<div>{message.message}</div>
+		<div class="flex gap-2">
+			<div class="avatar">
+				<div class="w-6 h-6 rounded-full">
+					{#if message.sender.profile?.picture != null}
+						<img
+							src={getFileUrl(message.sender.profile?.picture?.id)}
+							alt={`${message.sender!.name} avatar`}
+						/>
+					{/if}
+				</div>
+			</div>
+			<div>
+				<div class="text-xs text-base-content/60">
+					{senderLabel()} • {new Date(message.createdAt!).toLocaleTimeString()}
+				</div>
+				<div>{message.message}</div>
+			</div>
+		</div>
 	</div>
 {/if}

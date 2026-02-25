@@ -1,10 +1,12 @@
+import type { Account } from "./post";
+
 export type ChatMessageType = 'chat' | 'systemAward' | 'systemJoin' | 'systemLeave';
 
 export interface ChatMessage {
 	id: string;
 	senderId: string;
-	sender: string;
-	senderIdentity?: string | null;
+	sender: Account;
+	senderName?: string | null;
 	message: string;
 	isMine: boolean;
 	createdAt?: string | null;

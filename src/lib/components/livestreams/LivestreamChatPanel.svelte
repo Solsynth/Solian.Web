@@ -7,16 +7,17 @@
 	interface Props {
 		messages: ChatMessage[];
 		collapsed?: boolean;
+		maxHeight?: string;
 		onToggleCollapse?: () => void;
 		onSend?: (value: string) => Promise<void> | void;
 		onLoadHistory?: () => Promise<void> | void;
 	}
 
-	let { messages, collapsed = false, onToggleCollapse, onSend, onLoadHistory }: Props = $props();
+	let { messages, collapsed = false, maxHeight = 'max-h-56', onToggleCollapse, onSend, onLoadHistory }: Props = $props();
 
 	let inputValue = $state('');
 	let hasLoadedHistory = $state(false);
-	let chatContainer: HTMLDivElement | null = null;
+	let chatContainer: HTMLDivElement | null = $state(null);
 
 	function scrollToBottom() {
 		if (chatContainer) {
@@ -73,7 +74,8 @@
 	{#if !collapsed}
 		<div
 			bind:this={chatContainer}
-			class="max-h-56 space-y-2 overflow-y-auto px-3 pb-2"
+			class="space-y-2 overflow-y-auto px-3 pb-2"
+			style={`max-height: ${maxHeight}`}
 			onscroll={(e) => {
 				// Optional: handle manual scrolling if needed
 				const target = e.currentTarget as HTMLDivElement;
