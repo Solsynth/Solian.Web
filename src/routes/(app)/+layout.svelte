@@ -38,7 +38,7 @@
 	class="app-shell min-h-screen bg-cover bg-center bg-fixed bg-no-repeat"
 	style={`background-image: ${backgroundUrl ? `url('${backgroundUrl}')` : 'none'};`}
 >
-	<div class="min-h-screen bg-base-100/75 backdrop-blur-[1px]">
+	<div class="min-h-screen bg-base-100/75">
 	<!-- Mobile Top Navigation -->
 	<MobileNav />
 

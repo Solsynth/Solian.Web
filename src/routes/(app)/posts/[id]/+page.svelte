@@ -24,24 +24,28 @@
 </svelte:head>
 
 <!-- Header -->
-<div class="sticky lg:top-0 max-lg:top-14 border-b border-base-300 z-10 bg-base-100/95 backdrop-blur">
-	<div class="flex items-center gap-4 px-4 py-3 max-w-2xl mx-auto">
-		<button
-			class="btn btn-ghost btn-sm btn-circle -ml-2"
-			onclick={handleBack}
+<div class="sticky z-10 max-lg:top-14 lg:top-4 mb-4 lg:mb-6">
+	<div class="max-w-2xl mx-auto lg:px-4">
+		<div
+			class="flex items-center gap-4 px-4 py-3 border-b border-base-300 bg-base-100/95 backdrop-blur lg:rounded-[2rem] lg:border lg:shadow-lg lg:shadow-base-content/5"
 		>
-			<ArrowLeft class="w-5 h-5" />
-		</button>
-		<div>
-			<h1 class="text-lg font-bold">Post</h1>
-			{#if data.post}
-				<p class="text-xs text-base-content/50">{data.post.replies_count} replies</p>
-			{/if}
+			<button
+				class="btn btn-ghost btn-sm btn-circle -ml-2"
+				onclick={handleBack}
+			>
+				<ArrowLeft class="w-5 h-5" />
+			</button>
+			<div>
+				<h1 class="text-lg font-bold">Post</h1>
+				{#if data.post}
+					<p class="text-xs text-base-content/50">{data.post.replies_count} replies</p>
+				{/if}
+			</div>
 		</div>
 	</div>
 </div>
 
-<div class="max-w-2xl mx-auto">
+<div class="max-w-2xl mx-auto lg:pt-1">
 	{#if data.error}
 		<div class="p-8 text-center">
 			<div class="alert alert-error max-w-md mx-auto">
