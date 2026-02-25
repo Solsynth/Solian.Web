@@ -4,6 +4,7 @@
 	import { Compass, Radio, Plus, LogIn, LogOut, User } from 'lucide-svelte';
 	import { auth } from '$lib/stores/auth.svelte';
 	import { getFileUrl } from '$lib/utils/files';
+	import ComposeDialog from './ComposeDialog.svelte';
 
 	const navItems = [
 		{ icon: Compass, label: 'Explore', href: '/' },
@@ -50,6 +51,7 @@
 	<div class="mt-4 px-2">
 		<button
 			class="btn w-full rounded-full shadow-lg transition-shadow btn-lg btn-primary hover:shadow-xl"
+			onclick={() => (document.getElementById('compose-dialog') as HTMLDialogElement)?.showModal()}
 		>
 			<Plus class="h-6 w-6" />
 			<span>New Post</span>

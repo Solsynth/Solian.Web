@@ -7,6 +7,7 @@
 	import { Toaster } from 'svelte-french-toast';
 	import favicon from '$lib/assets/favicon.png';
 	import './layout.css';
+	import ComposeDialog from '$lib/components/ComposeDialog.svelte';
 
 	let { children } = $props();
 	let showRouteProgress = $state(false);
@@ -129,5 +130,7 @@
 </div>
 
 <Toaster />
+
+<ComposeDialog />
 
 {@render children()}
