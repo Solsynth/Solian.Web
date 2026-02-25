@@ -5,7 +5,8 @@ export const mockPosts: Post[] = [
 		id: '019c8b4e-eb0d-785f-999c-22f409d3e67d',
 		title: null,
 		description: null,
-		content: 'Just launched my new project! 🚀 Really excited to share this with everyone. It\'s been months of hard work and countless late nights. What do you all think?',
+		content:
+			"Just launched my new project! 🚀 Really excited to share this with everyone. It's been months of hard work and countless late nights. What do you all think?",
 		content_type: 0,
 		published_at: '2026-02-23T16:22:10.957108Z',
 		visibility: 0,
@@ -25,7 +26,12 @@ export const mockPosts: Post[] = [
 			bio: 'Full-stack developer • Open source enthusiast',
 			picture: null,
 			background: null,
-			verification: { type: 1, title: 'Developer', description: 'Verified developer', verified_by: 'admin' },
+			verification: {
+				type: 1,
+				title: 'Developer',
+				description: 'Verified developer',
+				verified_by: 'admin'
+			},
 			account: null,
 			created_at: '2025-01-15T10:00:00Z'
 		},
@@ -43,8 +49,9 @@ export const mockPosts: Post[] = [
 	{
 		id: '019c8b4e-eb0d-785f-999c-22f409d3e68e',
 		title: 'The Future of Social Media',
-		description: 'A thought piece on where we\'re heading',
-		content: 'Social media is evolving. We\'re moving away from algorithmic feeds toward community-driven content. The future is federated, decentralized, and user-owned. Here\'s why that matters...\n\n1. Users control their data\n2. Communities set their own rules\n3. No single point of failure\n\nThe shift is already happening. Are you ready?',
+		description: "A thought piece on where we're heading",
+		content:
+			"Social media is evolving. We're moving away from algorithmic feeds toward community-driven content. The future is federated, decentralized, and user-owned. Here's why that matters...\n\n1. Users control their data\n2. Communities set their own rules\n3. No single point of failure\n\nThe shift is already happening. Are you ready?",
 		content_type: 0,
 		published_at: '2026-02-23T14:15:00Z',
 		visibility: 0,
@@ -133,7 +140,8 @@ export const mockPosts: Post[] = [
 		id: '019c8b4e-eb0d-785f-999c-22f409d3e70a',
 		title: null,
 		description: null,
-		content: 'Replying to @alex_writer: Great points! I especially agree about community-driven moderation. It scales better and creates healthier spaces.',
+		content:
+			'Replying to @alex_writer: Great points! I especially agree about community-driven moderation. It scales better and creates healthier spaces.',
 		content_type: 0,
 		published_at: '2026-02-23T15:45:00Z',
 		visibility: 0,
@@ -162,7 +170,7 @@ export const mockPosts: Post[] = [
 		replied_post: {
 			id: '019c8b4e-eb0d-785f-999c-22f409d3e68e',
 			title: 'The Future of Social Media',
-			description: 'A thought piece on where we\'re heading',
+			description: "A thought piece on where we're heading",
 			content: 'Social media is evolving...',
 			content_type: 0,
 			published_at: '2026-02-23T14:15:00Z',
@@ -204,7 +212,8 @@ export const mockPosts: Post[] = [
 		id: '019c8b4e-eb0d-785f-999c-22f409d3e71b',
 		title: null,
 		description: null,
-		content: 'Coding tip: When debugging, always check your assumptions. The bug is usually where you least expect it. 🐛➡️✨',
+		content:
+			'Coding tip: When debugging, always check your assumptions. The bug is usually where you least expect it. 🐛➡️✨',
 		content_type: 0,
 		published_at: '2026-02-22T20:00:00Z',
 		visibility: 0,
@@ -244,7 +253,8 @@ export const mockPosts: Post[] = [
 		id: '019c8b4e-eb0d-785f-999c-22f409d3e72c',
 		title: 'Weekend Project Complete!',
 		description: 'Built a custom mechanical keyboard',
-		content: 'Finally finished my custom keeb build! Specs:\n- Gasket mount\n- Lubed Gateron Yellows\n- PBT keycaps\n- Tape modded\n\nSound test coming soon! ⌨️🔊',
+		content:
+			'Finally finished my custom keeb build! Specs:\n- Gasket mount\n- Lubed Gateron Yellows\n- PBT keycaps\n- Tape modded\n\nSound test coming soon! ⌨️🔊',
 		content_type: 0,
 		published_at: '2026-02-22T16:30:00Z',
 		visibility: 0,

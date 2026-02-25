@@ -192,6 +192,7 @@
 						collapsed={chatCollapsed}
 						onToggleCollapse={() => (chatCollapsed = !chatCollapsed)}
 						onSend={async (value) => roomController.sendMessage(value, data.livestream!.id!)}
+						onLoadHistory={async () => roomController.fetchChatHistory(data.livestream!.id!)}
 					/>
 				{/if}
 			</div>

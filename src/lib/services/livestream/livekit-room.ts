@@ -121,7 +121,8 @@ export class LivekitRoomController {
 						messageType: 'chat' as const
 					};
 				})
-				.filter((msg: unknown): msg is ChatMessage => msg !== null);
+				.filter((msg: unknown): msg is ChatMessage => msg !== null)
+				.reverse();
 
 			this.state.update((s) => ({ ...s, messages }));
 		} catch (err) {
