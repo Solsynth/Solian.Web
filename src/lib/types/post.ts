@@ -6,6 +6,9 @@ export interface FileAttachment {
 	height: number | null;
 	blurhash: string | null;
 	mime_type: string;
+	has_compression: boolean;
+	has_thumbnail: boolean;
+	file_meta: Record<string, unknown>;
 }
 
 export interface Profile {

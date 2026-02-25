@@ -4,6 +4,7 @@
 	import { renderMarkdown } from '$lib/utils/markdown';
 	import { goto } from '$app/navigation';
 	import LivestreamPlayer from '$lib/components/livestreams/LivestreamPlayer.svelte';
+	import AttachmentGrid from './AttachmentGrid.svelte';
 	import {
 		MessageCircle,
 		Repeat2,
@@ -68,9 +69,6 @@
 	};
 	type EmbedItem = Record<string, unknown> & { type?: string };
 
-	function getAttachmentUrl(attachment: Post['attachments'][0]): string {
-		return attachment.url || getFileUrl(attachment.id) || '';
-	}
 
 	function isEmbedItem(value: unknown): value is EmbedItem {
 		return typeof value === 'object' && value !== null;
@@ -339,22 +337,7 @@
 									</div>
 								{/if}
 								{#if referencePost.attachments.length > 0}
-									<div
-										class="mt-2 grid gap-2 {referencePost.attachments.length > 1
-											? 'grid-cols-2'
-											: 'grid-cols-1'}"
-									>
-										{#each referencePost.attachments as attachment}
-											<div class="relative overflow-hidden rounded-xl bg-base-200">
-												<img
-													src={getAttachmentUrl(attachment)}
-													alt={attachment.name}
-													class="h-auto max-h-80 w-full object-cover"
-													loading="lazy"
-												/>
-											</div>
-										{/each}
-									</div>
+									<AttachmentGrid attachments={referencePost.attachments} maxHeight="80" />
 								{/if}
 							</div>
 						</div>
@@ -498,18 +481,7 @@
 
 			<!-- Attachments -->
 			{#if post.attachments.length > 0}
-				<div class="mt-3 grid gap-2 {post.attachments.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}">
-					{#each post.attachments as attachment}
-						<div class="relative overflow-hidden rounded-xl bg-base-200">
-							<img
-								src={getAttachmentUrl(attachment)}
-								alt={attachment.name}
-								class="h-auto max-h-96 w-full object-cover"
-								loading="lazy"
-							/>
-						</div>
-					{/each}
-				</div>
+				<AttachmentGrid attachments={post.attachments} />
 			{/if}
 
 			<!-- Tags -->
