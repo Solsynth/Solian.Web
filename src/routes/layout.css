@@ -13,4 +13,53 @@
 			0 14px 36px color-mix(in oklch, black 14%, transparent),
 			0 0 0 1px color-mix(in oklch, white 20%, transparent);
 	}
+
+	.route-progress {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 3px;
+		z-index: 9999;
+		pointer-events: none;
+		opacity: 0;
+		transition: opacity 180ms ease;
+	}
+
+	.route-progress.is-visible {
+		opacity: 1;
+	}
+
+	.route-progress__bar {
+		height: 100%;
+		width: 100%;
+		background: linear-gradient(
+			90deg,
+			var(--color-primary),
+			color-mix(in oklch, var(--color-primary) 55%, white)
+		);
+		box-shadow: 0 0 12px color-mix(in oklch, var(--color-primary) 55%, transparent);
+		transform-origin: left center;
+		transform: scaleX(0);
+		transition: transform 130ms ease-out;
+	}
+}
+
+@supports (view-transition-name: root) {
+	:root {
+		view-transition-name: root;
+	}
+
+	::view-transition-old(root),
+	::view-transition-new(root) {
+		animation-duration: 220ms;
+		animation-timing-function: ease;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	::view-transition-old(root),
+	::view-transition-new(root) {
+		animation-duration: 1ms;
+	}
 }
