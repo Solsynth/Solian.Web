@@ -15,9 +15,25 @@
 {#if attachments.length > 0}
 	<div class="mt-3 grid gap-2 {gridClass}">
 		{#each attachments as attachment}
-			<div class="relative overflow-hidden rounded-xl bg-base-200">
-				<AttachmentItem {attachment} {maxHeight} />
-			</div>
+			{#if attachment.mime_type.startsWith('image/')}
+				<a
+					href="/files/{attachment.id}"
+					class="relative block overflow-hidden rounded-xl bg-base-200"
+					onclick={(e) => e.stopPropagation()}
+				>
+					<AttachmentItem {attachment} {maxHeight} />
+				</a>
+			{:else}
+				<div
+					class="relative overflow-hidden rounded-xl bg-base-200"
+					role="button"
+					tabindex="0"
+					onclick={(e) => e.stopPropagation()}
+					onkeydown={(e) => e.stopPropagation()}
+				>
+					<AttachmentItem {attachment} {maxHeight} />
+				</div>
+			{/if}
 		{/each}
 	</div>
 {/if}
