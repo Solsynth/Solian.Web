@@ -2,10 +2,10 @@
 	import { Asterisk, Github, Chrome, Apple, ChevronRight, ExternalLink } from 'lucide-svelte';
 	import { createChallenge, getFactors, getOidcLoginUrl } from '$lib/utils/api';
 	import { auth, getDeviceInfo } from '$lib/stores/auth.svelte';
+	import toast from 'svelte-french-toast';
 
 	let username = $state('');
 	let isBusy = $state(false);
-	let error = $state('');
 
 	interface Props {
 		onNext: () => void;
@@ -16,7 +16,6 @@
 	async function performNewTicket() {
 		if (!username.trim()) return;
 		isBusy = true;
-		error = '';
 
 		try {
 			const deviceInfo = await getDeviceInfo();
@@ -29,7 +28,7 @@
 
 			onNext();
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to start login';
+			toast.error(`Failed to start a challenge: ${err instanceof Error ? err.message : 'unknown error'}`);
 		} finally {
 			isBusy = false;
 		}
@@ -37,11 +36,11 @@
 
 	async function requestResetPassword() {
 		if (!username.trim()) {
-			error = 'Please enter your username first';
+			toast.error('Please enter your username first');
 			return;
 		}
 		// For now, show alert. In real implementation, show captcha modal
-		alert('Password reset would show captcha modal here');
+		toast.error('TODO');
 	}
 
 	async function withOidc(provider: string) {
@@ -54,13 +53,6 @@
 		window.location.href = url;
 	}
 </script>
-
-<!-- Error display -->
-{#if error}
-	<div class="alert-sm alert alert-error">
-		<span>{error}</span>
-	</div>
-{/if}
 
 <div class="flex flex-col gap-4">
 	<!-- Header -->
@@ -103,14 +95,6 @@
 				title="Google"
 			>
 				<Chrome size={18} />
-			</button>
-			<button
-				class="btn btn-circle btn-outline"
-				onclick={() => alert('Apple Sign In requires mobile app')}
-				disabled={isBusy}
-				title="Apple"
-			>
-				<Apple size={18} />
 			</button>
 		</div>
 	</div>

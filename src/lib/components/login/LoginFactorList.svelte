@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { Lock, ChevronRight, Key, Mail, Eye, Clock, Globe, HelpCircle } from 'lucide-svelte';
+	import { ChevronRight, Key, Mail, Eye, Clock, Globe, HelpCircle } from 'lucide-svelte';
 	import { requestFactorCode } from '$lib/utils/api';
 	import { auth } from '$lib/stores/auth.svelte';
 	import { FACTOR_TYPES } from '$lib/types/auth';
+	import toast from 'svelte-french-toast';
 
 	interface Props {
 		onNext: () => void;
@@ -12,7 +13,6 @@
 	let { onNext, onBack }: Props = $props();
 
 	let isBusy = $state(false);
-	let error = $state('');
 	let selectedFactorId = $state<string | null>(null);
 
 	const availableFactors = $derived(
@@ -23,7 +23,6 @@
 		if (!selectedFactorId || !auth.challenge) return;
 
 		isBusy = true;
-		error = '';
 
 		try {
 			// Some factors return empty response (null) which is fine
@@ -34,14 +33,10 @@
 			}
 			onNext();
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to request code';
+			toast.error(`Failed to request code: ${err instanceof Error ? err.message : 'unknown error'}`);
 		} finally {
 			isBusy = false;
 		}
-	}
-
-	function getFactorIcon(type: number): string {
-		return FACTOR_TYPES[type]?.icon || 'help-circle';
 	}
 
 	function getFactorLabel(type: number): string {
@@ -66,13 +61,6 @@
 			</p>
 		{/if}
 	</div>
-
-	<!-- Error display -->
-	{#if error}
-		<div class="alert-sm alert alert-error">
-			<span>{error}</span>
-		</div>
-	{/if}
 
 	<!-- Progress bar -->
 	{#if auth.challenge}

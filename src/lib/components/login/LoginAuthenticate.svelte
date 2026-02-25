@@ -15,6 +15,7 @@
 	import { auth } from '$lib/stores/auth.svelte';
 	import { FACTOR_TYPES } from '$lib/types/auth';
 	import ConfuseSpinner from '../ConfuseSpinner.svelte';
+	import toast from 'svelte-french-toast';
 
 	interface Props {
 		onComplete: () => void;
@@ -25,7 +26,6 @@
 
 	let isBusy = $state(false);
 	let isFinalizing = $state(false);
-	let error = $state('');
 	let password = $state('');
 	let showPassword = $state(false);
 	let otpValues = $state(['', '', '', '', '', '']);
@@ -47,7 +47,6 @@
 		if (!pwd) return;
 
 		isBusy = true;
-		error = '';
 
 		try {
 			const result = await verifyChallenge(auth.challenge.id, auth.selectedFactor.id, pwd);
@@ -65,7 +64,7 @@
 			// All steps complete - get token
 			await completeLogin(result.id);
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Verification failed';
+			toast.error(`Failed to authenticate: ${err instanceof Error ? err.message : 'unknown error'}`);
 			// Clear OTP on error
 			if (isOtpType) {
 				otpValues = ['', '', '', '', '', ''];
@@ -86,7 +85,7 @@
 			await auth.fetchUser();
 			onComplete();
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to get token';
+			toast.error(`Failed to exchange token: ${err instanceof Error ? err.message : 'unknown error'}`);
 			isBusy = false;
 		}
 	}
@@ -132,13 +131,6 @@
 			{/if}
 		</h1>
 	</div>
-
-	<!-- Error display -->
-	{#if error}
-		<div class="alert-sm alert alert-error">
-			<span>{error}</span>
-		</div>
-	{/if}
 
 	<!-- Input area -->
 	{#if isFinalizing}

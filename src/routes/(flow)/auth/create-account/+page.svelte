@@ -6,12 +6,12 @@
 	import CaptchaWidget from '$lib/components/CaptchaWidget.svelte';
 	import { ArrowLeft, ArrowRight, CheckCircle2, ShieldCheck } from 'lucide-svelte';
 	import favicon from '$lib/assets/favicon.png';
+	import toast from 'svelte-french-toast';
 
 	type Stage = 'username-nick' | 'email' | 'password' | 'captcha' | 'terms';
 
 	let stage = $state<Stage>('username-nick');
 	let isLoading = $state(false);
-	let error = $state('');
 
 	let name = $state('');
 	let nick = $state('');
@@ -59,10 +59,9 @@
 	}
 
 	function next() {
-		error = '';
 		const validationError = validateCurrentStage();
 		if (validationError) {
-			error = validationError;
+			toast.error(validationError);
 			return;
 		}
 
@@ -73,7 +72,6 @@
 	}
 
 	function back() {
-		error = '';
 		if (stage === 'email') stage = 'username-nick';
 		else if (stage === 'password') stage = 'email';
 		else if (stage === 'captcha') stage = 'password';
@@ -82,14 +80,12 @@
 
 	function onCaptchaVerified(token: string) {
 		captchaToken = token;
-		error = '';
 		stage = 'terms';
 	}
 
 	async function submit() {
-		error = '';
 		if (!captchaToken.trim()) {
-			error = 'Captcha token is required.';
+			toast.error('Please complete captcha before submitting.');
 			stage = 'captcha';
 			return;
 		}
@@ -106,7 +102,9 @@
 			});
 			await goto('/auth/login');
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to create account';
+			toast.error(
+				`Failed to create your account: ${err instanceof Error ? err.message : 'unknown error'}`
+			);
 		} finally {
 			isLoading = false;
 		}
@@ -133,10 +131,6 @@
 		</section>
 
 		<section class="rounded-r-2xl bg-base-100/90 p-6 md:p-8">
-			{#if error}
-				<div class="mb-4 alert alert-error"><span>{error}</span></div>
-			{/if}
-
 			{#if stage === 'username-nick'}
 				<div class="space-y-4">
 					<fieldset class="fieldset">
@@ -149,28 +143,23 @@
 					</fieldset>
 				</div>
 			{:else if stage === 'email'}
-				<label class="form-control">
-					<span class="label-text mb-1">Email</span>
-					<input
-						class="input-bordered input w-full"
-						type="email"
-						bind:value={email}
-						placeholder="you@example.com"
-					/>
-				</label>
+				<fieldset class="fieldset">
+					<legend class="fieldset-legend">Email</legend>
+					<input type="email" class="input w-full" bind:value={email} />
+				</fieldset>
 			{:else if stage === 'password'}
-				<label class="form-control">
-					<span class="label-text mb-1">Password</span>
+				<fieldset class="fieldset">
+					<legend class="fieldset-legend">Password</legend>
 					<input
 						class="input-bordered input w-full"
 						type="password"
 						bind:value={password}
 						placeholder="At least 4 characters"
 					/>
-				</label>
+				</fieldset>
 			{:else if stage === 'captcha'}
 				<div class="space-y-3">
-					<p class="text-sm text-base-content/70">Complete captcha to continue.</p>
+					<p class="text-center text-sm text-base-content/70">Complete captcha to continue.</p>
 					<CaptchaWidget onVerified={onCaptchaVerified} />
 					{#if captchaToken}
 						<p class="text-xs text-success">Captcha verified successfully.</p>

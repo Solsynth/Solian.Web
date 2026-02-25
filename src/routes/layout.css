@@ -5,10 +5,11 @@
 	themes:
 		light --default,
 		dark --prefersdark;
+	exclude: indicator, status;
 }
 
 @theme {
-    --font-sans: "Nunito", sans-serif;
+	--font-sans: 'Nunito', sans-serif;
 	--default-font-family: var(--font-sans);
 }
 

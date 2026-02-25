@@ -161,7 +161,6 @@
 </script>
 
 <div class="flex w-full flex-col items-center gap-3">
-	<ConfuseSpinner />
 	{#if isLoading}
 		<ConfuseSpinner />
 	{:else if error}

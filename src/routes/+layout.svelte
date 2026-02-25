@@ -4,8 +4,9 @@
 	import { onNavigate } from '$app/navigation';
 	import { onDestroy } from 'svelte';
 	import { resolveSeo, SITE_NAME, type SeoData } from '$lib/seo';
-	import './layout.css';
+	import { Toaster } from 'svelte-french-toast';
 	import favicon from '$lib/assets/favicon.png';
+	import './layout.css';
 
 	let { children } = $props();
 	let showRouteProgress = $state(false);
@@ -126,5 +127,7 @@
 <div class={`route-progress${showRouteProgress ? ' is-visible' : ''}`} aria-hidden="true">
 	<div class="route-progress__bar" style={`transform: scaleX(${routeProgress});`}></div>
 </div>
+
+<Toaster />
 
 {@render children()}
