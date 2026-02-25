@@ -5,6 +5,7 @@
 	import { createAccount } from '$lib/utils/api';
 	import CaptchaWidget from '$lib/components/CaptchaWidget.svelte';
 	import { ArrowLeft, ArrowRight, CheckCircle2, ShieldCheck } from 'lucide-svelte';
+	import favicon from '$lib/assets/favicon.png';
 
 	type Stage = 'username-nick' | 'email' | 'password' | 'captcha' | 'terms';
 
@@ -116,46 +117,36 @@
 	<title>Create Account - Solar Network</title>
 </svelte:head>
 
-<div
-	class="w-full max-w-3xl rounded-3xl border border-base-300/70 bg-base-100/85 shadow-2xl backdrop-blur-xl"
->
+<div class="w-full max-w-4xl rounded-3xl shadow-2xl backdrop-blur-xl">
 	<div class="grid md:grid-cols-[0.95fr_1.05fr]">
 		<section
-			class="relative overflow-hidden rounded-t-3xl bg-gradient-to-br from-primary/25 via-info/15 to-base-100 p-7 md:rounded-l-3xl md:rounded-tr-none md:p-9"
+			class="flex flex-col justify-start gap-2 rounded-t-3xl bg-base-100/50 p-6 backdrop-blur-2xl md:rounded-l-3xl md:rounded-tr-none md:p-8"
 		>
-			<div
-				class="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-primary-content shadow"
-			>
-				<ShieldCheck size={22} />
-			</div>
+			<img src={favicon} alt="Solar Network" class="h-12 w-12 rounded-full" />
 			<p class="text-xs font-semibold tracking-[0.2em] text-base-content/70 uppercase">
 				Step {stepIndex} / 5
 			</p>
-			<h1 class="mt-2 text-3xl leading-tight font-black">Create your account</h1>
-			<p class="mt-3 text-sm text-base-content/70">
+			<h1 class="text-3xl leading-tight font-black">Create your account</h1>
+			<p class="text-sm text-base-content/70">
 				Fast setup with username, email, password, captcha, and terms confirmation.
 			</p>
 		</section>
 
-		<section class="p-6 md:p-9">
+		<section class="rounded-r-2xl bg-base-100/90 p-6 md:p-8">
 			{#if error}
 				<div class="mb-4 alert alert-error"><span>{error}</span></div>
 			{/if}
 
 			{#if stage === 'username-nick'}
 				<div class="space-y-4">
-					<label class="form-control">
-						<span class="label-text mb-1">Username</span>
-						<input
-							class="input-bordered input w-full"
-							bind:value={name}
-							placeholder="littlesheep"
-						/>
-					</label>
-					<label class="form-control">
-						<span class="label-text mb-1">Nickname</span>
-						<input class="input-bordered input w-full" bind:value={nick} placeholder="ラムです" />
-					</label>
+					<fieldset class="fieldset">
+						<legend class="fieldset-legend">Username</legend>
+						<input type="text" class="input w-full" bind:value={name} />
+					</fieldset>
+					<fieldset class="fieldset">
+						<legend class="fieldset-legend">Nickname</legend>
+						<input type="text" class="input w-full" bind:value={nick} />
+					</fieldset>
 				</div>
 			{:else if stage === 'email'}
 				<label class="form-control">

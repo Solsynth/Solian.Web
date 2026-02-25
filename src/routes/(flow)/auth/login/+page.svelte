@@ -44,18 +44,18 @@
 	$effect(() => {
 		const requestedStep = $page.url.searchParams.get('step');
 		const challengeId = $page.url.searchParams.get('challenge');
-		
+
 		if (requestedStep === 'picker' && auth.challenge) {
 			step = 'picker';
 		}
 		if (requestedStep === 'check' && auth.selectedFactor) {
 			step = 'check';
 		}
-		
+
 		// Set challenge ID in state if provided in URL
 		if (challengeId && auth.challenge?.id !== challengeId) {
 			// Find the challenge with matching ID from factors
-			const matchingFactor = auth.factors.find(f => f.id === challengeId);
+			const matchingFactor = auth.factors.find((f) => f.id === challengeId);
 			if (matchingFactor) {
 				auth.selectFactor(matchingFactor);
 			}
@@ -67,18 +67,16 @@
 	<title>Login - Solar Network</title>
 </svelte:head>
 
-<div
-	class="w-full max-w-4xl rounded-3xl border border-base-300/60 bg-base-100/90 shadow-2xl backdrop-blur-xl"
->
+<div class="w-full max-w-4xl rounded-3xl shadow-2xl backdrop-blur-xl">
 	<div class="grid md:grid-cols-[1fr_1.15fr]">
 		<section
-			class="flex flex-col justify-between rounded-t-3xl bg-linear-to-br from-primary/25 via-base-100 to-info/15 p-6 md:rounded-l-3xl md:rounded-tr-none md:p-8"
+			class="flex flex-col justify-between rounded-t-3xl bg-base-100/50 p-6 backdrop-blur-2xl md:rounded-l-3xl md:rounded-tr-none md:p-8"
 		>
 			<div>
 				<img src={favicon} alt="Solar Network" class="h-12 w-12 rounded-full" />
 				<h1 class="mt-2 text-3xl leading-tight font-black">Sign in</h1>
 				<p class="mt-3 max-w-sm text-sm text-base-content/70">
-					Multi-factor login with pass challenge flow and social providers.
+					Use your Solarpass account to login the Floating Island.
 				</p>
 			</div>
 			<div class="mt-6 text-sm">
@@ -87,7 +85,7 @@
 			</div>
 		</section>
 
-		<section class="p-6 md:p-8">
+		<section class="bg-base-100/90 p-6 md:p-8 rounded-r-2xl">
 			{#if step === 'lookup'}
 				<LoginEntrance onNext={goToPicker} />
 			{:else if step === 'picker'}

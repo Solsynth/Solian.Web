@@ -2,6 +2,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { AlertTriangle } from 'lucide-svelte';
 	import { getCaptchaConfig } from '$lib/utils/api';
+	import ConfuseSpinner from './ConfuseSpinner.svelte';
 
 	interface Props {
 		provider?: string;
@@ -160,13 +161,14 @@
 </script>
 
 <div class="flex w-full flex-col items-center gap-3">
+	<ConfuseSpinner />
 	{#if isLoading}
-		<span class="loading loading-md loading-spinner"></span>
+		<ConfuseSpinner />
 	{:else if error}
 		<div class="flex flex-col items-center justify-center gap-1 text-sm text-base-content/70">
 			<AlertTriangle size={18} />
 			<span>{error}</span>
 		</div>
 	{/if}
-	<div bind:this={captchaContainer} class="flex min-h-[70px] w-full justify-center"></div>
+	<div bind:this={captchaContainer} class="flex min-h-17.5 w-full justify-center"></div>
 </div>

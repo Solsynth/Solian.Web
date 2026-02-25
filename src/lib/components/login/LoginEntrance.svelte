@@ -65,7 +65,9 @@
 <div class="flex flex-col gap-4">
 	<!-- Header -->
 	<div class="pt-14">
-		<h1 class="text-3xl font-black">Welcome back</h1>
+		<h1 class="text-3xl font-black">
+			&#67;&#105;&#97;&#108;&#108;&#111;&#32;&#65374;&#40;&#8736;&#12539;&#969;&#60;&#32;&#41;&#8978;&#9733;
+		</h1>
 	</div>
 
 	<!-- Username input -->
@@ -84,8 +86,7 @@
 	</fieldset>
 
 	<!-- Third party login -->
-	<div class="flex justify-end items-center py-2">
-
+	<div class="flex items-center justify-end py-2">
 		<div class="flex justify-center gap-2">
 			<button
 				class="btn btn-circle btn-outline"
