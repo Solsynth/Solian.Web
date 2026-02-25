@@ -155,7 +155,7 @@
 	</div>
 {:else}
 	<div class="mx-auto max-w-5xl">
-		<section class="relative overflow-hidden border-b border-base-300">
+		<section class="relative overflow-hidden">
 			<div class="h-40 w-full bg-base-200 sm:h-52">
 				{#if backgroundUrl}
 					<img
