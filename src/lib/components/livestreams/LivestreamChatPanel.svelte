@@ -107,7 +107,7 @@
 	{#if !collapsed}
 		<div
 			bind:this={chatContainer}
-			class="space-y-2 overflow-y-auto px-3 pb-2"
+			class="chat-scroll space-y-2 overflow-y-auto px-3 pb-2"
 			style={`max-height: ${maxHeight}`}
 			onscroll={(e) => {
 				// Optional: handle manual scrolling if needed
@@ -158,6 +158,15 @@
 <style>
 	.chat-panel {
 		backdrop-filter: blur(8px);
+	}
+
+	.chat-scroll {
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+
+	.chat-scroll::-webkit-scrollbar {
+		display: none;
 	}
 
 	.message-enter {

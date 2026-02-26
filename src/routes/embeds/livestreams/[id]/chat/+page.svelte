@@ -5,6 +5,7 @@
 	import { API_BASE_URL } from '$lib/utils/api';
 	import { Crown } from 'lucide-svelte';
 	import type { ChatMessage } from '$lib/types/livestream';
+	import type { Account } from '$lib/types/post';
 
 	let { data }: { data: PageData } = $props();
 
@@ -14,6 +15,7 @@
 	let chatContainer: HTMLDivElement | null = $state(null);
 	let credentials: { url: string; token: string } | null = $state(null);
 	let animatedMessageIds: Set<string> = $state(new Set());
+	const accountLookupCache = new Map<string, Promise<Account | null>>();
 	let embedUi = $state({
 		scale: 1.42,
 		fontSizePx: 14,
@@ -178,6 +180,186 @@
 		return sender ? `${sender} · ${label}` : label;
 	}
 
+	function parseNumber(input: unknown): number {
+		if (typeof input === 'number') return input;
+		if (typeof input === 'string') return Number.parseFloat(input) || 0;
+		return 0;
+	}
+
+	function parseInteger(input: unknown): number {
+		if (typeof input === 'number') return Math.trunc(input);
+		if (typeof input === 'string') return Number.parseInt(input, 10) || 0;
+		return 0;
+	}
+
+	function parseDateIso(input: unknown): string | null {
+		if (typeof input !== 'string' || !input.trim()) return null;
+		const date = new Date(input);
+		if (Number.isNaN(date.getTime())) return null;
+		return date.toISOString();
+	}
+
+	function createdTimestamp(input: ChatMessage): number {
+		const ts = input.createdAt ? Date.parse(input.createdAt) : Number.NaN;
+		if (!Number.isFinite(ts)) return 0;
+		return ts;
+	}
+
+	function extractObjectList(payload: unknown): Record<string, unknown>[] {
+		if (Array.isArray(payload)) {
+			return payload.filter(
+				(item): item is Record<string, unknown> => item !== null && typeof item === 'object'
+			);
+		}
+		if (payload && typeof payload === 'object') {
+			const holder = payload as Record<string, unknown>;
+			const candidates = [holder.data, holder.items, holder.results, holder.list];
+			for (const candidate of candidates) {
+				if (Array.isArray(candidate)) {
+					return candidate.filter(
+						(item): item is Record<string, unknown> => item !== null && typeof item === 'object'
+					);
+				}
+			}
+		}
+		return [];
+	}
+
+	function pictureIdFromSender(rawSender: unknown): string | null {
+		if (!rawSender || typeof rawSender !== 'object') return null;
+		const senderObj = rawSender as Record<string, unknown>;
+		const profile = senderObj.profile;
+		if (!profile || typeof profile !== 'object') return null;
+		const picture = (profile as Record<string, unknown>).picture;
+		if (!picture || typeof picture !== 'object') return null;
+		const id = (picture as Record<string, unknown>).id;
+		return typeof id === 'string' && id ? id : null;
+	}
+
+	function accountFromUnknown(raw: unknown): Account | null {
+		if (!raw || typeof raw !== 'object') return null;
+		const obj = raw as Record<string, unknown>;
+		const id = typeof obj.id === 'string' ? obj.id : '';
+		const name = typeof obj.name === 'string' ? obj.name : '';
+		if (!id && !name) return null;
+		const nick = typeof obj.nick === 'string' ? obj.nick : name || null;
+		const profile =
+			obj.profile && typeof obj.profile === 'object' ? (obj.profile as Account['profile']) : null;
+		return {
+			id: id || name,
+			name: name || id,
+			nick,
+			profile
+		};
+	}
+
+	function authHeadersForLookup(): Record<string, string> {
+		const headers: Record<string, string> = {
+			'Content-Type': 'application/json'
+		};
+		if (typeof window === 'undefined') return headers;
+		const urlToken = new URLSearchParams(window.location.search).get('tk');
+		const localToken = localStorage.getItem('auth_token');
+		const token = urlToken || localToken;
+		if (token) headers.Authorization = `Bearer ${token}`;
+		return headers;
+	}
+
+	async function fetchAccountByRef(ref: string): Promise<Account | null> {
+		const key = ref.trim();
+		if (!key) return null;
+		if (accountLookupCache.has(key)) {
+			return accountLookupCache.get(key)!;
+		}
+		const lookupPromise = (async () => {
+			try {
+				const res = await fetch(`${API_BASE_URL}/pass/accounts/${encodeURIComponent(key)}`, {
+					headers: authHeadersForLookup()
+				});
+				if (!res.ok) return null;
+				const payload = await res.json();
+				const payloadObj = payload as Record<string, unknown>;
+				return (
+					accountFromUnknown(payloadObj.data) ||
+					accountFromUnknown(payloadObj.account) ||
+					accountFromUnknown(payloadObj)
+				);
+			} catch {
+				return null;
+			}
+		})();
+		accountLookupCache.set(key, lookupPromise);
+		return lookupPromise;
+	}
+
+	async function resolveSenderAccount(
+		senderId: string,
+		senderName: string
+	): Promise<Account | null> {
+		if (senderId.trim()) {
+			const byId = await fetchAccountByRef(senderId);
+			if (byId) return byId;
+		}
+		if (senderName.trim()) {
+			const byName = await fetchAccountByRef(senderName);
+			if (byName) return byName;
+		}
+		return null;
+	}
+
+	function chatMessageFromActiveAward(award: Record<string, unknown>): ChatMessage | null {
+		const rawSender = award.sender ?? award.account;
+		const senderId = String(award.sender_id ?? award.account_id ?? '').trim();
+		const senderName = String(
+			award.sender_name ||
+				(rawSender &&
+				typeof rawSender === 'object' &&
+				typeof (rawSender as Record<string, unknown>).name === 'string'
+					? (rawSender as Record<string, unknown>).name
+					: null) ||
+				award.sender ||
+				'Unknown'
+		).trim();
+
+		const amount = parseNumber(award.amount);
+		if (amount <= 0) return null;
+
+		const message = typeof award.message === 'string' ? award.message : '';
+		const createdAt = parseDateIso(award.created_at) || new Date().toISOString();
+		const expiresAt = parseDateIso(award.expires_at);
+
+		let highlightSeconds = parseInteger(award.highlight_seconds);
+		if (highlightSeconds <= 0 && expiresAt) {
+			const computed = Math.floor((Date.parse(expiresAt) - Date.parse(createdAt)) / 1000) || 0;
+			highlightSeconds = computed > 0 ? computed : 0;
+		}
+		if (highlightSeconds <= 0 && !expiresAt) {
+			highlightSeconds = 120;
+		}
+
+		const pictureId = pictureIdFromSender(rawSender);
+		const metadata: Record<string, unknown> = { amount, highlightSeconds };
+		if (expiresAt) metadata.activeUntil = expiresAt;
+		if (pictureId) metadata.pictureId = pictureId;
+
+		return {
+			id: `active-award-${String(award.id || crypto.randomUUID())}`,
+			senderId,
+			sender: {
+				id: senderId,
+				name: senderName,
+				nick: senderName,
+				profile: null
+			},
+			senderName,
+			message,
+			isMine: false,
+			createdAt,
+			messageType: 'systemAward',
+			metadata
+		};
+	}
+
 	async function loadChatHistory(livestreamId: string, accessToken?: string | null) {
 		const headers: Record<string, string> = {
 			'Content-Type': 'application/json'
@@ -192,15 +374,20 @@
 		}
 
 		try {
-			const res = await fetch(
-				`${API_BASE_URL}/sphere/livestreams/${livestreamId}/chat?limit=100&offset=0`,
-				{ headers }
-			);
-			if (res.ok) {
-				const chatMessages = await res.json();
-				const history: ChatMessage[] = chatMessages
-					.map((msg: Record<string, unknown>) => {
-						const pictureId = msg.picture_id as string | undefined;
+			const [chatRes, activeAwardsRes] = await Promise.all([
+				fetch(`${API_BASE_URL}/sphere/livestreams/${livestreamId}/chat?limit=100&offset=0`, {
+					headers
+				}),
+				fetch(`${API_BASE_URL}/sphere/livestreams/${livestreamId}/awards/active`, { headers })
+			]);
+
+			const history: ChatMessage[] = [];
+			if (chatRes.ok) {
+				const chatMessages = await chatRes.json();
+				const mapped = extractObjectList(chatMessages)
+					.map((msg) => {
+						const pictureId =
+							typeof msg.picture_id === 'string' ? msg.picture_id : pictureIdFromSender(msg.sender);
 						return {
 							id: String(msg.id || ''),
 							senderId: String(msg.sender_id || ''),
@@ -214,17 +401,29 @@
 							message: String(msg.content || ''),
 							isMine: false,
 							createdAt: String(msg.created_at || ''),
-							messageType: 'chat',
+							messageType: 'chat' as const,
 							metadata: pictureId ? { pictureId } : null
-						};
+						} satisfies ChatMessage;
 					})
 					.reverse();
-				messages = [...messages, ...history];
-				if (messages.length > MAX_MESSAGES) {
-					messages = messages.slice(-MAX_MESSAGES);
-				}
-				scrollToBottom();
+				history.push(...mapped);
 			}
+
+			if (activeAwardsRes.ok) {
+				const activeAwardsPayload = await activeAwardsRes.json();
+				const activeAwards = extractObjectList(activeAwardsPayload);
+				for (const award of activeAwards) {
+					const msg = chatMessageFromActiveAward(award);
+					if (msg) history.push(msg);
+				}
+			}
+
+			history.sort((a, b) => createdTimestamp(a) - createdTimestamp(b));
+			messages = [...messages, ...history];
+			if (messages.length > MAX_MESSAGES) {
+				messages = messages.slice(-MAX_MESSAGES);
+			}
+			scrollToBottom();
 		} catch (err) {
 			console.error('Failed to load chat history:', err);
 		}
@@ -252,8 +451,28 @@
 		return 0;
 	}
 
+	function awardTier(msg: ChatMessage): 'red' | 'orange' | 'amber' | 'green' | 'blue' | 'teal' {
+		const amount = readAmount(msg);
+		if (amount >= 500) return 'red';
+		if (amount >= 200) return 'orange';
+		if (amount >= 100) return 'amber';
+		if (amount >= 50) return 'green';
+		if (amount >= 20) return 'blue';
+		return 'teal';
+	}
+
+	function awardTierClass(msg: ChatMessage): string {
+		return `message-item-award-${awardTier(msg)}`;
+	}
+
 	function senderLabel(msg: ChatMessage): string {
 		return msg.sender.nick?.trim() || msg.senderName?.trim() || 'Unknown';
+	}
+
+	function senderInitial(msg: ChatMessage): string {
+		const name = senderLabel(msg).trim();
+		if (!name) return '?';
+		return name[0].toUpperCase();
 	}
 
 	function messageEventLabel(msg: ChatMessage): string {
@@ -308,72 +527,96 @@
 
 		room.on('dataReceived', (...args: unknown[]) => {
 			const payload = args[0] as Uint8Array;
-			try {
-				const decoder = new TextDecoder('utf-8');
-				const jsonStr = decoder.decode(payload);
-				if (!jsonStr.trim()) return;
+			void (async () => {
+				try {
+					const decoder = new TextDecoder('utf-8');
+					const jsonStr = decoder.decode(payload);
+					if (!jsonStr.trim()) return;
 
-				const parsed = JSON.parse(jsonStr);
-				const sender = parsed.sender_name || parsed.user || parsed.from || '未知';
-				const content = String(parsed.content || parsed.message || parsed.msg || '');
-				const amount = parsed.amount;
-				const pictureId = parsed.sender?.profile?.picture?.id || parsed.picture_id;
-				const normalizedEventType = normalizeEventType(
-					parsed.type || parsed.event || parsed.event_type
-				);
-				const isAwardEvent = awardEventTypes.has(normalizedEventType) || Number(amount) > 0;
-				const isJoinEvent = joinEventTypes.has(normalizedEventType);
-				const isLeaveEvent = leaveEventTypes.has(normalizedEventType);
+					const parsed = JSON.parse(jsonStr);
+					const senderFromPayload = accountFromUnknown(parsed.sender);
+					let senderId = String(parsed.sender_id || senderFromPayload?.id || '');
+					let sender = String(
+						parsed.sender_name ||
+							senderFromPayload?.nick ||
+							senderFromPayload?.name ||
+							parsed.user ||
+							parsed.from ||
+							'未知'
+					);
+					const content = String(parsed.content || parsed.message || parsed.msg || '');
+					const amount = parsed.amount;
+					let pictureId = parsed.sender?.profile?.picture?.id || parsed.picture_id;
+					const normalizedEventType = normalizeEventType(
+						parsed.type || parsed.event || parsed.event_type
+					);
+					const isAwardEvent = awardEventTypes.has(normalizedEventType) || Number(amount) > 0;
+					const isJoinEvent = joinEventTypes.has(normalizedEventType);
+					const isLeaveEvent = leaveEventTypes.has(normalizedEventType);
 
-				if (content || amount || normalizedEventType) {
-					const messageType = isAwardEvent
-						? 'systemAward'
-						: isJoinEvent
-							? 'systemJoin'
-							: isLeaveEvent
-								? 'systemLeave'
-								: normalizedEventType
-									? 'systemInfo'
-									: 'chat';
-					const metadata: Record<string, unknown> = {};
-					if (typeof amount === 'number' || typeof amount === 'string') {
-						metadata.amount = amount;
-					}
-					if (pictureId && !isAwardEvent) {
-						metadata.pictureId = pictureId;
-					}
-					if (normalizedEventType) {
-						metadata.eventType = normalizedEventType;
-					}
-					const chatMsg: ChatMessage = {
-						id: crypto.randomUUID(),
-						senderId: parsed.sender_id || '',
-						sender: {
-							id: parsed.sender_id || '',
-							name: sender,
-							nick: sender,
-							profile: null
-						},
-						senderName: sender,
-						message: isAwardEvent
-							? content
+					if (content || amount || normalizedEventType) {
+						const messageType = isAwardEvent
+							? 'systemAward'
 							: isJoinEvent
-								? `${sender} 加入了直播间`
+								? 'systemJoin'
 								: isLeaveEvent
-									? `${sender} 离开了直播间`
+									? 'systemLeave'
 									: normalizedEventType
-										? toSystemInfoMessage(sender, normalizedEventType, content)
-										: content,
-						isMine: false,
-						createdAt: new Date().toISOString(),
-						messageType,
-						metadata: Object.keys(metadata).length > 0 ? metadata : null
-					};
-					addMessage(chatMsg);
+										? 'systemInfo'
+										: 'chat';
+						const metadata: Record<string, unknown> = {};
+						if (typeof amount === 'number' || typeof amount === 'string') {
+							metadata.amount = amount;
+						}
+						if (pictureId && !isAwardEvent) {
+							metadata.pictureId = pictureId;
+						}
+						if (normalizedEventType) {
+							metadata.eventType = normalizedEventType;
+						}
+						const needsLookup = !senderFromPayload || !pictureId;
+						const resolvedAccount = needsLookup
+							? await resolveSenderAccount(senderId, sender)
+							: null;
+						if (resolvedAccount) {
+							senderId = senderId || resolvedAccount.id;
+							sender = resolvedAccount.nick?.trim() || resolvedAccount.name || sender;
+							pictureId = pictureId || resolvedAccount.profile?.picture?.id;
+							if (pictureId && !isAwardEvent) {
+								metadata.pictureId = pictureId;
+							}
+						}
+						const chatMsg: ChatMessage = {
+							id: crypto.randomUUID(),
+							senderId,
+							sender: resolvedAccount ||
+								senderFromPayload || {
+									id: senderId,
+									name: sender,
+									nick: sender,
+									profile: null
+								},
+							senderName: sender,
+							message: isAwardEvent
+								? content
+								: isJoinEvent
+									? `${sender} 加入了直播间`
+									: isLeaveEvent
+										? `${sender} 离开了直播间`
+										: normalizedEventType
+											? toSystemInfoMessage(sender, normalizedEventType, content)
+											: content,
+							isMine: false,
+							createdAt: new Date().toISOString(),
+							messageType,
+							metadata: Object.keys(metadata).length > 0 ? metadata : null
+						};
+						addMessage(chatMsg);
+					}
+				} catch (err) {
+					console.error('Parse message failed', err);
 				}
-			} catch (err) {
-				console.error('Parse message failed', err);
-			}
+			})();
 		});
 
 		room.on('participantConnected', (...args: unknown[]) => {
@@ -514,21 +757,37 @@
 
 <div
 	bind:this={chatContainer}
-	class="chat-panel absolute inset-0 w-full overflow-y-auto px-2 py-2"
+	class="chat-panel chat-scroll absolute inset-0 w-full overflow-y-auto px-2 py-2"
 	style={embedStyleVars()}
 >
 	{#each messages as message (message.id)}
 		{#if isSuperchatMessage(message)}
 			<div
-				class="message-item message-item-award mb-1 rounded-lg px-2 py-1 text-sm"
+				class={`message-item message-item-award ${awardTierClass(message)} mb-1 rounded-lg px-2 py-1 text-sm`}
 				class:message-enter={animatedMessageIds.has(message.id)}
 			>
-				<div class="message-meta flex items-center gap-1 font-semibold text-amber-200">
-					<Crown class="h-3 w-3" />
-					<span>{senderLabel(message)} 打赏了 {readAmount(message)}</span>
+				<div class="award-head">
+					<div class="award-avatar" aria-hidden="true">
+						{#if getAvatarPictureId(message)}
+							<img
+								src={getFileUrl(getAvatarPictureId(message))}
+								alt={`${senderLabel(message)} avatar`}
+								class="h-full w-full rounded-full object-cover"
+							/>
+						{:else}
+							<span>{senderInitial(message)}</span>
+						{/if}
+					</div>
+					<div class="award-main">
+						<div class="message-meta flex items-center gap-1 font-semibold">
+							<span>{senderLabel(message)}</span>
+							<Crown class="h-3 w-3" />
+						</div>
+						<div class="award-amount">{readAmount(message)} pts</div>
+					</div>
 				</div>
 				{#if message.message.trim()}
-					<div class="message-text text-amber-50">{message.message}</div>
+					<div class="award-body message-text">{message.message}</div>
 				{/if}
 			</div>
 		{:else if message.messageType === 'systemJoin' || message.messageType === 'systemLeave' || message.messageType === 'systemInfo'}
@@ -580,6 +839,15 @@
 		backdrop-filter: none;
 	}
 
+	.chat-scroll {
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+
+	.chat-scroll::-webkit-scrollbar {
+		display: none;
+	}
+
 	.message-item {
 		font-size: var(--embed-font-size);
 		padding: var(--embed-card-py) var(--embed-card-px);
@@ -608,8 +876,109 @@
 	}
 
 	.message-item-award {
-		background: linear-gradient(140deg, rgba(120, 53, 15, 0.92), rgba(146, 64, 14, 0.8));
-		border-color: rgba(251, 191, 36, 0.45);
+		--award-name-color: #ffffff;
+		--award-message-color: #ffffff;
+		--award-head-bg: rgba(15, 118, 110, 0.96);
+		--award-body-bg: rgba(94, 234, 212, 0.72);
+		--award-body-text: #0f172a;
+		padding: 0;
+		overflow: hidden;
+		border-color: rgba(255, 255, 255, 0.28);
+	}
+
+	.message-item-award .message-meta {
+		color: var(--award-name-color);
+	}
+
+	.message-item-award .message-text {
+		color: var(--award-message-color);
+	}
+
+	.award-head {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: calc(var(--embed-card-py) + 2px) var(--embed-card-px);
+		background: var(--award-head-bg);
+	}
+
+	.award-main {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		min-width: 0;
+	}
+
+	.award-avatar {
+		width: var(--embed-avatar-size);
+		height: var(--embed-avatar-size);
+		border-radius: 9999px;
+		display: grid;
+		place-items: center;
+		overflow: hidden;
+		background: rgba(255, 255, 255, 0.22);
+		color: #ffffff;
+		font-size: calc(var(--embed-meta-font-size) + 1px);
+		font-weight: 700;
+		flex-shrink: 0;
+	}
+
+	.award-amount {
+		color: #ffffff;
+		font-weight: 800;
+		font-size: var(--embed-font-size);
+		line-height: 1.25;
+	}
+
+	.award-body {
+		padding: var(--embed-card-py) var(--embed-card-px);
+		background: var(--award-body-bg);
+		color: var(--award-body-text);
+	}
+
+	.message-item-award-red {
+		--award-head-bg: rgba(185, 28, 28, 0.96);
+		--award-body-bg: rgba(248, 113, 113, 0.78);
+		--award-body-text: #ffffff;
+		background: linear-gradient(140deg, rgba(185, 28, 28, 0.94), rgba(239, 68, 68, 0.82));
+	}
+
+	.message-item-award-orange {
+		--award-message-color: #0c0a09;
+		--award-head-bg: rgba(194, 65, 12, 0.96);
+		--award-body-bg: rgba(251, 146, 60, 0.78);
+		--award-body-text: #0c0a09;
+		background: linear-gradient(140deg, rgba(194, 65, 12, 0.94), rgba(251, 146, 60, 0.84));
+	}
+
+	.message-item-award-amber {
+		--award-message-color: #0c0a09;
+		--award-head-bg: rgba(180, 83, 9, 0.96);
+		--award-body-bg: rgba(251, 191, 36, 0.78);
+		--award-body-text: #0c0a09;
+		background: linear-gradient(140deg, rgba(180, 83, 9, 0.94), rgba(251, 191, 36, 0.84));
+	}
+
+	.message-item-award-green {
+		--award-head-bg: rgba(21, 128, 61, 0.96);
+		--award-body-bg: rgba(74, 222, 128, 0.78);
+		--award-body-text: #052e16;
+		background: linear-gradient(140deg, rgba(21, 128, 61, 0.94), rgba(34, 197, 94, 0.84));
+	}
+
+	.message-item-award-blue {
+		--award-head-bg: rgba(29, 78, 216, 0.96);
+		--award-body-bg: rgba(96, 165, 250, 0.78);
+		--award-body-text: #082f49;
+		background: linear-gradient(140deg, rgba(29, 78, 216, 0.94), rgba(59, 130, 246, 0.84));
+	}
+
+	.message-item-award-teal {
+		--award-message-color: #0f172a;
+		--award-head-bg: rgba(15, 118, 110, 0.96);
+		--award-body-bg: rgba(94, 234, 212, 0.72);
+		--award-body-text: #0f172a;
+		background: linear-gradient(140deg, rgba(13, 148, 136, 0.94), rgba(94, 234, 212, 0.82));
 	}
 
 	.message-enter {
