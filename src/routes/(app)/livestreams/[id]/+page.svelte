@@ -4,7 +4,7 @@
 	import type { PageData } from './$types';
 	import LivestreamPlayer from '$lib/components/livestreams/LivestreamPlayer.svelte';
 	import { getFileUrl } from '$lib/utils/files';
-	import { ArrowLeft, Clapperboard, Radio, PlayCircle } from 'lucide-svelte';
+	import { ArrowLeft, Clapperboard, Radio, PlayCircle, ExternalLink } from 'lucide-svelte';
 	import LivestreamChatPanel from '$lib/components/livestreams/LivestreamChatPanel.svelte';
 	import { LivekitRoomController } from '$lib/services/livestream/livekit-room';
 
@@ -15,6 +15,7 @@
 	let playbackMode = $state<PlaybackMode>('webrtc');
 	let chatCollapsed = $state(false);
 	let isWide = $state(false);
+	let authToken = $state('');
 
 	const roomController = new LivekitRoomController('viewer');
 	const roomState = roomController.state;
@@ -55,6 +56,7 @@
 		const sync = () => (isWide = media.matches);
 		sync();
 		media.addEventListener('change', sync);
+		authToken = localStorage.getItem('auth_token') ?? '';
 		return () => media.removeEventListener('change', sync);
 	});
 
@@ -71,9 +73,18 @@
 			<button class="btn -ml-2 btn-circle btn-ghost btn-sm" onclick={handleBack}>
 				<ArrowLeft class="h-5 w-5" />
 			</button>
-			<div class="min-w-0">
+			<div class="min-w-0 flex-1">
 				<h1 class="truncate text-lg font-bold">{livestream?.title ?? 'Live'}</h1>
 			</div>
+			<a
+				href={`/embeds/livestreams/${livestream?.id}/chat?tk=${authToken}`}
+				target="_blank"
+				rel="noopener noreferrer"
+				class="btn btn-circle btn-ghost btn-sm"
+				title="Open chat embed"
+			>
+				<ExternalLink class="h-5 w-5" />
+			</a>
 		</div>
 	</div>
 </div>

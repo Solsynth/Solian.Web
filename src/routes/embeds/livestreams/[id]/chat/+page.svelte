@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
 	import { getFileUrl } from '$lib/utils/files';
-	import { apiClient } from '$lib/utils/api';
+	import { API_BASE_URL } from '$lib/utils/api';
 
 	let { data }: { data: PageData } = $props();
 
@@ -104,14 +104,21 @@
 					if (imgUrl) {
 						const img = document.createElement('img');
 						img.src = imgUrl;
-						img.className = 'danmu-img';
+						img.style.width = '1.2em';
+						img.style.height = '1.2em';
+						img.style.objectFit = 'cover';
+						img.style.verticalAlign = 'middle';
+						img.style.marginRight = '4px';
+						img.style.borderRadius = '50%';
+						img.style.display = 'inline-block';
 						img.alt = '';
 						node.appendChild(img);
 					}
 
 					if (text) {
 						const textSpan = document.createElement('span');
-						textSpan.className = 'danmu-text';
+						textSpan.style.display = 'inline-block';
+						textSpan.style.verticalAlign = 'middle';
 						textSpan.textContent = text;
 						node.appendChild(textSpan);
 					}
@@ -197,6 +204,13 @@
 	onMount(async () => {
 		if (typeof window === 'undefined') return;
 
+		const urlParams = new URLSearchParams(window.location.search);
+		const accessToken = urlParams.get('tk');
+
+		if (accessToken) {
+			console.log('[EMBED CHAT] Using access token from URL');
+		}
+
 		try {
 			await ensureScripts();
 			createDanmuManager();
@@ -207,7 +221,24 @@
 				return;
 			}
 
-			const credRes = await apiClient(`/sphere/livestreams/${livestreamId}/token?tool=true`);
+			const headers: Record<string, string> = {
+				'Content-Type': 'application/json'
+			};
+			if (accessToken) {
+				headers['Authorization'] = `Bearer ${accessToken}`;
+			} else {
+				const localToken = localStorage.getItem('auth_token');
+				if (localToken) {
+					headers['Authorization'] = `Bearer ${localToken}`;
+				}
+			}
+
+			const credRes = await fetch(
+				`${API_BASE_URL}/sphere/livestreams/${livestreamId}/token?tool=true`,
+				{
+					headers
+				}
+			);
 			if (credRes.ok) {
 				credentials = await credRes.json();
 			} else {
@@ -229,26 +260,10 @@
 </script>
 
 <svelte:head>
-	<title>Chat Embed - {data.livestream?.title ?? 'Livestream'}</title>
+	<title>Damuku Embed | {data.livestream?.title ?? 'Livestream'}</title>
 </svelte:head>
 
 <div
 	bind:this={danmuContainer}
 	class="danmu-container relative h-full w-full overflow-hidden"
 ></div>
-
-<style>
-	:global(.danmu-img) {
-		width: 1.2em;
-		height: 1.2em;
-		object-fit: cover;
-		vertical-align: middle;
-		margin-right: 4px;
-		border-radius: 50%;
-	}
-
-	:global(.danmu-text) {
-		display: inline-block;
-		vertical-align: middle;
-	}
-</style>
