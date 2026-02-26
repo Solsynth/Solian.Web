@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
 	import { getFileUrl } from '$lib/utils/files';
+	import { apiClient } from '$lib/utils/api';
 
 	let { data }: { data: PageData } = $props();
 
@@ -206,9 +207,7 @@
 				return;
 			}
 
-			const credRes = await fetch(
-				`https://api.solian.app/sphere/livestreams/${livestreamId}/token?tool=true`
-			);
+			const credRes = await apiClient(`/sphere/livestreams/${livestreamId}/token?tool=true`);
 			if (credRes.ok) {
 				credentials = await credRes.json();
 			} else {

@@ -1,5 +1,4 @@
 import type { PageServerLoad } from './$types';
-import { apiClient } from '$lib/utils/api';
 import { snakeToCamel } from '$lib/utils/case';
 import type { LivestreamDetail } from '$lib/types/livestream';
 
