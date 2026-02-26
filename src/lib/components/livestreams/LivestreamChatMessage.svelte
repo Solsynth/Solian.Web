@@ -10,6 +10,22 @@
 
 	let { message }: Props = $props();
 
+	const eventLabelMap: Record<string, string> = {
+		stream_started: 'Stream Started',
+		stream_ended: 'Stream Ended',
+		pinned: 'Pinned',
+		unpinned: 'Unpinned',
+		follow: 'Follow',
+		share: 'Share',
+		like: 'Like',
+		timeout: 'Timeout',
+		muted: 'Muted',
+		banned: 'Banned',
+		warning: 'Warning',
+		error: 'Error',
+		announcement: 'Announcement'
+	};
+
 	function readAmount(): number {
 		const raw = message.metadata?.amount;
 		if (typeof raw === 'number') return raw;
@@ -26,6 +42,17 @@
 	function senderLabel(): string {
 		return message.sender.nick?.trim() || message.senderName?.trim() || 'Unknown';
 	}
+
+	function systemEventLabel(): string {
+		if (message.messageType === 'systemJoin') return 'Join';
+		if (message.messageType === 'systemLeave') return 'Leave';
+		const rawType = message.metadata?.eventType;
+		if (typeof rawType === 'string') {
+			const normalized = rawType.trim().toLowerCase().replaceAll('-', '_');
+			return eventLabelMap[normalized] || normalized.replaceAll('_', ' ');
+		}
+		return 'System';
+	}
 </script>
 
 {#if isSuperchatMessage(message)}
@@ -38,13 +65,17 @@
 			<div class="text-sm">{message.message}</div>
 		{/if}
 	</div>
-{:else if message.messageType === 'systemJoin' || message.messageType === 'systemLeave'}
-	<div class="text-center text-xs text-base-content/55">{message.message}</div>
+{:else if message.messageType === 'systemJoin' || message.messageType === 'systemLeave' || message.messageType === 'systemInfo'}
+	<div class="rounded-md bg-base-300/40 px-2 py-1 text-center text-xs text-base-content/80">
+		<span class="font-semibold">{systemEventLabel()}</span>
+		<span class="mx-1">•</span>
+		<span>{message.message}</span>
+	</div>
 {:else}
-	<div class="rounded-lg bg-base-100 px-2 py-1.5 text-sm">
+	<div class="rounded-lg border border-base-300/60 bg-base-100/90 px-2 py-1.5 text-sm">
 		<div class="flex gap-2">
 			<div class="avatar">
-				<div class="w-6 h-6 rounded-full">
+				<div class="h-6 w-6 rounded-full">
 					{#if message.sender.profile?.picture != null}
 						<img
 							src={getFileUrl(message.sender.profile?.picture?.id)}

@@ -1,6 +1,6 @@
-import type { Account } from "./post";
+import type { Account } from './post';
 
-export type ChatMessageType = 'chat' | 'systemAward' | 'systemJoin' | 'systemLeave';
+export type ChatMessageType = 'chat' | 'systemAward' | 'systemJoin' | 'systemLeave' | 'systemInfo';
 
 export interface ChatMessage {
 	id: string;

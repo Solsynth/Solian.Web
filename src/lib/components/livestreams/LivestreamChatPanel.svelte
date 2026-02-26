@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { MessageCircle, Send, ChevronDown, ChevronUp } from 'lucide-svelte';
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount, onDestroy, tick } from 'svelte';
 	import LivestreamChatMessage from '$lib/components/livestreams/LivestreamChatMessage.svelte';
 	import type { ChatMessage } from '$lib/types/livestream';
 
@@ -13,16 +13,36 @@
 		onLoadHistory?: () => Promise<void> | void;
 	}
 
-	let { messages, collapsed = false, maxHeight = 'max-h-56', onToggleCollapse, onSend, onLoadHistory }: Props = $props();
+	let {
+		messages,
+		collapsed = false,
+		maxHeight = 'max-h-56',
+		onToggleCollapse,
+		onSend,
+		onLoadHistory
+	}: Props = $props();
 
 	let inputValue = $state('');
 	let hasLoadedHistory = $state(false);
 	let chatContainer: HTMLDivElement | null = $state(null);
+	let enteringMessageIds: Set<string> = $state(new Set());
+	let previousMessageCount = $state(0);
+	let hasPrimedMessageCount = $state(false);
 
-	function scrollToBottom() {
+	async function scrollToBottom() {
+		await tick();
 		if (chatContainer) {
 			chatContainer.scrollTop = chatContainer.scrollHeight;
 		}
+	}
+
+	function markMessageEntering(messageId: string) {
+		enteringMessageIds = new Set(enteringMessageIds).add(messageId);
+		window.setTimeout(() => {
+			const nextIds = new Set(enteringMessageIds);
+			nextIds.delete(messageId);
+			enteringMessageIds = nextIds;
+		}, 420);
 	}
 
 	onMount(() => {
@@ -33,13 +53,26 @@
 		}
 
 		// Scroll to bottom when component mounts
-		scrollToBottom();
+		void scrollToBottom();
 	});
 
 	$effect(() => {
-		// Auto-scroll to bottom when messages change
-		if (!collapsed && messages.length > 0) {
-			scrollToBottom();
+		const count = messages.length;
+		if (!hasPrimedMessageCount) {
+			hasPrimedMessageCount = true;
+			previousMessageCount = count;
+			return;
+		}
+
+		if (count > previousMessageCount) {
+			for (const message of messages.slice(previousMessageCount)) {
+				markMessageEntering(message.id);
+			}
+		}
+		previousMessageCount = count;
+
+		if (!collapsed && count > 0) {
+			void scrollToBottom();
 		}
 	});
 
@@ -55,10 +88,10 @@
 	}
 </script>
 
-<div class="mt-3 rounded-xl border border-base-300 bg-base-200/25">
+<div class="chat-panel mt-3 rounded-xl border border-base-300/60 bg-base-300/25">
 	<button
 		type="button"
-		class="flex w-full items-center gap-2 px-3 py-2 text-left"
+		class="flex w-full items-center gap-2 px-3 py-2 text-left text-base-content/90"
 		onclick={onToggleCollapse}
 	>
 		<MessageCircle class="h-4 w-4" />
@@ -88,7 +121,9 @@
 				<div class="py-4 text-center text-xs text-base-content/60">No chat messages yet.</div>
 			{:else}
 				{#each messages as message (message.id)}
-					<LivestreamChatMessage {message} />
+					<div class:message-enter={enteringMessageIds.has(message.id)}>
+						<LivestreamChatMessage {message} />
+					</div>
 				{/each}
 			{/if}
 		</div>
@@ -119,3 +154,27 @@
 		</div>
 	{/if}
 </div>
+
+<style>
+	.chat-panel {
+		backdrop-filter: blur(8px);
+	}
+
+	.message-enter {
+		animation: panel-message-slide-in 0.42s cubic-bezier(0.2, 0.75, 0.2, 1);
+		will-change: transform, opacity, filter;
+	}
+
+	@keyframes panel-message-slide-in {
+		from {
+			opacity: 0;
+			transform: translate3d(20px, 0, 0);
+			filter: blur(4px);
+		}
+		to {
+			opacity: 1;
+			transform: translate3d(0, 0, 0);
+			filter: blur(0);
+		}
+	}
+</style>
