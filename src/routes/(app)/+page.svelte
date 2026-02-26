@@ -1,10 +1,11 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import PostCard from '$lib/components/PostCard.svelte';
 	import { LoaderCircle } from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import type { Post } from '$lib/types/post';
 
-	let { data }: { data: PageData } = $props();
+let { data }: { data: PageData } = $props();
 
 	// Infinite scroll state - use initial data
 	let posts = $state<Post[]>([]);
@@ -72,6 +73,20 @@
 </script>
 
 <div class="mx-auto max-w-2xl">
+	{#if data.healthDown}
+		<div class="p-4 pb-0">
+			<div class="alert alert-warning">
+				<span>Primary server appears down. Use the failover room:</span>
+				<a
+					class="link font-semibold"
+					href={resolve(data.mockDown ? '/failover/chat?mock_down=1' : '/failover/chat')}
+				>
+					/failover/chat
+				</a>
+			</div>
+		</div>
+	{/if}
+
 	<!-- Error State (Initial Load) -->
 	{#if error && posts.length === 0}
 		<div class="p-8 text-center">
