@@ -235,10 +235,12 @@
 		}
 
 		if (mode === 'failover') {
-			const isAdminAuthorized = await verifyFailoverAdminPassword();
-			if (!isAdminAuthorized) {
-				connecting = false;
-				return;
+			if (adminPassword.trim()) {
+				const isAdminAuthorized = await verifyFailoverAdminPassword();
+				if (!isAdminAuthorized) {
+					connecting = false;
+					return;
+				}
 			}
 		}
 
@@ -250,7 +252,7 @@
 			if (token) {
 				url += `&tk=${encodeURIComponent(token)}`;
 			}
-		} else if (mode === 'failover') {
+		} else if (mode === 'failover' && adminPassword.trim()) {
 			url += '&official=1';
 		}
 

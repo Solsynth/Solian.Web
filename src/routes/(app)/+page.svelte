@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { resolve } from '$app/paths';
 	import PostCard from '$lib/components/PostCard.svelte';
 	import { LoaderCircle } from 'lucide-svelte';
@@ -13,6 +14,7 @@ let { data }: { data: PageData } = $props();
 	let hasMore = $state(false);
 	let error = $state<string | null>(null);
 	let offset = $state(0);
+	let healthDown = $state(false);
 
 	// Initialize from props once on mount
 	$effect(() => {
@@ -20,6 +22,23 @@ let { data }: { data: PageData } = $props();
 		hasMore = data.posts.length === 20;
 		error = data.error;
 		offset = data.posts.length;
+	});
+
+	onMount(() => {
+		void (async () => {
+			try {
+				const currentUrl = new URL(window.location.href);
+				const mockDown = currentUrl.searchParams.get('mock_down');
+				const modeUrl = mockDown
+					? `/api/failover/chat/mode?mock_down=${encodeURIComponent(mockDown)}`
+					: '/api/failover/chat/mode';
+				const response = await fetch(modeUrl, { cache: 'no-store' });
+				const payload = (await response.json()) as { mode?: 'up' | 'failover' };
+				healthDown = payload.mode === 'failover';
+			} catch {
+				healthDown = true;
+			}
+		})();
 	});
 	let loadMoreTrigger: HTMLDivElement | null = $state(null);
 
@@ -73,14 +92,11 @@ let { data }: { data: PageData } = $props();
 </script>
 
 <div class="mx-auto max-w-2xl">
-	{#if data.healthDown}
+	{#if healthDown}
 		<div class="p-4 pb-0">
 			<div class="alert alert-warning">
 				<span>Primary server appears down. Use the failover room:</span>
-				<a
-					class="link font-semibold"
-					href={resolve(data.mockDown ? '/failover/chat?mock_down=1' : '/failover/chat')}
-				>
+				<a class="link font-semibold" href={resolve('/failover/chat')}>
 					/failover/chat
 				</a>
 			</div>

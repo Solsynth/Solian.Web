@@ -3,7 +3,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { dev } from '$app/environment';
 
-const CHECK_TIMEOUT_MS = 4000;
+const CHECK_TIMEOUT_MS = 30000;
 
 export const GET: RequestHandler = async ({ fetch, url }) => {
 	const mockDown = dev && url.searchParams.get('mock_down') === '1';
@@ -21,7 +21,7 @@ export const GET: RequestHandler = async ({ fetch, url }) => {
 			signal: controller.signal
 		});
 
-		if (response.status === 200) {
+		if (response.ok) {
 			return json({ mode: 'up' as const });
 		}
 

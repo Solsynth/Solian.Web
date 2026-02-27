@@ -1,5 +1,4 @@
 import type { RequestHandler } from './$types';
-import { API_BASE_URL } from '$lib/utils/api';
 
 interface ChatKvNamespace {
 	get(key: string, options?: { type: 'json' }): Promise<unknown>;
@@ -35,6 +34,11 @@ interface RoomClient {
 	isOfficial: boolean;
 }
 
+interface RuntimeChatState {
+	clients: Set<RoomClient>;
+	history: ChatMessage[];
+}
+
 const MAX_NAME_LENGTH = 30;
 const MAX_AVATAR_URL_LENGTH = 500;
 const MAX_TEXT_LENGTH = 500;
@@ -43,8 +47,19 @@ const HISTORY_KEY = 'failover-chat-history-v1';
 const HISTORY_TTL_SECONDS = 60 * 60 * 24;
 const HISTORY_TTL_MS = HISTORY_TTL_SECONDS * 1000;
 
-const clients = new Set<RoomClient>();
-const history: ChatMessage[] = [];
+const runtime = globalThis as typeof globalThis & {
+	__failoverChatState?: RuntimeChatState;
+};
+
+if (!runtime.__failoverChatState) {
+	runtime.__failoverChatState = {
+		clients: new Set<RoomClient>(),
+		history: []
+	};
+}
+
+const clients = runtime.__failoverChatState.clients;
+const history = runtime.__failoverChatState.history;
 
 function sanitizeName(value: string | null): string {
 	const fallback = 'Anonymous';
@@ -74,46 +89,6 @@ function parseCookieValue(cookieHeader: string | null, key: string): string | nu
 		return rest.join('=') || null;
 	}
 	return null;
-}
-
-async function isPrimaryApiUp(fetchFn: typeof fetch): Promise<boolean> {
-	try {
-		const response = await fetchFn(`${API_BASE_URL}/health`, {
-			method: 'GET',
-			cache: 'no-store'
-		});
-		return response.status === 200;
-	} catch {
-		return false;
-	}
-}
-
-async function isUsernameAllowed(
-	fetchFn: typeof fetch,
-	name: string,
-	authToken: string | null
-): Promise<boolean> {
-	const response = await fetchFn(`${API_BASE_URL}/pass/accounts/${encodeURIComponent(name)}`);
-
-	if (response.status === 404) {
-		return true;
-	}
-	if (!response.ok) {
-		return false;
-	}
-	if (!authToken) {
-		return false;
-	}
-
-	const meResponse = await fetchFn(`${API_BASE_URL}/pass/accounts/me`, {
-		headers: {
-			Authorization: `Bearer ${authToken}`
-		}
-	});
-	if (!meResponse.ok) return false;
-
-	const me = (await meResponse.json()) as { name?: string };
-	return typeof me.name === 'string' && me.name.toLowerCase() === name.toLowerCase();
 }
 
 function pushHistory(message: ChatMessage): void {
@@ -201,7 +176,7 @@ function broadcastSystem(text: string): void {
 	broadcast({ type: 'message', message });
 }
 
-export const GET: RequestHandler = async ({ request, url, platform, fetch }) => {
+export const GET: RequestHandler = async ({ request, url, platform }) => {
 	if (request.headers.get('upgrade')?.toLowerCase() !== 'websocket') {
 		return new Response('Expected websocket request', { status: 426 });
 	}
@@ -229,22 +204,17 @@ export const GET: RequestHandler = async ({ request, url, platform, fetch }) => 
 	const serverSocket = pair[1];
 
 	const name = sanitizeName(url.searchParams.get('name'));
-	const apiUp = await isPrimaryApiUp(fetch);
 	const wantsOfficial = url.searchParams.get('official') === '1';
 	let isOfficial = false;
 
-	if (apiUp) {
-		const token = url.searchParams.get('tk');
-		const allowed = await isUsernameAllowed(fetch, name, token);
-		if (!allowed) {
-			return new Response('Username is not permitted in up mode.', { status: 403 });
-		}
-	} else if (configuredFailoverPassword) {
+	if (configuredFailoverPassword && wantsOfficial) {
 		const failoverCookie = parseCookieValue(request.headers.get('cookie'), 'failover_admin');
 		if (failoverCookie !== '1') {
-			return new Response('Failover admin authorization is required.', { status: 403 });
+			return new Response('Failover admin authorization is required for official mode.', {
+				status: 403
+			});
 		}
-		isOfficial = wantsOfficial;
+		isOfficial = true;
 	}
 
 	serverSocket.accept();
