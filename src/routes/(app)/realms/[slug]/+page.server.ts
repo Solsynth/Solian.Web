@@ -4,6 +4,7 @@ import type { Realm } from '$lib/types/realm';
 import { redirect } from '@sveltejs/kit';
 import { excerptText } from '$lib/seo';
 import { getFileUrl } from '$lib/utils/files';
+import { API_BASE_URL } from '$lib/utils/api';
 
 const TAKE = 20;
 
@@ -33,9 +34,7 @@ export const load: PageServerLoad = async ({ fetch, params, url }) => {
 	}
 
 	try {
-		const realmResponse = await fetch(
-			`https://api.solian.app/pass/realms/${encodeURIComponent(slug)}`
-		);
+		const realmResponse = await fetch(`${API_BASE_URL}/pass/realms/${encodeURIComponent(slug)}`);
 		if (!realmResponse.ok) {
 			if (realmResponse.status === 404) {
 				return {
@@ -75,7 +74,7 @@ export const load: PageServerLoad = async ({ fetch, params, url }) => {
 		if (queryTerm) query.set('query', queryTerm);
 		if (type === '0' || type === '1') query.set('type', type);
 
-		const postsResponse = await fetch(`https://api.solian.app/sphere/posts?${query.toString()}`);
+		const postsResponse = await fetch(`${API_BASE_URL}/sphere/posts?${query.toString()}`);
 		const posts: Post[] = postsResponse.ok ? await postsResponse.json() : [];
 		const total = parseInt(postsResponse.headers.get('x-total') || '0', 10);
 

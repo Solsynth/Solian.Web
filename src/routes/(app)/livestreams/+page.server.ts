@@ -1,5 +1,6 @@
 import type { PageServerLoad } from './$types';
 import { snakeToCamel } from '$lib/utils/case';
+import { API_BASE_URL } from '$lib/utils/api';
 
 interface LivestreamListItem {
 	id?: string;
@@ -28,7 +29,7 @@ function isActiveLivestream(status: string | number | undefined): boolean {
 
 export const load: PageServerLoad = async ({ fetch }) => {
 	try {
-		const response = await fetch('https://api.solian.app/sphere/livestreams?limit=100&offset=0');
+		const response = await fetch(`${API_BASE_URL}/sphere/livestreams?limit=100&offset=0`);
 		if (!response.ok) {
 			throw new Error(`Failed to load livestreams (${response.status})`);
 		}

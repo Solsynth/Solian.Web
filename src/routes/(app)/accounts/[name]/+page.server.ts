@@ -2,6 +2,7 @@ import type { PageServerLoad } from './$types';
 import { excerptText } from '$lib/seo';
 import { getFileUrl } from '$lib/utils/files';
 import { snakeToCamel } from '$lib/utils/case';
+import { API_BASE_URL } from '$lib/utils/api';
 
 interface AccountProfile {
 	id: string;
@@ -101,7 +102,7 @@ export const load: PageServerLoad = async ({ fetch, params, url }): Promise<Page
 
 	try {
 		const accountResponse = await fetch(
-			`https://api.solian.app/pass/accounts/${encodeURIComponent(username)}`
+			`${API_BASE_URL}/pass/accounts/${encodeURIComponent(username)}`
 		);
 
 		if (!accountResponse.ok) {

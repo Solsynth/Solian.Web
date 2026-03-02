@@ -3,6 +3,7 @@ import type { Post } from '$lib/types/post';
 import type { PublisherProfile } from '$lib/types/publisher';
 import { excerptText } from '$lib/seo';
 import { getFileUrl } from '$lib/utils/files';
+import { API_BASE_URL } from '$lib/utils/api';
 
 const TAKE = 20;
 
@@ -28,7 +29,7 @@ export const load: PageServerLoad = async ({ fetch, params, url }) => {
 
 	try {
 		const publisherResponse = await fetch(
-			`https://api.solian.app/sphere/publishers/${encodeURIComponent(username)}`
+			`${API_BASE_URL}/sphere/publishers/${encodeURIComponent(username)}`
 		);
 
 		if (!publisherResponse.ok) {
@@ -70,7 +71,7 @@ export const load: PageServerLoad = async ({ fetch, params, url }) => {
 		if (queryTerm) query.set('query', queryTerm);
 		if (type === '0' || type === '1') query.set('type', type);
 
-		const postsResponse = await fetch(`https://api.solian.app/sphere/posts?${query.toString()}`);
+		const postsResponse = await fetch(`${API_BASE_URL}/sphere/posts?${query.toString()}`);
 		const posts: Post[] = postsResponse.ok ? await postsResponse.json() : [];
 		const total = parseInt(postsResponse.headers.get('x-total') || '0', 10);
 		const displayName = publisher.nick || publisher.name;

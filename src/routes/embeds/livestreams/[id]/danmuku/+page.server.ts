@@ -1,6 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { snakeToCamel } from '$lib/utils/case';
 import type { LivestreamDetail } from '$lib/types/livestream';
+import { API_BASE_URL } from '$lib/utils/api';
 
 export const load: PageServerLoad = async ({ params, fetch }) => {
 	const { id } = params;
@@ -9,7 +10,7 @@ export const load: PageServerLoad = async ({ params, fetch }) => {
 	try {
 		console.log('[EMBED CHAT] Fetching livestream data...');
 		const livestreamRes = await fetch(
-			`https://api.solian.app/sphere/livestreams/${encodeURIComponent(id)}`
+			`${API_BASE_URL}/sphere/livestreams/${encodeURIComponent(id)}`
 		);
 		console.log('[EMBED CHAT] Livestream response status:', livestreamRes.status);
 

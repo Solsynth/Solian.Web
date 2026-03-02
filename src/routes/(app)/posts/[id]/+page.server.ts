@@ -2,10 +2,11 @@ import type { PageServerLoad } from './$types';
 import type { Post } from '$lib/types/post';
 import { excerptText } from '$lib/seo';
 import { getFileUrl } from '$lib/utils/files';
+import { API_BASE_URL } from '$lib/utils/api';
 
 export const load: PageServerLoad = async ({ fetch, params }) => {
 	try {
-		const response = await fetch(`https://api.solian.app/sphere/posts/${params.id}`);
+		const response = await fetch(`${API_BASE_URL}/sphere/posts/${params.id}`);
 
 		if (!response.ok) {
 			if (response.status === 404) {
@@ -27,7 +28,7 @@ export const load: PageServerLoad = async ({ fetch, params }) => {
 
 		// Fetch replies
 		const repliesResponse = await fetch(
-			`https://api.solian.app/sphere/posts/${params.id}/replies?take=50`
+			`${API_BASE_URL}/sphere/posts/${params.id}/replies?take=50`
 		);
 		const replies: Post[] = repliesResponse.ok ? await repliesResponse.json() : [];
 		const imageAttachment = post.attachments.find((item) => item.mime_type.startsWith('image/'));

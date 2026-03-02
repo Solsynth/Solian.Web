@@ -3,13 +3,12 @@ import { snakeToCamel } from '$lib/utils/case';
 import type { LivestreamDetail } from '$lib/types/livestream';
 import { excerptText } from '$lib/seo';
 import { getFileUrl } from '$lib/utils/files';
+import { API_BASE_URL } from '$lib/utils/api';
 
 export const load: PageServerLoad = async ({ params, fetch }) => {
 	const { id } = params;
 	try {
-		const response = await fetch(
-			`https://api.solian.app/sphere/livestreams/${encodeURIComponent(id)}`
-		);
+		const response = await fetch(`${API_BASE_URL}/sphere/livestreams/${encodeURIComponent(id)}`);
 		if (!response.ok) {
 			if (response.status === 404) {
 				return {

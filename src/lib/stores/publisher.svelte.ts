@@ -1,4 +1,5 @@
 import type { Publisher } from '$lib/types/post';
+import { API_BASE_URL } from '$lib/utils/api';
 
 class PublisherStore {
 	publishers = $state<Publisher[]>([]);
@@ -11,7 +12,7 @@ class PublisherStore {
 
 		try {
 			const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-			const response = await fetch('https://api.solian.app/sphere/publishers', {
+			const response = await fetch(`${API_BASE_URL}/sphere/publishers`, {
 				headers: token ? { Authorization: `Bearer ${token}` } : {}
 			});
 

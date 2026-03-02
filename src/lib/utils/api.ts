@@ -2,7 +2,8 @@
 import type { SnAuthChallenge, SnAuthFactor, SnAuthToken, User } from '$lib/types/auth';
 import { snakeToCamel } from './case';
 
-export const API_BASE_URL = 'https://api.solian.app';
+export const API_BASE = 'api.solian.app';
+export const API_BASE_URL = `https://${API_BASE}`;
 
 // Parse response - handles JSON, plain text, and empty responses
 async function parseResponse(response: Response): Promise<unknown> {

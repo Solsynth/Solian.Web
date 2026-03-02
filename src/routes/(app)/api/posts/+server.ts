@@ -1,12 +1,13 @@
 import type { RequestHandler } from './$types';
 import type { Post } from '$lib/types/post';
+import { API_BASE_URL } from '$lib/utils/api';
 
 export const GET: RequestHandler = async ({ fetch, url }) => {
 	const offset = url.searchParams.get('offset');
 	const take = parseInt(url.searchParams.get('take') || '20');
 
 	try {
-		let apiUrl = `https://api.solian.app/sphere/posts?take=${take}&replies=false`;
+		let apiUrl = `${API_BASE_URL}/sphere/posts?take=${take}&replies=false`;
 		if (offset) {
 			apiUrl += `&offset=${encodeURIComponent(offset)}`;
 		}

@@ -1,5 +1,6 @@
 import type { RequestHandler } from './$types';
 import type { Post } from '$lib/types/post';
+import { API_BASE_URL } from '$lib/utils/api';
 
 export const GET: RequestHandler = async ({ fetch, params, url }) => {
 	const slug = params.slug || '';
@@ -35,7 +36,7 @@ export const GET: RequestHandler = async ({ fetch, params, url }) => {
 			if (value != null && value !== '') query.set(key, value);
 		}
 
-		const response = await fetch(`https://api.solian.app/sphere/posts?${query.toString()}`);
+		const response = await fetch(`${API_BASE_URL}/sphere/posts?${query.toString()}`);
 		if (!response.ok) throw new Error(`Failed to fetch posts: ${response.status}`);
 
 		const posts: Post[] = await response.json();

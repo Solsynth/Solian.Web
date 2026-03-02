@@ -2,6 +2,7 @@ import type { PageServerLoad } from './$types';
 import type { Realm } from '$lib/types/realm';
 import { excerptText } from '$lib/seo';
 import { getFileUrl } from '$lib/utils/files';
+import { API_BASE_URL } from '$lib/utils/api';
 
 export const load: PageServerLoad = async ({ fetch, params }) => {
 	const slug = params.slug || '';
@@ -19,7 +20,7 @@ export const load: PageServerLoad = async ({ fetch, params }) => {
 	}
 
 	try {
-		const response = await fetch(`https://api.solian.app/pass/realms/${encodeURIComponent(slug)}`);
+		const response = await fetch(`${API_BASE_URL}/pass/realms/${encodeURIComponent(slug)}`);
 		if (!response.ok) {
 			if (response.status === 404) {
 				return {
