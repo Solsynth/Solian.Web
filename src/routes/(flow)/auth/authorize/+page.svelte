@@ -1,5 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
+	import { auth } from '$lib/stores/auth.svelte';
 	import { Check, Plug, X } from 'lucide-svelte';
 	import { getAuthorizeClientInfo, submitAuthorizeDecision } from '$lib/utils/api';
 	import { getFileUrl } from '$lib/utils/files';
@@ -20,6 +23,13 @@
 	const backgroundUrl = $derived(getFileUrl(clientInfo?.background?.id));
 	const avatarUrl = $derived(getFileUrl(clientInfo?.picture?.id));
 	const requestedScopes = $derived(clientInfo?.scopes || []);
+
+	$effect(() => {
+		if (!auth.isAuthenticated) {
+			const redirectUrl = $page.url.pathname + $page.url.search;
+			goto(`/auth/login?redirect=${encodeURIComponent(redirectUrl)}`);
+		}
+	});
 
 	onMount(async () => {
 		try {

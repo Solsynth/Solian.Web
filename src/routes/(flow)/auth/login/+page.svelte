@@ -31,7 +31,8 @@
 
 	function completeLogin() {
 		auth.clearLoginFlow();
-		goto('/');
+		const redirectUrl = $page.url.searchParams.get('redirect');
+		goto(redirectUrl || '/');
 	}
 
 	// Redirect if already authenticated
@@ -85,7 +86,7 @@
 			</div>
 		</section>
 
-		<section class="bg-base-100/90 p-6 md:p-8 rounded-r-2xl">
+		<section class="rounded-r-2xl bg-base-100/90 p-6 md:p-8">
 			{#if step === 'lookup'}
 				<LoginEntrance onNext={goToPicker} />
 			{:else if step === 'picker'}

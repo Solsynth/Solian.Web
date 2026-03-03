@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
+	import { auth } from '$lib/stores/auth.svelte';
 	import { getFileUrl } from '$lib/utils/files';
 	import { apiClient } from '$lib/utils/api';
 	import { Check, Loader2, Users, UserPlus, Building2, Globe2, Lock } from 'lucide-svelte';
@@ -7,6 +9,13 @@
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
+
+	$effect(() => {
+		if (!auth.isAuthenticated) {
+			const redirectUrl = $page.url.pathname + $page.url.search;
+			goto(`/auth/login?redirect=${encodeURIComponent(redirectUrl)}`);
+		}
+	});
 
 	let initialized = $state(false);
 	let isJoining = $state(false);
