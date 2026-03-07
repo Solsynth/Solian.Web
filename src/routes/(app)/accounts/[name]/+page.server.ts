@@ -102,7 +102,7 @@ export const load: PageServerLoad = async ({ fetch, params, url }): Promise<Page
 
 	try {
 		const accountResponse = await fetch(
-			`${API_BASE_URL}/pass/accounts/${encodeURIComponent(username)}`
+			`${API_BASE_URL}/passport/accounts/${encodeURIComponent(username)}`
 		);
 
 		if (!accountResponse.ok) {

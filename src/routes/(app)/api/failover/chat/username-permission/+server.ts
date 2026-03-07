@@ -15,7 +15,7 @@ function sanitizeUsername(value: string | null): string {
 
 async function getAccountName(fetchFn: typeof fetch, authHeader: string | null): Promise<string | null> {
 	if (!authHeader) return null;
-	const response = await fetchFn(`${API_BASE_URL}/pass/accounts/me`, {
+	const response = await fetchFn(`${API_BASE_URL}/passport/accounts/me`, {
 		headers: {
 			Authorization: authHeader
 		}
@@ -32,7 +32,7 @@ export const GET: RequestHandler = async ({ fetch, request, url }) => {
 		return json({ error: 'name is required' }, { status: 400 });
 	}
 
-	const response = await fetch(`${API_BASE_URL}/pass/accounts/${encodeURIComponent(name)}`);
+	const response = await fetch(`${API_BASE_URL}/passport/accounts/${encodeURIComponent(name)}`);
 
 	if (response.status === 404) {
 		const payload: PermissionResponse = {

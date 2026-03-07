@@ -38,7 +38,7 @@
 			// Need to get factors and continue login flow
 			try {
 				const { apiClient } = await import('$lib/utils/api');
-				const resp = await apiClient(`/pass/auth/challenge/${challengeId}`);
+				const resp = await apiClient(`/padlock/auth/challenge/${challengeId}`);
 				const challenge = await resp.json();
 				auth.setChallenge(challenge);
 

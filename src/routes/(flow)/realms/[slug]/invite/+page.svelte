@@ -50,7 +50,7 @@
 		if (!realm?.slug || isCheckingMembership) return;
 		isCheckingMembership = true;
 		try {
-			await apiClient(`/pass/realms/${encodeURIComponent(realm.slug)}/members/me`);
+			await apiClient(`/passport/realms/${encodeURIComponent(realm.slug)}/members/me`);
 			isMember = true;
 		} catch {
 			isMember = false;
@@ -64,7 +64,7 @@
 		isJoining = true;
 		error = null;
 		try {
-			await apiClient(`/pass/realms/${encodeURIComponent(realm.slug)}/members/me`, {
+			await apiClient(`/passport/realms/${encodeURIComponent(realm.slug)}/members/me`, {
 				method: 'POST'
 			});
 			isMember = true;

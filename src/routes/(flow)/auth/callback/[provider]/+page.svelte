@@ -6,7 +6,7 @@
 
 	onMount(() => {
 		const provider = $page.params.provider;
-		const redirectUrl = `${API_BASE_URL}/pass/auth/callback/${provider}${$page.url.search}`;
+		const redirectUrl = `${API_BASE_URL}/padlock/auth/callback/${provider}${$page.url.search}`;
 		window.location.href = redirectUrl;
 	});
 </script>

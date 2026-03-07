@@ -1,3 +1,4 @@
+/*! 🌼 daisyUI 5.5.19 */
 // API client for Solar Network
 import type { SnAuthChallenge, SnAuthFactor, SnAuthToken, User } from '$lib/types/auth';
 import { snakeToCamel } from './case';
@@ -69,7 +70,7 @@ export async function createChallenge(
 	account: string,
 	deviceInfo: Record<string, unknown>
 ): Promise<SnAuthChallenge> {
-	const response = await apiClient('/pass/auth/challenge', {
+	const response = await apiClient('/padlock/auth/challenge', {
 		method: 'POST',
 		body: JSON.stringify({
 			account,
@@ -80,12 +81,12 @@ export async function createChallenge(
 }
 
 export async function getFactors(challengeId: string): Promise<SnAuthFactor[]> {
-	const response = await apiClient(`/pass/auth/challenge/${challengeId}/factors`);
+	const response = await apiClient(`/padlock/auth/challenge/${challengeId}/factors`);
 	return safeJsonParse<SnAuthFactor[]>(response);
 }
 
 export async function requestFactorCode(challengeId: string, factorId: string): Promise<unknown> {
-	const response = await apiClient(`/pass/auth/challenge/${challengeId}/factors/${factorId}`, {
+	const response = await apiClient(`/padlock/auth/challenge/${challengeId}/factors/${factorId}`, {
 		method: 'POST'
 	});
 	return safeJsonParse<unknown>(response);
@@ -96,7 +97,7 @@ export async function verifyChallenge(
 	factorId: string,
 	password: string
 ): Promise<SnAuthChallenge> {
-	const response = await apiClient(`/pass/auth/challenge/${challengeId}`, {
+	const response = await apiClient(`/padlock/auth/challenge/${challengeId}`, {
 		method: 'PATCH',
 		body: JSON.stringify({
 			factor_id: factorId,
@@ -107,7 +108,7 @@ export async function verifyChallenge(
 }
 
 export async function getToken(code: string): Promise<SnAuthToken> {
-	const response = await apiClient('/pass/auth/token', {
+	const response = await apiClient('/padlock/auth/token', {
 		method: 'POST',
 		body: JSON.stringify({
 			grant_type: 'authorization_code',
@@ -118,7 +119,7 @@ export async function getToken(code: string): Promise<SnAuthToken> {
 }
 
 export async function getUserInfo(): Promise<User> {
-	const response = await apiClient('/pass/accounts/me');
+	const response = await apiClient('/passport/accounts/me');
 	return safeJsonParse<User>(response);
 }
 
@@ -130,7 +131,7 @@ export async function createAccount(payload: {
 	language: string;
 	captchaToken: string;
 }): Promise<unknown> {
-	const response = await apiClient('/pass/accounts', {
+	const response = await apiClient('/padlock/accounts', {
 		method: 'POST',
 		body: JSON.stringify({
 			name: payload.name,
@@ -148,7 +149,7 @@ export async function requestPasswordReset(
 	account: string,
 	captchaToken: string
 ): Promise<unknown> {
-	const response = await apiClient('/pass/accounts/recovery/password', {
+	const response = await apiClient('/padlock/accounts/recovery/password', {
 		method: 'POST',
 		body: JSON.stringify({
 			account,
@@ -164,7 +165,7 @@ export interface CaptchaConfig {
 }
 
 export async function getCaptchaConfig(): Promise<CaptchaConfig> {
-	const response = await apiClient('/pass/captcha');
+	const response = await apiClient('/padlock/auth/captcha');
 	return safeJsonParse<CaptchaConfig>(response);
 }
 
@@ -175,7 +176,7 @@ export async function getAuthorizeClientInfo(query: URLSearchParams): Promise<{
 	background?: { id?: string };
 	scopes?: string[];
 }> {
-	const response = await apiClient(`/pass/auth/open/authorize?${query.toString()}`);
+	const response = await apiClient(`/padlock/auth/open/authorize?${query.toString()}`);
 	return safeJsonParse(response);
 }
 
@@ -186,7 +187,7 @@ export async function submitAuthorizeDecision(
 	const payload = new URLSearchParams(query);
 	payload.set('authorize', authorize ? 'true' : 'false');
 
-	const response = await apiClient('/pass/auth/open/authorize', {
+	const response = await apiClient('/padlock/auth/open/authorize', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/x-www-form-urlencoded'
@@ -216,12 +217,12 @@ export interface SpellInfo {
 }
 
 export async function getOrder(orderId: string): Promise<WalletOrder> {
-	const response = await apiClient(`/pass/orders/${encodeURIComponent(orderId)}`);
+	const response = await apiClient(`/passport/orders/${encodeURIComponent(orderId)}`);
 	return safeJsonParse<WalletOrder>(response);
 }
 
 export async function payOrder(orderId: string, pinCode: string): Promise<unknown> {
-	const response = await apiClient(`/pass/orders/${encodeURIComponent(orderId)}/pay`, {
+	const response = await apiClient(`/passport/orders/${encodeURIComponent(orderId)}/pay`, {
 		method: 'POST',
 		body: JSON.stringify({
 			pin_code: pinCode
@@ -231,12 +232,12 @@ export async function payOrder(orderId: string, pinCode: string): Promise<unknow
 }
 
 export async function getSpell(spellWord: string): Promise<SpellInfo> {
-	const response = await apiClient(`/pass/spells/${encodeURIComponent(spellWord)}`);
+	const response = await apiClient(`/passport/spells/${encodeURIComponent(spellWord)}`);
 	return safeJsonParse<SpellInfo>(response);
 }
 
 export async function applySpell(spellWord: string, newPassword?: string): Promise<unknown> {
-	const response = await apiClient(`/pass/spells/${encodeURIComponent(spellWord)}/apply`, {
+	const response = await apiClient(`/passport/spells/${encodeURIComponent(spellWord)}/apply`, {
 		method: 'POST',
 		body: newPassword ? JSON.stringify({ new_password: newPassword }) : null
 	});
@@ -250,7 +251,7 @@ export function getOidcLoginUrl(provider: string, deviceId: string, returnUrl: s
 		deviceId,
 		flow: 'login'
 	});
-	return `${API_BASE_URL}/pass/auth/login/${provider.toLowerCase()}?${params}`;
+	return `${API_BASE_URL}/padlock/auth/login/${provider.toLowerCase()}?${params}`;
 }
 
 // Apple login (mobile only)
@@ -259,7 +260,7 @@ export async function loginWithApple(
 	authorizationCode: string,
 	deviceInfo: Record<string, unknown>
 ): Promise<SnAuthToken> {
-	const response = await apiClient('/pass/auth/login/apple/mobile', {
+	const response = await apiClient('/padlock/auth/login/apple/mobile', {
 		method: 'POST',
 		body: JSON.stringify({
 			identity_token: identityToken,

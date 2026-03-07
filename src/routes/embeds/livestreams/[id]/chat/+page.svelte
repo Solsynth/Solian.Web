@@ -273,7 +273,7 @@
 		}
 		const lookupPromise = (async () => {
 			try {
-				const res = await fetch(`${API_BASE_URL}/pass/accounts/${encodeURIComponent(key)}`, {
+				const res = await fetch(`${API_BASE_URL}/passport/accounts/${encodeURIComponent(key)}`, {
 					headers: authHeadersForLookup()
 				});
 				if (!res.ok) return null;

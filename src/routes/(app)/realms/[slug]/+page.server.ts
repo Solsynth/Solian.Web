@@ -34,7 +34,7 @@ export const load: PageServerLoad = async ({ fetch, params, url }) => {
 	}
 
 	try {
-		const realmResponse = await fetch(`${API_BASE_URL}/pass/realms/${encodeURIComponent(slug)}`);
+		const realmResponse = await fetch(`${API_BASE_URL}/passport/realms/${encodeURIComponent(slug)}`);
 		if (!realmResponse.ok) {
 			if (realmResponse.status === 404) {
 				return {
