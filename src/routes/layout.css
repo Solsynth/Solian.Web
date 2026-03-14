@@ -1,4 +1,3 @@
-/*! 🌼 daisyUI 5.5.19 */
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
 @plugin 'daisyui' {

@@ -1,4 +1,3 @@
-/*! 🌼 daisyUI 5.5.19 */
 // API client for Solar Network
 import type { SnAuthChallenge, SnAuthFactor, SnAuthToken, User } from '$lib/types/auth';
 import { snakeToCamel } from './case';

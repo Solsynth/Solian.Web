@@ -127,7 +127,6 @@
 	];
 </script>
 
-/*! 🌼 daisyUI 5.5.19 */
 <svelte:head>
 	<title>Pricing - Stellar Program</title>
 </svelte:head>

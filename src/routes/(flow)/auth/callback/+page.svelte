@@ -26,7 +26,11 @@
 			try {
 				auth.setToken(token);
 				await auth.fetchUser();
-				goto('/');
+				const redirectUrl = url.searchParams.get('redirect');
+				const successTarget = redirectUrl
+					? `/auth/success?redirect=${encodeURIComponent(redirectUrl)}`
+					: '/auth/success';
+				goto(successTarget);
 			} catch (err) {
 				error = err instanceof Error ? err.message : 'Failed to authenticate';
 				isProcessing = false;

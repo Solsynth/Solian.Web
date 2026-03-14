@@ -24,7 +24,6 @@
 	const fallbackInitials = $derived((username || '?').slice(0, 2).toUpperCase());
 </script>
 
-/*! 🌼 daisyUI 5.5.19 */
 <aside class="flex h-full flex-col items-stretch px-4 py-4">
 	<!-- Logo -->
 	<div class="mb-6 flex justify-end px-2">
