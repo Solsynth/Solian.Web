@@ -1,7 +1,17 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.png';
 
-	import { House, Plus, Menu, Radio, Compass, LogIn, LogOut, User } from 'lucide-svelte';
+	import {
+		House,
+		Plus,
+		Menu,
+		Radio,
+		Compass,
+		CreditCard,
+		LogIn,
+		LogOut,
+		User
+	} from 'lucide-svelte';
 	import { auth } from '$lib/stores/auth.svelte';
 	import { getFileUrl } from '$lib/utils/files';
 
@@ -68,6 +78,17 @@
 						class="absolute top-full right-0 z-50 mt-2 w-48 rounded-xl border border-base-300 bg-base-100 py-2 shadow-lg"
 					>
 						{#if auth.isAuthenticated && auth.user}
+							{#each navItems as item}
+								<a
+									href={item.href}
+									class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200"
+									onclick={closeMenu}
+								>
+									<item.icon class="h-5 w-5 text-base-content/70" />
+									<span class="font-medium">{item.label}</span>
+								</a>
+							{/each}
+							<div class="divider my-1"></div>
 							<div class="mb-1 border-b border-base-200 px-4 py-3">
 								<div class="flex items-center gap-3">
 									{#if avatarUrl}
@@ -92,6 +113,14 @@
 								</div>
 							</div>
 							<a
+								href="/pricing"
+								class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200"
+								onclick={closeMenu}
+							>
+								<CreditCard class="h-5 w-5 text-base-content/70" />
+								<span class="font-medium">Pricing</span>
+							</a>
+							<a
 								href="/me"
 								class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200"
 								onclick={closeMenu}
@@ -107,16 +136,16 @@
 								<span class="font-medium">Logout</span>
 							</button>
 						{:else}
-							{#each navItems as item}
-								<a
-									href={item.href}
-									class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200"
-									onclick={closeMenu}
-								>
-									<item.icon class="h-5 w-5 text-base-content/70" />
-									<span class="font-medium">{item.label}</span>
-								</a>
-							{/each}
+								{#each navItems as item}
+									<a
+										href={item.href}
+										class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200"
+										onclick={closeMenu}
+									>
+										<item.icon class="h-5 w-5 text-base-content/70" />
+										<span class="font-medium">{item.label}</span>
+									</a>
+								{/each}
 							<div class="divider my-1"></div>
 							<a
 								href="/auth/login"

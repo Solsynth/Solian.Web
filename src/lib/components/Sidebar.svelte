@@ -1,7 +1,7 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.png';
 
-	import { Compass, Radio, Plus, LogIn, LogOut, User } from 'lucide-svelte';
+	import { Compass, CreditCard, Radio, Plus, LogIn, LogOut, User } from 'lucide-svelte';
 	import { auth } from '$lib/stores/auth.svelte';
 	import { getFileUrl } from '$lib/utils/files';
 	import ComposeDialog from './ComposeDialog.svelte';
@@ -24,6 +24,7 @@
 	const fallbackInitials = $derived((username || '?').slice(0, 2).toUpperCase());
 </script>
 
+/*! 🌼 daisyUI 5.5.19 */
 <aside class="flex h-full flex-col items-stretch px-4 py-4">
 	<!-- Logo -->
 	<div class="mb-6 flex justify-end px-2">
@@ -84,6 +85,13 @@
 					</div>
 				</button>
 				<ul class="dropdown-content menu mb-2 w-52 rounded-box bg-base-100 p-2 shadow">
+					<li>
+						<a href="/pricing">
+							<CreditCard size={18} />
+							Membership
+						</a>
+					</li>
+					<li class="my-1 border-t border-base-300"></li>
 					<li>
 						<a href="/me">
 							<User size={18} />
